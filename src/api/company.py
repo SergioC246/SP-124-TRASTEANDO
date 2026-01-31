@@ -1,6 +1,8 @@
-from api.db import db
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+from flask_sqlalchemy import SQLAlchemy
+
+db = SQLAlchemy()
 
 class Company(db.Model):
 
