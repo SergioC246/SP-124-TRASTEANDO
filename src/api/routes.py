@@ -2,9 +2,11 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, User
+from api.models import db, User, Company
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
+from sqlalchemy import select
+import os
 
 app = Flask(__name__)
 
@@ -26,14 +28,14 @@ def handle_hello():
 
 # All clients
 
-@app.route('/clients', methods=['GET'])
+@api.route('/clients', methods=['GET'])
 def get_clients():
     clients = Client.query.all()
     return jsonify([c.serialize() for c in clients]), 200
 
 # A client
 
-@app.route('/clients/<int:client_id>', methods=['GET'])
+@api.route('/clients/<int:client_id>', methods=['GET'])
 def get_client(client_id):
     client = Client.query.get(client_id)
     if client is None:
@@ -42,7 +44,7 @@ def get_client(client_id):
 
 # Create client
 
-@app.route('/clients', methods=['POST'])
+@api.route('/clients', methods=['POST'])
 def create_client():
     body = request.get_json()
 
@@ -62,7 +64,7 @@ def create_client():
 
 # Edit client
 
-@app.route('/clients/<int:client_id>', methods=['PUT'])
+@api.route('/clients/<int:client_id>', methods=['PUT'])
 def update_client():
     client = Client.query.get(client_id)
     if client is None:
@@ -80,7 +82,7 @@ def update_client():
 
 # Delete client
 
-@app.route('/clients/<int:client_id>', methods=['DELETE'])
+@api.route('/clients/<int:client_id>', methods=['DELETE'])
 def delete_client():
     client = Client.query.get(client_id)
     if client is None:
@@ -93,7 +95,82 @@ def delete_client():
     return jsonify({"msg": "Client deleted"}), 200
 
 
+# ENDPOINTS DE COMPANY
 
+# conseguir todas las compañias
+
+@api.route('/companies', methods=['GET'])
+def get_all_companies():
+    result = db.session.execute(select(Company)).scalars().all()
+
+    return jsonify([company.serialize() for company in result]), 200
+
+# conseguir una compañia
+
+@api.route('/companies/<int:company_id>', methods=["GET"])
+def get_one_company(company_id):
+    company = db.session.get(Company, company_id)
+
+    if not company:
+        return jsonify({"message": "Company not found"}), 404
+    return jsonify(company.serialize()), 200
+
+# crear una comàñia
+
+@api.route('/companies', methods=["POST"])
+def create_company():
+    data = request.get_json()
+    
+    name = data.get("name")
+    cif =data.get("cif")
+    address= data.get("address")
+    email= data.get("email")
+    password= data.get("password")
+
+    if not all([name, cif, address, email, password]):
+        return jsonify({"message": "Missing data"}), 400
+
+    new_company = Company(name=name, cif=cif, address=address, email=email, password=password)
+        
+    db.session.add(new_company)
+    db.session.commit()
+
+    return jsonify(new_company.serialize()), 201
+
+# editar una compañia
+
+@api.route('/companies/<int:company_id>', methods=["PUT"])
+def update_company(company_id):
+    data = request.get_json()
+
+    company = db.session.get(Company, company_id)
+    if not company:
+        return jsonify({"message": "Company not found"}), 404
+
+    company.name = data.get("name", company.name)
+    company.cif = data.get("cif", company.cif)
+    company.address = data.get("address", company.address)
+    company.email = data.get("email", company.email)
+
+    db.session.commit()
+
+    return jsonify(company.serialize()), 200
+
+# delete company
+
+@api.route('/companies/<int:company_id>', methods=["DELETE"])
+def delete_company(company_id):
+    company = db.session.get(Company, company_id)
+
+    if not company:
+        return jsonify({"message":"Company not found"}), 404
+    
+    db.session.delete(company)
+    db.session.commit()
+
+    return jsonify({"message": "Company deleted"}), 200
+
+app.register_blueprint(api, url_prefix='/api')
 
 if __name__ == '__main__':
     PORT = int(os.environ.get('PORT', 3000))
