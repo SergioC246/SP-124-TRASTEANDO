@@ -2,10 +2,11 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, User
+from api.models import db, User, Admin_user
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from sqlalchemy import select
+
 
 api = Blueprint('api', __name__)
 
@@ -23,29 +24,20 @@ def handle_hello():
     return jsonify(response_body), 200
 
 
+@api.route('/admin_user/<int:admin_user_id>', methods=['GET'])
+def get_one_admin_user(admin_user_id):
+    admin_user = db.session.get(Admin_user, admin_user_id)
+
+    if not admin_user:
+        return jsonify({"message": "admin_user not found"}), 404
+    
+    return jsonify(admin_user.serialize()), 200
 
 
+# crear un admin_user
 
-
-
-
-
-
-
-
-@api.route('/admin/<int:admin_id>', methods=['GET'])
-def get_one_admin(admin_id):
-    admin = db.session.get(admin, admin_id).scalar_one()
-
-    if not admin:
-        return jsonify({"message": "admin not found"}), 404
-    return jsonify(admin.serialize()), 200
-
-
-# crear un admin
-
-@api.route('/admin', methods=['POST', 'GET'])
-def admin():
+@api.route('/admin_user', methods=['POST', 'GET'])
+def create_or_get_admin_user():
     if request.method == "POST":
         data = request.get_json()
 
@@ -56,59 +48,48 @@ def admin():
         if not all([name, email, password]):
             return jsonify({"message": "Missing data"}), 400
         
-        new_admin = admin(name=name, email=email, password=password)
-        db.session.add(new_admin)
+        new_admin_user = Admin_user(name=name, email=email, password=password)
+        db.session.add(new_admin_user)
         db.session.commit()
 
-        return jsonify(new_admin.serialize()), 201
+        return jsonify(new_admin_user.serialize()), 201
 
     else:
-        result = db.session.execute(select(admin)).scalars().all()
-        return jsonify([admin.serialize() for admin in result]), 200
+        result = db.session.execute(select(Admin_user)).scalars().all()
+        return jsonify([admin_user.serialize() for admin_user in result]), 200
     
 
 
-# editar un admin
+# editar un admin_user
 
-@api.route('/admin/<int:admin_id', methods=["PUT"])
-def update_admin(admin_id):
+@api.route('/admin_user/<int:admin_user_id>', methods=["PUT"])
+def update_admin_user(admin_user_id):
     data = request.get_json()
 
-    admin = db.session.get(admin, admin_id)
-    if not admin:
-        return jsonify({"message": "admin not found"}), 404
+    admin_user = db.session.get(Admin_user, admin_user_id)
+    if not admin_user:
+        return jsonify({"message": "admin_user not found"}), 404
 
-    admin.name = data.get("name", admin.name)
-    admin.email = data.get("email", admin.email)
-    admin.password = data.get("password", admin.password)
+    admin_user.name = data.get("name", admin_user.name)
+    admin_user.email = data.get("email", admin_user.email)
+    admin_user.password = data.get("password", admin_user.password)
 
     db.session.commit()
 
-    return jsonify(admin.serialize()), 200
+    return jsonify(admin_user.serialize()), 200
 
 
-# delete un admin
+# delete un admin_user
 
-@api.route('/admin/<int:admin_id>', methods=["DELETE"])
-def delete_admin(admin_id):
-    admin = db.session.get(admin, admin_id)
+@api.route('/admin_user/<int:admin_user_id>', methods=["DELETE"])
+def delete_admin_user(admin_user_id):
+    admin_user = db.session.get(Admin_user, admin_user_id)
 
-    if not admin:
-        return jsonify({"message": "admin not found"}), 404
+    if not admin_user:
+        return jsonify({"message": "admin_user not found"}), 404
     
-    db.session.delete(admin)
+    db.session.delete(admin_user)
     db.session.commit()
 
-    return jsonify({"message": "admin deleted"}), 200
-
-
-
-
-# this only runs if `$ python src/app.py` is executed
-if __name__ == '__main__':
-    PORT = int(os.environ.get('PORT', 3000))
-    app.run(host='0.0.0.0', port=PORT, debug=False)
-           
-                                    
-
+    return jsonify({"message": "admin_user deleted"}), 200
 

@@ -20,14 +20,13 @@ class User(db.Model):
     
 
 
-class Admin(db.Model):
-    __tablename__ = "admin"
+class Admin_user(db.Model):
+    __tablename__ = "admin_user"
     
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(120), unique=True, nullable=False)
     email: Mapped[str] = mapped_column(String(120), unique=True, nullable=False)
-    password: Mapped[str] = mapped_column(String(120), nullable=False)
-    is_active: Mapped[bool] = mapped_column(Boolean(), nullable=False)
+    password: Mapped[str] = mapped_column(String(120), nullable=False)   
 
 
     def serialize(self):
