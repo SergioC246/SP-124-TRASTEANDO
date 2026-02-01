@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { getClients } from "../store/api";
+
 
 export const Clients = () => {
     const [clients, setClients] = useState([]);
 
     useEffect(() => {
-      getClients().then(data => setClients(data));
+      fetch(`${import.meta.env.VITE_BACKEND_URL}/api/clients`)
+        .then(res => res.json())
+    .then(data => setClients(data));
     }, []);
 
     return (
@@ -23,9 +25,7 @@ export const Clients = () => {
                     <link to={`/clients/${client.id}`}>View</link>
                 </li>
              ))}
-            </ul>
-
-            
+            </ul>            
         </div>
-    )
-}
+    );
+};

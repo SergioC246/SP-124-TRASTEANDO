@@ -14,6 +14,14 @@ export const Navbar = () => {
 					</Link>
 				</div>
 			</div>
+			
+			<div className="ml-auto d-flex gap-2">
+				<Link to="/clients" className="btn btn-outline-secondary">
+					Clients
+				</Link>
+
+			</div>
 		</nav>
 	);
 };
+
