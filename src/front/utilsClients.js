@@ -2,14 +2,14 @@ const CLIENTS_URL = `${import.meta.env.VITE_BACKEND_URL}/api/clients`;
 
 // Obtain client
 
-export const getClients = async (cliendId) => {
+export const getClients = async (clientId) => {
     const response = await fetch(`${CLIENTS_URL}/${clientId}`);
 
     if (!response.ok) {
-        trhow Error("Client not found");
+        throw new  Error("Client not found");
     }
 
-    const data = awair response.json();
+    const data = await response.json();
     return data;
 };
 
@@ -19,16 +19,16 @@ export const getAllClients = async () => {
     const response = await fetch(CLIENTS_URL);
 
     if (!response.ok) {
-        trhow Error("Get all clients failes");
+        throw new  Error("Get all clients failes");
     }
 
-    const data = awair response.json();
+    const data = await response.json();
     return data;
 };
 
 // Create client
 
-export const createClient = async ()clientData => {
+export const createClient = async (clientData) => {
     const response = await fetch(CLIENTS_URL, {
         method: "POST",
         headers: {
@@ -38,10 +38,10 @@ export const createClient = async ()clientData => {
     });
 
     if (!response.ok) {
-        trhow Error("Create client failed");
+        throw new  Error("Create client failed");
     }
 
-    const data = awair response.json();
+    const data = await response.json();
     return data;
 };
 
@@ -51,30 +51,30 @@ export const editClient = async (clientId, clientData) => {
     const response = await fetch(`${CLIENTS_URL}/${clientId}`, {
         method: "PUT",
         headers: {
-            "Content-Type": "aplication/json"
+            "Content-Type": "application/json"
         },
         body: JSON.stringify(clientData)
     });
 
     if (!response.ok) {
-        trhow Error("Edit client failed");
+        throw new  Error("Edit client failed");
     }
 
-    const data = awair response.json();
+    const data = await response.json();
     return data;
 };
 
 //Delete client
 
 export const deleteClient = async (clientId) => {
-    const response = await (`${CLIENTS_URL}/${clientId}`, {
+    const response = await fetch(`${CLIENTS_URL}/${clientId}`, {
         method: "DELETE",
     });
 
     if (!response.ok) {
-        trhow Error("Delete client failed");
+        throw new  Error("Delete client failed");
     }
 
-    const data = awair response.json();
+    const data = await response.json();
     return data;
 };
