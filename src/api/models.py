@@ -21,10 +21,10 @@ class User(db.Model):
     
 class Client(db.Model):
     __tablename__= "clients"
-    id = Mapped[int] = mapped_column(primary_key=True)
-    email = Mapped[str] = mapped_column(String(120), unique=True, nullable=False)
-    password = Mapped[str] = mapped_column(String(200), nullable=False)
-    is_active = Mapped[bool] = mapped_column(Boolean, default=True)
+    id: Mapped[int] = mapped_column(primary_key=True)
+    email: Mapped[str] = mapped_column(String(120), unique=True, nullable=False)
+    password: Mapped[str] = mapped_column(String(200), nullable=False)
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True)
 
     def serialize(self):
         return{
