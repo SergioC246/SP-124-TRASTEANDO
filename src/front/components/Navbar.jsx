@@ -12,13 +12,15 @@ export const Navbar = () => {
 					<Link to="/demo">
 						<button className="btn btn-primary">Check the Context in action</button>
 					</Link>
+
+					<div className="ml-auto d-flex gap-2">
+						<Link to="/clients">
+							<button className="btn btn-outline-secondary">
+								Clients
+							</button>
+						</Link>
+					</div>
 				</div>
-			</div>
-			
-			<div className="ml-auto d-flex gap-2">
-				<Link to="/clients" className="btn btn-outline-secondary">
-					Clients
-				</Link>
 
 			</div>
 		</nav>

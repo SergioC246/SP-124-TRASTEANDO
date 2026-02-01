@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
-import { getAllClients, createClient, editClient, deleteClient } from "../utilsClients";
+import { getAllClients, createClient, editClient, deleteClient } from "../utilsClients.js";
 
 
 
 export const Clients = () => {
     const [clients, setClients] = useState([]);
-    const [form.setForm] = useState(null);
+    const [form, setForm] = useState(null);
     const [loading, setLoading] = useState(true);
 
     // Load Clients
@@ -45,7 +45,7 @@ export const Clients = () => {
             })
             : createClient({
                 email: form.email,
-                password: for.password,
+                password: form.password,
                 is_active: form.is_active
             });
 
@@ -78,11 +78,11 @@ export const Clients = () => {
             {form === null && (
                 <>
                     <button
-                        className="btn-btn-success mn-3"
+                        className="btn-btn-success mb-3"
                         onClick={() =>
                             setForm({
                                 email: "",
-                                password; "",
+                                password: "",
                                 is_active: true
                             })
                         }
@@ -161,7 +161,7 @@ export const Clients = () => {
                             type="checkbox"
                             className="form-check-input"
                             name="is_active"
-                            value={form.is_active}
+                            checked={form.is_active}
                             onChange={handleChange}
                         />
                         <label className="form-check-label">Active</label>
