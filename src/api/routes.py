@@ -2,11 +2,10 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, User
+from api.models import db, User, Client
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 
-app = Flask(__name__)
 
 api = Blueprint('api', __name__)
 
@@ -26,14 +25,14 @@ def handle_hello():
 
 # All clients
 
-@app.route('/clients', methods=['GET'])
+@api.route('/clients', methods=['GET'])
 def get_clients():
     clients = Client.query.all()
     return jsonify([c.serialize() for c in clients]), 200
 
 # A client
 
-@app.route('/clients/<int:client_id>', methods=['GET'])
+@api.route('/clients/<int:client_id>', methods=['GET'])
 def get_client(client_id):
     client = Client.query.get(client_id)
     if client is None:
@@ -42,17 +41,17 @@ def get_client(client_id):
 
 # Create client
 
-@app.route('/clients', methods=['POST'])
+@api.route('/clients', methods=['POST'])
 def create_client():
     body = request.get_json()
 
-    if not body.get("email") or not body.get ("password"):
-        returnjsonify ({"msg": "Email and password are required"}), 400
+    if not body or not body.get("email") or not body.get ("password"):
+        return jsonify ({"msg": "Email and password are required"}), 400
 
     new_client = Client(
         email=body["email"],
         password=body["password"],
-        active=True
+        is_active=True
     )    
 
     db.session.add(new_client)
@@ -62,8 +61,8 @@ def create_client():
 
 # Edit client
 
-@app.route('/clients/<int:client_id>', methods=['PUT'])
-def update_client():
+@api.route('/clients/<int:client_id>', methods=['PUT'])
+def update_client(client_id):
     client = Client.query.get(client_id)
     if client is None:
         return jsonify({"msg": "Client not found"}), 404
@@ -71,7 +70,7 @@ def update_client():
     body = request.get_json()
 
     client.email = body.get("email", client.email)
-    client.active = body.get("active", client.active)
+    client.is_active = body.get("is_active", client.is_active)
 
    
     db.session.commit()
@@ -80,8 +79,8 @@ def update_client():
 
 # Delete client
 
-@app.route('/clients/<int:client_id>', methods=['DELETE'])
-def delete_client():
+@api.route('/clients/<int:client_id>', methods=['DELETE'])
+def delete_client(client_id):
     client = Client.query.get(client_id)
     if client is None:
         return jsonify({"msg": "Client not found"}), 404
@@ -91,7 +90,3 @@ def delete_client():
     db.session.commit()
 
     return jsonify({"msg": "Client deleted"}), 200
-
-if __name__ == '__main__':
-    PORT = int(os.environ.get('PORT', 3000))
-    app.run(host='0.0.0.0', port=PORT, debug=False)
