@@ -2,7 +2,7 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, User, Company
+from api.models import db, User, Company, Client
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from sqlalchemy import select
@@ -49,7 +49,7 @@ def create_client():
     body = request.get_json()
 
     if not body.get("email") or not body.get ("password"):
-        returnjsonify ({"msg": "Email and password are required"}), 400
+        return jsonify ({"msg": "Email and password are required"}), 400
 
     new_client = Client(
         email=body["email"],
@@ -94,17 +94,6 @@ def delete_client():
 
     return jsonify({"msg": "Client deleted"}), 200
 
-
-# ENDPOINTS DE COMPANY
-
-# conseguir todas las compañias
-
-@api.route('/companies', methods=['GET'])
-def get_all_companies():
-    result = db.session.execute(select(Company)).scalars().all()
-
-    return jsonify([company.serialize() for company in result]), 200
-
 # conseguir una compañia
 
 @api.route('/companies/<int:company_id>', methods=["GET"])
@@ -117,26 +106,30 @@ def get_one_company(company_id):
 
 # crear una comàñia
 
-@api.route('/companies', methods=["POST"])
-def create_company():
-    data = request.get_json()
-    
-    name = data.get("name")
-    cif =data.get("cif")
-    address= data.get("address")
-    email= data.get("email")
-    password= data.get("password")
-
-    if not all([name, cif, address, email, password]):
-        return jsonify({"message": "Missing data"}), 400
-
-    new_company = Company(name=name, cif=cif, address=address, email=email, password=password)
+@api.route('/companies', methods=["POST", "GET"])
+def companies():
+    if request.method == "POST":
+        data = request.get_json()
         
-    db.session.add(new_company)
-    db.session.commit()
+        name = data.get("name")
+        cif =data.get("cif")
+        address= data.get("address")
+        email= data.get("email")
+        password= data.get("password")
 
-    return jsonify(new_company.serialize()), 201
+        if not all([name, cif, address, email, password]):
+            return jsonify({"message": "Missing data"}), 400
+        
+        new_company = Company(name=name, cif=cif, address=address, email=email, password=password)
+        db.session.add(new_company)
+        db.session.commit()
 
+        return jsonify(new_company.serialize()), 201
+    
+    else:
+        result = db.session.execute(select(Company)).scalars().all()
+        return jsonify([company.serialize() for company in result]), 200    
+    
 # editar una compañia
 
 @api.route('/companies/<int:company_id>', methods=["PUT"])
