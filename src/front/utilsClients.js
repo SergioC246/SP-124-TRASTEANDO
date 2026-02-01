@@ -32,7 +32,7 @@ export const createClient = async (clientData) => {
     const response = await fetch(CLIENTS_URL, {
         method: "POST",
         headers: {
-            "Content-Type": "aplication/json"
+            "Content-Type": "application/json"
         },
         body: JSON.stringify(clientData)
     });

@@ -7,6 +7,7 @@ export const Clients = () => {
     const [clients, setClients] = useState([]);
     const [form, setForm] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [mode, setMode] = useState("list"); 
 
     // Load Clients
     const loadClients = () => {
@@ -49,8 +50,10 @@ export const Clients = () => {
                 is_active: form.is_active
             });
 
-        action.then(() => {
+        action
+          .then(() => {
             setForm(null);
+            setMode("list");
             loadClients();
         })
             .catch(err => console.error(err));
@@ -73,23 +76,36 @@ export const Clients = () => {
     return (
         <div className="container mt-4">
             <h1>Clients</h1>
+            
+            <div className="d-flex gap-3 mb-4 justify-content-center">
+                <button className="btn btn-primary"
+                    onClick={() => {
+                            setMode("list");
+                            setForm(null)
+                    }}    
+                >
+                    See all Clients        
+                </button>
+
+                <button className="btn btn-success"
+                onClick={() => {
+                    setMode("create");
+                    setForm({
+                        email: "",
+                        password: "",
+                        is_active: true
+                    });
+                  }}
+                >
+                   Create Client
+                </button>    
+
+            </div>
 
             {/* ==== LIST ==== */}
-            {form === null && (
+            
+             {mode === "list" && (
                 <>
-                    <button
-                        className="btn-btn-success mb-3"
-                        onClick={() =>
-                            setForm({
-                                email: "",
-                                password: "",
-                                is_active: true
-                            })
-                        }
-                    >
-                        New Client
-                    </button>
-
                     {clients.length === 0 ? (
                         <p>No clients found</p>
                     ) : (
@@ -107,7 +123,10 @@ export const Clients = () => {
                                     <div>
                                         <button
                                             className="btn btn-sm btn-primary me-2"
-                                            onClick={() => setForm(client)}
+                                            onClick={() => {
+                                                setForm(client);
+                                                setMode("edit");
+                                            }}
                                         >
                                             Edit
                                         </button>
@@ -126,10 +145,10 @@ export const Clients = () => {
             )}
 
             {/* ==== Form ==== */}
-            {form !== null && (
+            {(mode === "create" || mode === "edit") && (
                 <>
                     <h3 className="mt-4">
-                        {form.id ? "Edit Client" : "New Client"}
+                        {mode === "edit" ? "Edit Client" : "New Client"}
                     </h3>
 
                     <div className="mb-3">
@@ -143,7 +162,7 @@ export const Clients = () => {
                         />
                     </div>
 
-                    {!form.id && (
+                     {mode === "create" && (
                         <div className="mb-3">
                             <label className="form-label">Password</label>
                             <input
@@ -167,13 +186,20 @@ export const Clients = () => {
                         <label className="form-check-label">Active</label>
                     </div>
 
-                    <button className="btn btn-success me-2"
-                        onClick={handleSave}>
+                    <button 
+                        type="button"
+                        className="btn btn-success me-2"
+                        onClick={handleSave}
+                    >
                         Save
                     </button>
 
                     <button className="btn btn-secondary"
-                        onClick={() => setForm(null)}
+                        onClick={() => {
+                            setForm(null);
+                            setMode("list");
+                        }}    
+
                     >
                         Cancel
                     </button>
