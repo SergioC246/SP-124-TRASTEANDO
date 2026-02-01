@@ -33,19 +33,19 @@ def handle_hello():
 
 
 
-@api.route('/administradors/<int:administrador:id>', methods=['GET'])
-def get__one_administrador(administrador_id):
-    Administrador = db.session.get(Administrador, administrador_id).scalar_one()
+@api.route('/admin/<int:admin_id>', methods=['GET'])
+def get_one_admin(admin_id):
+    admin = db.session.get(admin, admin_id).scalar_one()
 
-    if not Administrador:
-        return jsonify({"message": "Administrador not found"}), 404
-    return jsonify(Administrador.serialize()), 200
+    if not admin:
+        return jsonify({"message": "admin not found"}), 404
+    return jsonify(admin.serialize()), 200
 
 
-# crear un administrador
+# crear un admin
 
-@api.route('/administradors', methods=['POST', 'GET'])
-def administradors():
+@api.route('/admin', methods=['POST', 'GET'])
+def admin():
     if request.method == "POST":
         data = request.get_json()
 
@@ -56,50 +56,50 @@ def administradors():
         if not all([name, email, password]):
             return jsonify({"message": "Missing data"}), 400
         
-        new_administrador = Administrador(name=name, email=email, password=password)
-        db.session.add(new_administrador)
+        new_admin = admin(name=name, email=email, password=password)
+        db.session.add(new_admin)
         db.session.commit()
 
-        return jsonify(new_administrador.serialize()), 201
+        return jsonify(new_admin.serialize()), 201
 
     else:
-        result = db.session.execute(select(Administrador)).scalars().all()
-        return jsonify([administrador.serialize() for administrador in result]), 200
+        result = db.session.execute(select(admin)).scalars().all()
+        return jsonify([admin.serialize() for admin in result]), 200
     
 
 
-# editar un administrador
+# editar un admin
 
-@api.route('/administradors/<int:administrador_id', methods=["PUT"])
-def update_administrador(administrador_id):
+@api.route('/admin/<int:admin_id', methods=["PUT"])
+def update_admin(admin_id):
     data = request.get_json()
 
-    administrador = db.session.get(administrador, administrador_id)
-    if not administrador:
-        return jsonify({"message": "Administrador not found"}), 404
+    admin = db.session.get(admin, admin_id)
+    if not admin:
+        return jsonify({"message": "admin not found"}), 404
 
-    administrador.name = data.get("name", administrador.name)
-    administrador.email = data.get("email", administrador.email)
-    administrador.password = data.get("password", administrador.password)
+    admin.name = data.get("name", admin.name)
+    admin.email = data.get("email", admin.email)
+    admin.password = data.get("password", admin.password)
 
     db.session.commit()
 
-    return jsonify(administrador.serialize()), 200
+    return jsonify(admin.serialize()), 200
 
 
-# delete un administrador
+# delete un admin
 
-@api.route('/administradors/<int:administrador_id>', methods=["DELETE"])
-def delete_administrador(administrador_id):
-    administrador = db.session.get(administrador, administrador_id)
+@api.route('/admin/<int:admin_id>', methods=["DELETE"])
+def delete_admin(admin_id):
+    admin = db.session.get(admin, admin_id)
 
-    if not administrador:
-        return jsonify({"message": "Administrador not found"}), 404
+    if not admin:
+        return jsonify({"message": "admin not found"}), 404
     
-    db.session.delete(administrador)
+    db.session.delete(admin)
     db.session.commit()
 
-    return jsonify({"message": "Administrador deleted"}), 200
+    return jsonify({"message": "admin deleted"}), 200
 
 
 
