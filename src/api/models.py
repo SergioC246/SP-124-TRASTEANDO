@@ -19,6 +19,23 @@ class User(db.Model):
             # do not serialize the password, its a security breach
         }
     
+
+
+class Admin_user(db.Model):
+    __tablename__ = "admin_user"
+    
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str] = mapped_column(String(120), unique=True, nullable=False)
+    email: Mapped[str] = mapped_column(String(120), unique=True, nullable=False)
+    password: Mapped[str] = mapped_column(String(120), nullable=False)   
+
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "email": self.email            
+        }
 class Client(db.Model):
     __tablename__= "clients"
     id: Mapped[int] = mapped_column(primary_key=True)

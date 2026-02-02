@@ -2,9 +2,12 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 from flask import Flask, request, jsonify, url_for, Blueprint
+from api.models import db, User, Admin_user
 from api.models import db, User, Client
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
+from sqlalchemy import select
+
 
 
 api = Blueprint('api', __name__)
@@ -22,6 +25,75 @@ def handle_hello():
 
     return jsonify(response_body), 200
 
+
+@api.route('/admin_user/<int:admin_user_id>', methods=['GET'])
+def get_one_admin_user(admin_user_id):
+    admin_user = db.session.get(Admin_user, admin_user_id)
+
+    if not admin_user:
+        return jsonify({"message": "admin_user not found"}), 404
+    
+    return jsonify(admin_user.serialize()), 200
+
+
+# crear un admin_user
+
+@api.route('/admin_user', methods=['POST', 'GET'])
+def create_or_get_admin_user():
+    if request.method == "POST":
+        data = request.get_json()
+
+        name = data.get("name")
+        email = data.get("email")
+        password = data.get("password")
+
+        if not all([name, email, password]):
+            return jsonify({"message": "Missing data"}), 400
+        
+        new_admin_user = Admin_user(name=name, email=email, password=password)
+        db.session.add(new_admin_user)
+        db.session.commit()
+
+        return jsonify(new_admin_user.serialize()), 201
+
+    else:
+        result = db.session.execute(select(Admin_user)).scalars().all()
+        return jsonify([admin_user.serialize() for admin_user in result]), 200
+    
+
+
+# editar un admin_user
+
+@api.route('/admin_user/<int:admin_user_id>', methods=["PUT"])
+def update_admin_user(admin_user_id):
+    data = request.get_json()
+
+    admin_user = db.session.get(Admin_user, admin_user_id)
+    if not admin_user:
+        return jsonify({"message": "admin_user not found"}), 404
+
+    admin_user.name = data.get("name", admin_user.name)
+    admin_user.email = data.get("email", admin_user.email)
+    admin_user.password = data.get("password", admin_user.password)
+
+    db.session.commit()
+
+    return jsonify(admin_user.serialize()), 200
+
+
+# delete un admin_user
+
+@api.route('/admin_user/<int:admin_user_id>', methods=["DELETE"])
+def delete_admin_user(admin_user_id):
+    admin_user = db.session.get(Admin_user, admin_user_id)
+
+    if not admin_user:
+        return jsonify({"message": "admin_user not found"}), 404
+    
+    db.session.delete(admin_user)
+    db.session.commit()
+
+    return jsonify({"message": "admin_user deleted"}), 200
 
 # All clients
 
