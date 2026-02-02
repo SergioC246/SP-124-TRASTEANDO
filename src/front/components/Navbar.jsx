@@ -27,6 +27,11 @@ export const Navbar = () => {
 								AdminUser
 							</Link>
 						</li>
+						<li className="nav-item ms-2">
+							<Link to="/companies">
+								<button className="btn btn-primary">Companies</button>
+							</Link>
+						</li>
 					</ul>
 
 				</div>

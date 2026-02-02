@@ -11,6 +11,9 @@ import { AdminUsers } from "./pages/AdminUsers"
 import { AdminUserCreate } from "./pages/AdminUserCreate";
 import { AdminUserEdit } from "./pages/AdminUserEdit";
 import { Clients } from "./pages/Clients";
+import { Companies } from "./pages/Companies";
+import { CreateCompanies } from "./pages/CreateCompanies";
+import { CompanieDetails } from "./pages/CompanieDetails";
 
 
 
@@ -21,8 +24,11 @@ export const router = createBrowserRouter(
       <Route path="/" element={<Home />} />
       <Route path="/admin-users" element={<AdminUsers />} />
       <Route path="/admin-create" element={<AdminUserCreate />} />
-      <Route path="/admin-edit" element={<AdminUserEdit />} />  
-      <Route path="/clients" element={<Clients />} />           
+      <Route path="/admin-edit" element={<AdminUserEdit />} />
+      <Route path="/clients" element={<Clients />} />
+      <Route path="/companies" element={<Companies />} />
+      <Route path="/createCompanies" element={<CreateCompanies />} />
+      <Route path="/companies/:id" element={<CompanieDetails />} />
     </Route>
-  )
-);
+  );
+)

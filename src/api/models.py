@@ -5,12 +5,13 @@ from sqlalchemy.orm import Mapped, mapped_column
 
 db = SQLAlchemy()
 
+
 class User(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
-    email: Mapped[str] = mapped_column(String(120), unique=True, nullable=False)
+    email: Mapped[str] = mapped_column(
+        String(120), unique=True, nullable=False)
     password: Mapped[str] = mapped_column(nullable=False)
     is_active: Mapped[bool] = mapped_column(Boolean(), nullable=False)
-
 
     def serialize(self):
         return {
@@ -18,35 +19,60 @@ class User(db.Model):
             "email": self.email,
             # do not serialize the password, its a security breach
         }
-    
 
 
 class AdminUser(db.Model):
     __tablename__ = "admin_user"
-    
+
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(120), unique=True, nullable=False)
-    email: Mapped[str] = mapped_column(String(120), unique=True, nullable=False)
-    password: Mapped[str] = mapped_column(String(120), nullable=False)   
-
+    email: Mapped[str] = mapped_column(
+        String(120), unique=True, nullable=False)
+    password: Mapped[str] = mapped_column(String(120), nullable=False)
 
     def serialize(self):
         return {
             "id": self.id,
             "name": self.name,
-            "email": self.email            
+            "email": self.email
         }
+
+
 class Client(db.Model):
-    __tablename__= "clients"
+    __tablename__ = "clients"
     id: Mapped[int] = mapped_column(primary_key=True)
-    email: Mapped[str] = mapped_column(String(120), unique=True, nullable=False)
+    email: Mapped[str] = mapped_column(
+        String(120), unique=True, nullable=False)
     password: Mapped[str] = mapped_column(String(200), nullable=False)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
 
     def serialize(self):
-        return{
+        return {
             "id": self.id,
-            "email" : self.email,
-            "is_active" : self.is_active
+            "email": self.email,
+            "is_active": self.is_active
         }
 
+
+class Company(db.Model):
+
+    __tablename__ = "companies"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str] = mapped_column(nullable=False)
+    cif: Mapped[str] = mapped_column(unique=True, nullable=False)
+    address: Mapped[str] = mapped_column(nullable=False)
+    email: Mapped[str] = mapped_column(unique=True, nullable=False)
+    password: Mapped[str] = mapped_column(nullable=False)
+
+    # locations: Mapped[list["Location"]] = relationship(back_populates="company", cascade= "all, delete-orphan")
+
+    def serialize(self):
+        return {
+
+            "id": self.id,
+            "name": self.name,
+            "cif": self.cif,
+            "address": self.address,
+            "email": self.email
+        }
