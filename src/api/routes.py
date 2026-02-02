@@ -5,7 +5,7 @@ from flask import Flask, request, jsonify, url_for, Blueprint
 from api.models import db, User, AdminUser, Client, Company
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
-
+from sqlalchemy import select
 
 api = Blueprint('api', __name__)
 
@@ -29,7 +29,7 @@ def get_one_admin_user(admin_user_id):
 
     if not admin_user:
         return jsonify({"message": "admin_user not found"}), 404
-    
+
     return jsonify(admin_user.serialize()), 200
 
 
@@ -46,7 +46,7 @@ def create_or_get_admin_user():
 
         if not all([name, email, password]):
             return jsonify({"message": "Missing data"}), 400
-        
+
         new_admin_user = AdminUser(name=name, email=email, password=password)
         db.session.add(new_admin_user)
         db.session.commit()
@@ -56,7 +56,6 @@ def create_or_get_admin_user():
     else:
         result = db.session.execute(select(AdminUser)).scalars().all()
         return jsonify([admin_user.serialize() for admin_user in result]), 200
-    
 
 
 # editar un admin_user
@@ -86,7 +85,7 @@ def delete_admin_user(admin_user_id):
 
     if not admin_user:
         return jsonify({"message": "admin_user not found"}), 404
-    
+
     db.session.delete(admin_user)
     db.session.commit()
 
@@ -94,12 +93,14 @@ def delete_admin_user(admin_user_id):
 
 # All clients
 
+
 @api.route('/clients', methods=['GET'])
 def get_clients():
     clients = Client.query.all()
     return jsonify([c.serialize() for c in clients]), 200
 
 # A client
+
 
 @api.route('/clients/<int:client_id>', methods=['GET'])
 def get_client(client_id):
@@ -110,18 +111,19 @@ def get_client(client_id):
 
 # Create client
 
+
 @api.route('/clients', methods=['POST'])
 def create_client():
     body = request.get_json()
 
-    if not body.get("email") or not body.get ("password"):
-        returnjsonify ({"msg": "Email and password are required"}), 400
+    if not body.get("email") or not body.get("password"):
+        return jsonify({"msg": "Email and password are required"}), 400
 
     new_client = Client(
         email=body["email"],
         password=body["password"],
         is_active=True
-    )    
+    )
 
     db.session.add(new_client)
     db.session.commit()
@@ -130,36 +132,106 @@ def create_client():
 
 # Edit client
 
-@app.route('/clients/<int:client_id>', methods=['PUT'])
-def update_client():
+
+@api.route('/clients/<int:client_id>', methods=['PUT'])
+def update_client(client_id):
     client = Client.query.get(client_id)
     if client is None:
         return jsonify({"msg": "Client not found"}), 404
-    
+
     body = request.get_json()
 
     client.email = body.get("email", client.email)
     client.is_active = body.get("is_active", client.is_active)
 
-   
     db.session.commit()
 
     return jsonify(client.serialize()), 200
 
 # Delete client
 
-@app.route('/clients/<int:client_id>', methods=['DELETE'])
-def delete_client():
+
+@api.route('/clients/<int:client_id>', methods=['DELETE'])
+def delete_client(client_id):
     client = Client.query.get(client_id)
     if client is None:
         return jsonify({"msg": "Client not found"}), 404
-    
-    
+
     db.session.delete(client)
     db.session.commit()
 
     return jsonify({"msg": "Client deleted"}), 200
 
-if __name__ == '__main__':
-    PORT = int(os.environ.get('PORT', 3000))
-    app.run(host='0.0.0.0', port=PORT, debug=False)
+# conseguir una compañia
+
+
+@api.route('/companies/<int:company_id>', methods=["GET"])
+def get_one_company(company_id):
+    company = db.session.get(Company, company_id)
+
+    if not company:
+        return jsonify({"message": "Company not found"}), 404
+    return jsonify(company.serialize()), 200
+
+# crear una comàñia
+
+
+@api.route('/companies', methods=["POST", "GET"])
+def companies():
+    if request.method == "POST":
+        data = request.get_json()
+
+        name = data.get("name")
+        cif = data.get("cif")
+        address = data.get("address")
+        email = data.get("email")
+        password = data.get("password")
+
+        if not all([name, cif, address, email, password]):
+            return jsonify({"message": "Missing data"}), 400
+
+        new_company = Company(name=name, cif=cif,
+                              address=address, email=email, password=password)
+        db.session.add(new_company)
+        db.session.commit()
+
+        return jsonify(new_company.serialize()), 201
+
+    else:
+        result = db.session.execute(select(Company)).scalars().all()
+        return jsonify([company.serialize() for company in result]), 200
+
+# editar una compañia
+
+
+@api.route('/companies/<int:company_id>', methods=["PUT"])
+def update_company(company_id):
+    data = request.get_json()
+
+    company = db.session.get(Company, company_id)
+    if not company:
+        return jsonify({"message": "Company not found"}), 404
+
+    company.name = data.get("name", company.name)
+    company.cif = data.get("cif", company.cif)
+    company.address = data.get("address", company.address)
+    company.email = data.get("email", company.email)
+
+    db.session.commit()
+
+    return jsonify(company.serialize()), 200
+
+# delete company
+
+
+@api.route('/companies/<int:company_id>', methods=["DELETE"])
+def delete_company(company_id):
+    company = db.session.get(Company, company_id)
+
+    if not company:
+        return jsonify({"message": "Company not found"}), 404
+
+    db.session.delete(company)
+    db.session.commit()
+
+    return jsonify({"message": "Company deleted"}), 200
