@@ -2,7 +2,7 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, User, AdminUser, Client, Company
+from api.models import db, User, AdminUser, Client, Company, Leases
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from sqlalchemy import select
@@ -235,3 +235,6 @@ def delete_company(company_id):
     db.session.commit()
 
     return jsonify({"message": "Company deleted"}), 200
+
+
+# crear un lease
