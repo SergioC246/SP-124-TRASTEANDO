@@ -30,5 +30,5 @@ export const router = createBrowserRouter(
       <Route path="/createCompanies" element={<CreateCompanies />} />
       <Route path="/companies/:id" element={<CompanieDetails />} />
     </Route>
-  );
+  )
 )

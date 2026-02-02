@@ -23,7 +23,7 @@ export const Navbar = () => {
 							</Link>
 						</li>
 						<li className="nav-item ms-2">
-							<Link to="/admin-user" className="btn btn-outline-secondary" >
+							<Link to="/admin-users" className="btn btn-outline-secondary" >
 								AdminUser
 							</Link>
 						</li>

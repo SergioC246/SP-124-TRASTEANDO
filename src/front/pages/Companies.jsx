@@ -3,6 +3,7 @@ import { getAllCompanies } from "../utilsCompanies"
 import { deleteCompany } from "../utilsCompanies"
 import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
+import { editCompany } from "../utilsCompanies"
 
 export const Companies = () => {
 
@@ -116,19 +117,19 @@ export const Companies = () => {
                             <form onSubmit={handleEditSubmit}>
                                 <div className="modal-body ">
                                     <div className="mb-3">
-                                        <label className="form-label d-block text-start">Company Name</label><input type="text" className="form-control" placeholder="Enter company name" name="name" value={JSON.parse(localStorage.getItem('editingCompany') || '{}').name || ""} onChange={handleChange} required />
+                                        <label className="form-label d-block text-start">Company Name</label><input type="text" className="form-control" placeholder="Enter company name" name="name" defaultValue={JSON.parse(localStorage.getItem('editingCompany') || '{}').name || ""} onChange={handleChange} required />
                                     </div>
                                     <div className="mb-3">
-                                        <label className="form-label d-block text-start">CIF</label><input type="text" className="form-control" placeholder="Enter CIF" name="cif" value={JSON.parse(localStorage.getItem('editingCompany') || '{}').cif || ""}  onChange={handleChange} required />
+                                        <label className="form-label d-block text-start">CIF</label><input type="text" className="form-control" placeholder="Enter CIF" name="cif" defaultValue={JSON.parse(localStorage.getItem('editingCompany') || '{}').cif || ""}  onChange={handleChange} required />
                                     </div>
                                     <div className="mb-3">
-                                        <label className="form-label d-block text-start">Address</label><input type="text" className="form-control" placeholder="Enter address" name="address" value={JSON.parse(localStorage.getItem('editingCompany') || '{}').address || ""} onChange={handleChange} required />
+                                        <label className="form-label d-block text-start">Address</label><input type="text" className="form-control" placeholder="Enter address" name="address" defaultValue={JSON.parse(localStorage.getItem('editingCompany') || '{}').address || ""} onChange={handleChange} required />
                                     </div>
                                     <div className="mb-3">
-                                        <label className="form-label d-block text-start">Email</label><input type="email" className="form-control" placeholder="company@example.com" name="email" value={JSON.parse(localStorage.getItem('editingCompany') || '{}').email || ""}  onChange={handleChange} required />
+                                        <label className="form-label d-block text-start">Email</label><input type="email" className="form-control" placeholder="company@example.com" name="email" defaultValue={JSON.parse(localStorage.getItem('editingCompany') || '{}').email || ""}  onChange={handleChange} required />
                                     </div>
                                     <div className="mb-3">
-                                        <label className="form-label d-block text-start">Password</label><input type="password" className="form-control" placeholder="Enter password" name="password" value={JSON.parse(localStorage.getItem('editingCompany') || '{}').password || ""}  onChange={handleChange} required />
+                                        <label className="form-label d-block text-start">Password</label><input type="password" className="form-control" placeholder="Enter password" name="password" defaultValue={JSON.parse(localStorage.getItem('editingCompany') || '{}').password || ""}  onChange={handleChange} required />
                                     </div>
                                 </div>
                                 <div className="modal-footer">
