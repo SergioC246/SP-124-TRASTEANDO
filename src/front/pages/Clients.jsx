@@ -7,7 +7,7 @@ export const Clients = () => {
     const [clients, setClients] = useState([]);
     const [form, setForm] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [mode, setMode] = useState("list"); 
+    const [mode, setMode] = useState("list");
 
     // Load Clients
     const loadClients = () => {
@@ -51,11 +51,11 @@ export const Clients = () => {
             });
 
         action
-          .then(() => {
-            setForm(null);
-            setMode("list");
-            loadClients();
-        })
+            .then(() => {
+                setForm(null);
+                setMode("list");
+                loadClients();
+            })
             .catch(err => console.error(err));
     };
 
@@ -75,36 +75,28 @@ export const Clients = () => {
 
     return (
         <div className="container mt-4">
-            <h1>Clients</h1>
-            
+
             <div className="d-flex gap-3 mb-4 justify-content-center">
-                <button className="btn btn-primary"
-                    onClick={() => {
-                            setMode("list");
-                            setForm(null)
-                    }}    
-                >
-                    See all Clients        
-                </button>
+
 
                 <button className="btn btn-success"
-                onClick={() => {
-                    setMode("create");
-                    setForm({
-                        email: "",
-                        password: "",
-                        is_active: true
-                    });
-                  }}
+                    onClick={() => {
+                        setMode("create");
+                        setForm({
+                            email: "",
+                            password: "",
+                            is_active: true
+                        });
+                    }}
                 >
-                   Create Client
-                </button>    
+                    Create Client
+                </button>
 
             </div>
 
             {/* ==== LIST ==== */}
-            
-             {mode === "list" && (
+
+            {mode === "list" && (
                 <>
                     {clients.length === 0 ? (
                         <p>No clients found</p>
@@ -121,6 +113,15 @@ export const Clients = () => {
                                         {client.is_active ? "Active" : "Inactive"}
                                     </span>
                                     <div>
+                                        <button
+                                            className="btn btn-sm btn-success me-2"
+                                            onClick={() => {
+                                                setForm(client);
+                                                setMode("details");
+                                            }}
+                                        >
+                                            Details
+                                        </button>
                                         <button
                                             className="btn btn-sm btn-primary me-2"
                                             onClick={() => {
@@ -162,7 +163,7 @@ export const Clients = () => {
                         />
                     </div>
 
-                     {mode === "create" && (
+                    {mode === "create" && (
                         <div className="mb-3">
                             <label className="form-label">Password</label>
                             <input
@@ -186,7 +187,7 @@ export const Clients = () => {
                         <label className="form-check-label">Active</label>
                     </div>
 
-                    <button 
+                    <button
                         type="button"
                         className="btn btn-success me-2"
                         onClick={handleSave}
@@ -198,13 +199,43 @@ export const Clients = () => {
                         onClick={() => {
                             setForm(null);
                             setMode("list");
-                        }}    
+                        }}
 
                     >
                         Cancel
                     </button>
                 </>
             )}
+
+            {/* ==== Details ==== */}
+
+            {mode === "details" && form && (
+                <>
+                    <h3 className="mt-4">Client details</h3>
+
+                    <ul className="List-group mb-3">
+                        <li className="list-group-item">
+                            <strong>ID:</strong> {form.id}
+                        </li>
+                        <li className="list-group-item">
+                            <strong>Email:</strong> {form.email}
+                        </li>
+                        <li className="list-group-item">
+                            <strong>Status:</strong> {" "}
+                            {form.is_active ? "Active" : "Inactive"}
+                        </li>
+                    </ul>
+
+                    <button className="btn btn-secondary"
+                        onClick={() => {
+                            setForm(null);
+                            setMode("list");
+                        }}
+                    >
+                        Back
+                    </button>
+                </>
+            )}    
         </div>
     );
 };
