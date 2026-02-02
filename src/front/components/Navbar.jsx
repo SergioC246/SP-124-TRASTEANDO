@@ -22,6 +22,11 @@ export const Navbar = () => {
 								Clients
 							</Link>
 						</li>
+						<li className="nav-item ms-2">
+							<Link to="/admin-user" className="btn btn-outline-secondary" >
+								AdminUser
+							</Link>
+						</li>
 					</ul>
 
 				</div>

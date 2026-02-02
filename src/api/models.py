@@ -21,7 +21,7 @@ class User(db.Model):
     
 
 
-class Admin_user(db.Model):
+class AdminUser(db.Model):
     __tablename__ = "admin_user"
     
     id: Mapped[int] = mapped_column(primary_key=True)

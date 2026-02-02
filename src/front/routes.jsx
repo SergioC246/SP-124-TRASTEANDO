@@ -10,10 +10,8 @@ import { Home } from "./pages/Home";
 import { AdminUsers } from "./pages/AdminUsers"
 import { AdminUserCreate } from "./pages/AdminUserCreate";
 import { AdminUserEdit } from "./pages/AdminUserEdit";
-import { Single } from "./pages/Single";
-import { Demo } from "./pages/Demo";
 import { Clients } from "./pages/Clients";
-// import { Client } from "./pages/Client";
+
 
 
 
@@ -23,7 +21,8 @@ export const router = createBrowserRouter(
       <Route path="/" element={<Home />} />
       <Route path="/admin-users" element={<AdminUsers />} />
       <Route path="/admin-create" element={<AdminUserCreate />} />
-      <Route path="/admin-edit" element={<AdminUserEdit />} />             
+      <Route path="/admin-edit" element={<AdminUserEdit />} />  
+      <Route path="/clients" element={<Clients />} />           
     </Route>
   )
 );

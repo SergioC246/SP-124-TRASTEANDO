@@ -2,8 +2,7 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, User, Admin_user
-from api.models import db, User, Client
+from api.models import db, User, AdminUser, Client
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from sqlalchemy import select
@@ -28,7 +27,7 @@ def handle_hello():
 
 @api.route('/admin_user/<int:admin_user_id>', methods=['GET'])
 def get_one_admin_user(admin_user_id):
-    admin_user = db.session.get(Admin_user, admin_user_id)
+    admin_user = db.session.get(AdminUser, admin_user_id)
 
     if not admin_user:
         return jsonify({"message": "admin_user not found"}), 404
@@ -50,14 +49,14 @@ def create_or_get_admin_user():
         if not all([name, email, password]):
             return jsonify({"message": "Missing data"}), 400
         
-        new_admin_user = Admin_user(name=name, email=email, password=password)
+        new_admin_user = AdminUser(name=name, email=email, password=password)
         db.session.add(new_admin_user)
         db.session.commit()
 
         return jsonify(new_admin_user.serialize()), 201
 
     else:
-        result = db.session.execute(select(Admin_user)).scalars().all()
+        result = db.session.execute(select(AdminUser)).scalars().all()
         return jsonify([admin_user.serialize() for admin_user in result]), 200
     
 
@@ -68,7 +67,7 @@ def create_or_get_admin_user():
 def update_admin_user(admin_user_id):
     data = request.get_json()
 
-    admin_user = db.session.get(Admin_user, admin_user_id)
+    admin_user = db.session.get(AdminUser, admin_user_id)
     if not admin_user:
         return jsonify({"message": "admin_user not found"}), 404
 
@@ -85,7 +84,7 @@ def update_admin_user(admin_user_id):
 
 @api.route('/admin_user/<int:admin_user_id>', methods=["DELETE"])
 def delete_admin_user(admin_user_id):
-    admin_user = db.session.get(Admin_user, admin_user_id)
+    admin_user = db.session.get(AdminUser, admin_user_id)
 
     if not admin_user:
         return jsonify({"message": "admin_user not found"}), 404
