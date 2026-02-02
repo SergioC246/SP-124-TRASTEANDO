@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { getClients } from "../utilsClients.js";
 
 
-export const ClientsDetail = () => {
+export const ClientDetails = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const [client, setClient] = useState(null);
@@ -28,7 +28,7 @@ export const ClientsDetail = () => {
                <strong>Email:</strong> {client.email}
             </li>
             <li className="list-group-item">
-               <strong>Status:</strong> {""}
+               <strong>Status:</strong>{" "}
                {client.is_active ? "Active" : "Inactive"}
             </li>
         </ul>
