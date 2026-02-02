@@ -163,7 +163,6 @@ def delete_company(company_id):
 
     return jsonify({"message": "Company deleted"}), 200
 
-app.register_blueprint(api, url_prefix='/api')
 
 if __name__ == '__main__':
     PORT = int(os.environ.get('PORT', 3000))
