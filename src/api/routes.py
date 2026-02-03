@@ -236,3 +236,73 @@ def delete_company(company_id):
     db.session.commit()
 
     return jsonify({"message": "Company deleted"}), 200
+
+# All Storages
+
+@api.route("/storages", methods=["GET", "POST"])
+def storages():
+    if request.method == "POST":
+        data = request.get_json()
+
+        size = data.get("size")
+        price = data.get("price")
+        status = data.get("status", "available")
+        location_id = data.get("location_id")
+
+        if not all([size, price, location_id]):
+            return jsonify({"message": "Missing data"}), 400
+        
+        new_storage = Storage(
+            size=size,
+            price=price,
+            status=status,
+            location_id=location_id
+        )
+
+        db.session.add(new_storage)
+        db.session.commit()
+
+        return jsonify(new_storage.serialize()), 201
+    
+    else:
+
+        result = db.session.execute(select(storage)).scalars().all()
+        return jsonify([storage.serialize( for storage in result)]), 200
+
+
+# Update Storage
+
+@api route('/storages/<int:storage_id>', methods=[PUT])
+def upadate_storage(storage_id):
+    storage = db.session.get(Storage, storage_id)
+
+    if storage is None:
+        return jsonify({"message": "Storage not found"}), 404
+    
+    data = request.get_json()
+
+    storage.size = data.get("size", storage.size)
+    storage.price = data.get("price", storage.price)
+    storage.location = data.get("location", storage.location)
+    storage.location_id = data.get("location_id", storage.location_id)
+
+    db.session.commit()
+
+    return jsonify(storage.serialize()), 200
+
+# Delete Storage
+
+@api.route('/storages/<int_storage:id', methods=["DELETE"])
+def delete_storage(storage_id):
+    storage = db.session.get(Storage, storage_id)
+
+    if storage is None:
+        return jsonify({"message": "Storage not found"}), 404
+    
+    if storage.status == "occupied":
+        return jsonify({"mesage": "Cannot delete occupied storage"}), 400
+    
+    db.session.delete(storage)
+    db.session.commit()
+
+    return jsonify({"message": "Storage deleted"}), 200
