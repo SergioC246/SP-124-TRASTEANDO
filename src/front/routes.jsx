@@ -10,10 +10,10 @@ import { Home } from "./pages/Home";
 import { AdminUsers } from "./pages/AdminUsers"
 import { AdminUserCreate } from "./pages/AdminUserCreate";
 import { AdminUserEdit } from "./pages/AdminUserEdit";
+import { AdminUserDetails } from "./pages/AdminUserDetails";
 import { Companies } from "./pages/Companies";
 import { CreateCompanies } from "./pages/CreateCompanies";
 import { CompanieDetails } from "./pages/CompanieDetails";
-import { AdminUserDetails } from "./pages/AdminUserDetails";
 import { ClientList } from "./pages/ClientList";
 import { ClientCreate } from "./pages/ClientCreate";
 import { ClientDetails } from "./pages/ClientDetails";
@@ -32,15 +32,16 @@ export const router = createBrowserRouter(
       <Route path="/admin-details/:id" element={<AdminUserDetails />} />
 
       {/* Rutas client */}
+      <Route path="/clients" element={<ClientList />} />
+      <Route path="/clients/new" element={<ClientCreate />} />
+      <Route path="/clients/:id" element={<ClientDetails />} />
+      <Route path="/clients/:id/edit" element={<ClientEdit />} />
 
       {/* Rutas company */}
       <Route path="/companies" element={<Companies />} />
       <Route path="/createCompanies" element={<CreateCompanies />} />
       <Route path="/companies/:id" element={<CompanieDetails />} />
-      <Route path="/clients" element={<ClientList />} />
-      <Route path="/clients/new" element={<ClientCreate />} />
-      <Route path="/clients/:id" element={<ClientDetails />} />
-      <Route path="/clients/:id/edit" element={<ClientEdit />} />
+      
   
     // CreateRoutesFromElements function allows you to build route elements declaratively.
     // Create your routes here, if you want to keep the Navbar and Footer in all views, add your new routes inside the containing Route.
