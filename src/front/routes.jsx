@@ -14,8 +14,7 @@ import { Companies } from "./pages/Companies";
 import { CreateCompanies } from "./pages/CreateCompanies";
 import { CompanieDetails } from "./pages/CompanieDetails";
 import { AdminUserDetails } from "./pages/AdminUserDetails";
-import { Clients } from "./pages/Clients";
-import { ClientsList } from "./pages/ClientsList";
+import { ClientList } from "./pages/ClientList";
 import { ClientCreate } from "./pages/ClientCreate";
 import { ClientDetails } from "./pages/ClientDetails";
 import { ClientEdit } from "./pages/ClientEdit";
@@ -38,14 +37,11 @@ export const router = createBrowserRouter(
       <Route path="/companies" element={<Companies />} />
       <Route path="/createCompanies" element={<CreateCompanies />} />
       <Route path="/companies/:id" element={<CompanieDetails />} />
-      <Route path="/clients" element={<ClientsList />} />
-      <Route path="/clients" element={<ClientCreate />} />
-      <Route path="/clients" element={<ClientDetails />} />
-      <Route path="/clients" element={<ClientEdit />} />
+      <Route path="/clients" element={<ClientList />} />
+      <Route path="/clients/new" element={<ClientCreate />} />
+      <Route path="/clients/:id" element={<ClientDetails />} />
+      <Route path="/clients/:id/edit" element={<ClientEdit />} />
   
- )
-);
-
     // CreateRoutesFromElements function allows you to build route elements declaratively.
     // Create your routes here, if you want to keep the Navbar and Footer in all views, add your new routes inside the containing Route.
     // Root, on the contrary, create a sister Route, if you have doubts, try it!

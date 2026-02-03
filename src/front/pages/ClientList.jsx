@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getAllClients, deleteClient } from "../utilsClients.js";
-import { ClientsList } from "./pages/ClientList";
 
 
 
-export const ClientsList = () => {
+
+export const ClientList = () => {
     const [clients, setClients] = useState([]);
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
@@ -49,16 +49,14 @@ export const ClientsList = () => {
 
 
                 <button className="btn btn-success"
-                    onClick={() => navigate("/clients/new")
-                        >
+                    onClick={() => navigate("/clients/new")}
+                >
                         Create Client
                 </button>
 
 
-        </div>          
-                    
-        {
-        clients.length === 0 ? (
+            </div>          
+        {clients.length === 0 ? (
             <p>No clients found</p>
         ) : (
         <ul className="list-group">
@@ -98,8 +96,7 @@ export const ClientsList = () => {
                 </li>
             ))}
         </ul>
-    )
-    }  
+    )}  
                       </div > 
                     );
                 };
