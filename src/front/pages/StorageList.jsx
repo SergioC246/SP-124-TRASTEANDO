@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getAllStorages, deleteStorage  } from "../utilsStorage.js";
+import { getAllStorages, deleteStorage  } from "../utilsStorages.js";
 
 
 export const StorageList = () => {
