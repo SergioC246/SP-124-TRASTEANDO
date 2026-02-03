@@ -1,0 +1,14 @@
+
+
+
+export const LeasesCreate = () => {
+
+
+    return (
+
+        <>
+        </>
+
+    )
+
+}
