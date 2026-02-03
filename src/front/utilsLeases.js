@@ -1,7 +1,5 @@
-import { LeasesEdit } from "./pages/LeasesEdit"
-
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
-const LEASES_URL = BACKEND_URL + "api/companies"
+const LEASES_URL = BACKEND_URL + "api/leases"
 
 
 
@@ -11,7 +9,7 @@ export const deleteLease = async(leaseId)=> {
         method: "DELETE"
     })
 
-    IF (!Response.OK){
+    if (!response.ok){
         throw new Error('Delete failed')
     }
     const data = await response.json()
@@ -36,7 +34,7 @@ export const getAllLeases = async() => {
     const response = await fetch(LEASES_URL)
 
     if(!response.ok){
-        throw Error ("Get all companies failed")
+        throw Error ("Get all leases failed")
     }
     
     const data = await response.json()
@@ -48,7 +46,7 @@ export const getAllLeases = async() => {
 export const editLease = async(leaseId, leaseData) => {
     const response =await fetch(LEASES_URL + '/' + leaseId, {
         method: 'PUT',
-        headers: {"content-type": "application/json"},
+        headers: {"Content-type": "application/json"},
         body: JSON.stringify(leaseData)
     })
     if(!response.ok){
@@ -62,7 +60,7 @@ export const editLease = async(leaseId, leaseData) => {
 
 export const createLease = async(leaseData) => {
     const response = await fetch(LEASES_URL, {
-        methdo: 'POST',
+        method: 'POST',
         headers: {"Content-Type":"application/json"},
         body: JSON.stringify(leaseData)
     })
