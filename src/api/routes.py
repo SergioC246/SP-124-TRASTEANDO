@@ -22,7 +22,7 @@ def handle_hello():
 
     return jsonify(response_body), 200
 
-
+# conseguir un admin_user
 @api.route('/admin_user/<int:admin_user_id>', methods=['GET'])
 def get_one_admin_user(admin_user_id):
     admin_user = db.session.get(AdminUser, admin_user_id)
@@ -91,13 +91,14 @@ def delete_admin_user(admin_user_id):
 
     return jsonify({"message": "admin_user deleted"}), 200
 
-# All clients
 
+# All clients
 
 @api.route('/clients', methods=['GET'])
 def get_clients():
     clients = Client.query.all()
     return jsonify([c.serialize() for c in clients]), 200
+
 
 # A client
 

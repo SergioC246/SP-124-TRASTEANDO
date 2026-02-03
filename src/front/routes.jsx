@@ -14,6 +14,7 @@ import { Clients } from "./pages/Clients";
 import { Companies } from "./pages/Companies";
 import { CreateCompanies } from "./pages/CreateCompanies";
 import { CompanieDetails } from "./pages/CompanieDetails";
+import { AdminUserDetails } from "./pages/AdminUserDetails";
 
 
 
@@ -22,10 +23,16 @@ export const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<Layout />} errorElement={<h1>Not found!</h1>} >
       <Route path="/" element={<Home />} />
+      {/* Rutas adminUser */}
       <Route path="/admin-users" element={<AdminUsers />} />
       <Route path="/admin-create" element={<AdminUserCreate />} />
       <Route path="/admin-edit" element={<AdminUserEdit />} />
+      <Route path="/admin-details/:id" element={<AdminUserDetails />} />
+
+      {/* Rutas client */}
       <Route path="/clients" element={<Clients />} />
+
+      {/* Rutas company */}
       <Route path="/companies" element={<Companies />} />
       <Route path="/createCompanies" element={<CreateCompanies />} />
       <Route path="/companies/:id" element={<CompanieDetails />} />
