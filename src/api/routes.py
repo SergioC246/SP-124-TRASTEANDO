@@ -2,7 +2,7 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, User, AdminUser, Client, Company
+from api.models import db, User, AdminUser, Client, Company, Storage
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from sqlalchemy import select
@@ -239,8 +239,8 @@ def delete_company(company_id):
 
 # All Storages
 
-@api.route("/storages", methods=["GET", "POST"])
-def storages():
+@api.route("/storage", methods=["GET", "POST"])
+def storage():
     if request.method == "POST":
         data = request.get_json()
 
@@ -266,13 +266,13 @@ def storages():
     
     else:
 
-        result = db.session.execute(select(storage)).scalars().all()
-        return jsonify([storage.serialize( for storage in result)]), 200
+        result = db.session.execute(select(Storage)).scalars().all()
+        return jsonify([storage.serialize() for storage in result]), 200
 
 
 # Update Storage
 
-@api route('/storages/<int:storage_id>', methods=[PUT])
+@api.route('/storage/<int:storage_id>', methods=["PUT"])
 def upadate_storage(storage_id):
     storage = db.session.get(Storage, storage_id)
 
@@ -292,7 +292,7 @@ def upadate_storage(storage_id):
 
 # Delete Storage
 
-@api.route('/storages/<int_storage:id', methods=["DELETE"])
+@api.route('/storage/<int:storage_id>', methods=["DELETE"])
 def delete_storage(storage_id):
     storage = db.session.get(Storage, storage_id)
 
@@ -302,7 +302,7 @@ def delete_storage(storage_id):
     if storage.status == "occupied":
         return jsonify({"mesage": "Cannot delete occupied storage"}), 400
     
-    db.session.delete(storage)
+    db.session.delete(Storage)
     db.session.commit()
 
     return jsonify({"message": "Storage deleted"}), 200
