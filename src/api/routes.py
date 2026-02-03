@@ -236,3 +236,29 @@ def delete_company(company_id):
     db.session.commit()
 
     return jsonify({"message": "Company deleted"}), 200
+
+
+
+
+# conseguir todos location
+@api.route('')
+
+
+
+
+
+# conseguir un location
+
+
+
+
+# crear un location
+
+
+
+# editar un location
+
+
+
+
+# eliminar un location
