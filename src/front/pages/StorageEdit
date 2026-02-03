@@ -12,7 +12,7 @@ export const StorageEdit = () => {
     size: "",
     price: "",
     status: "available",
-    location_id: ""
+    location_id: "",
   });
 
   const [loading, setLoading] = useState(true);
@@ -26,7 +26,7 @@ export const StorageEdit = () => {
           size: data.size,
           price: data.price,
           status: data.status,
-          location_id: data.location_id
+          location_id: data.location_id,
         });
         setLoading(false);
       })
@@ -85,9 +85,9 @@ export const StorageEdit = () => {
           value={form.status}
           onChange={handleChange}
         >
-            <option value="available">Available</option>
-            <option value="occupied">Occupied</option>
-       </select>     
+          <option value="available">Available</option>
+          <option value="occupied">Occupied</option>
+        </select>
       </div>
 
       <div className="mb-3">
