@@ -1,12 +1,13 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import String, Boolean
-from sqlalchemy.orm import Mapped, mapped_column
-
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy import ForeignKey
 
 db = SQLAlchemy()
 
 
 class User(db.Model):
+
     id: Mapped[int] = mapped_column(primary_key=True)
     email: Mapped[str] = mapped_column(
         String(120), unique=True, nullable=False)
@@ -22,6 +23,7 @@ class User(db.Model):
 
 
 class AdminUser(db.Model):
+    
     __tablename__ = "admin_user"
 
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -46,6 +48,8 @@ class Client(db.Model):
     password: Mapped[str] = mapped_column(String(200), nullable=False)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
 
+    leases: Mapped[list["Leases"]] = relationship(back_populates="client")
+
     def serialize(self):
         return {
             "id": self.id,
@@ -65,9 +69,10 @@ class Company(db.Model):
     email: Mapped[str] = mapped_column(unique=True, nullable=False)
     password: Mapped[str] = mapped_column(nullable=False)
 
-    # locations: Mapped[list["Location"]] = relationship(back_populates="company", cascade= "all, delete-orphan")
+    locations: Mapped[list["Location"]] = relationship(back_populates="company", cascade= "all, delete-orphan")
 
     def serialize(self):
+        
         return {
 
             "id": self.id,
@@ -76,3 +81,78 @@ class Company(db.Model):
             "address": self.address,
             "email": self.email
         }
+
+class Leases(db.Model):
+
+    __tablename__ = "leases"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    start_date: Mapped[str] = mapped_column(nullable=False)
+    end_date: Mapped[str] = mapped_column(nullable=False)
+    status: Mapped[bool] = mapped_column(nullable=True, default=False)
+
+    client_id: Mapped[int] = mapped_column(ForeignKey("clients.id"), nullable=False)
+    storage_id: Mapped[int] = mapped_column(ForeignKey("storage.id"), nullable=False)
+
+    client: Mapped["Client"] = relationship(back_populates="leases")
+    storage: Mapped["Storage"] = relationship(back_populates="leases")
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "start_date":self.start_date, 
+            "end_date":self.end_date, 
+            "status":self.status, 
+            "client_id":self.client_id, 
+            "storage_id":self.storage_id 
+        }
+
+class Storage(db.Model):
+
+     __tablename__ = "storage"
+
+     id: Mapped[int] = mapped_column(primary_key=True)
+     size: Mapped[str] = mapped_column(nullable=False)
+     price: Mapped[str] = mapped_column(nullable=False)
+     status: Mapped[bool] = mapped_column(nullable=True, default=False)
+
+     location_id: Mapped[int] = mapped_column(ForeignKey("location.id"), nullable=False)
+
+     location: Mapped["Location"] = relationship(back_populates="storages")
+     leases: Mapped[list["Leases"]] = relationship(back_populates="storage")
+
+     def serialize(self):
+         return {
+             "id": self.id,
+             "size": self.size,
+             "price": self.price,
+             "status": self.status,
+             "location_id": self.location_id
+         }
+
+
+class Location(db.Model):
+
+    __tablename__ = "location"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    address: Mapped[str] = mapped_column(primary_key=False)
+    city: Mapped[str] = mapped_column(nullable=False)
+    latitude: Mapped[str] = mapped_column(nullable=False)
+    longitude: Mapped[str] = mapped_column(nullable=False)
+
+    company_id: Mapped[int] = mapped_column(ForeignKey("companies.id"), nullable=False)
+    
+    company: Mapped["Company"] = relationship(back_populates="locations")
+    storages: Mapped[list["Storage"]] = relationship(back_populates="location")
+
+    def serialize(self):
+        return {
+            "id":self.id,
+            "address": self.address,
+            "city": self.city,
+            "latitude": self.latitude,
+            "longitude": self.longitude,
+            "company_id": self.company_id
+        }
+         
