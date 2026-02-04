@@ -15,9 +15,11 @@ export const StorageCreate = () => {
     // Form handling
     const handleChange = (e) => {
         const { name, value } = e.target;
+        console.log(value)
         setForm({
             ...form,
-            [name]: name=== "location_id" ? parseInt(value) : value
+            [name]: name=== "location_id" ? parseInt(value) : name=="status" ? value== true : value
+
         });
     };
 
@@ -61,6 +63,7 @@ export const StorageCreate = () => {
                     value={form.status}
                     onChange={handleChange}
                 >
+                    <option value={""}>Select Status</option>
                     <option value={true}>Available</option>
                     <option value={false}>Occupied</option>
                 </select>
