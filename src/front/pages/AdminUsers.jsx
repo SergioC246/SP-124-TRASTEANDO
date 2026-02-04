@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { deleteAdminUsers, getAdminUsers } from "./utilsAdministrators"
+import { deleteAdminUsers, getAdminUser, getAdminUsers } from "./utilsAdministrators"
 import { useNavigate } from "react-router-dom"
 import { AdminUserEdit } from "./AdminUserEdit"
 
@@ -30,7 +30,7 @@ export const AdminUsers = () => {
 
     return (
         <div className="container py-4">
-            <div className="col-lg-8 col-md-10 col-sm-12">
+            <div>
 
                 {editAdmin ? (
                     <AdminUserEdit
@@ -62,6 +62,7 @@ export const AdminUsers = () => {
                                         <p className="mb-0">ID: {admin.id}</p>
                                     </div>
                                     <div className="d-flex flex-column flex-sm-row gap-1 mt-3 mt-sm-0">
+                                        <button className="btn btn-success" onClick={() => navigate(`/admin-details/${admin.id}`)}>Details</button>
                                         <button className="btn btn-primary" onClick={() => setEditAdmin(admin)}>Edit</button>
                                         <button className="btn btn-danger" onClick={() => handleDelete(admin.id)}>Delete</button>
                                     </div>

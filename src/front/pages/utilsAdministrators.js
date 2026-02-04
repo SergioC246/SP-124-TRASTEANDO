@@ -1,11 +1,21 @@
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
 
-// Fetch para conseguir
+// Fetch para conseguir todos
 export const getAdminUsers = async() =>{
     const response = await fetch(BACKEND_URL + "api/admin_user")
 
     const data = await response.json()
 
+    return data
+}
+
+
+// Fetch para conseguir uno
+export const getAdminUser = async(id) =>{
+    const response = await fetch(BACKEND_URL + "api/admin_user/" + id)
+
+    const data = await response.json()
+    
     return data
 }
 

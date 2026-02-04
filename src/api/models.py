@@ -1,7 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import String, Boolean
+from sqlalchemy import String, Boolean, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import ForeignKey
 
 db = SQLAlchemy()
 
@@ -155,4 +154,3 @@ class Location(db.Model):
             "longitude": self.longitude,
             "company_id": self.company_id
         }
-         
