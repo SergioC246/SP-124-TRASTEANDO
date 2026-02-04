@@ -2,7 +2,7 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, User, AdminUser, Client, Company, Storage
+from api.models import db, User, AdminUser, Client, Company, Leases
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from sqlalchemy import select
@@ -237,6 +237,87 @@ def delete_company(company_id):
 
     return jsonify({"message": "Company deleted"}), 200
 
+
+# get all leases
+
+@api.route('/leases', methods=["GET"])
+def get_leases():
+    leases = db.session.execute(select(Leases)).scalars().all()
+    return jsonify([lease.serialize()for lease in leases]), 200
+
+# get one lease
+
+@api.route('/leases/<int:lease_id>', methods=['GET'])
+def get_one_lease(lease_id):
+    lease = db.session.get(Leases, lease_id)
+
+    if not lease:
+        return jsonify({"message":"Lease not found"}), 404
+    return jsonify(lease.serialize()), 200
+    
+
+
+# crear un lease
+
+@api.route('/leases', methods=['POST'])
+def create_lease():
+    data = request.get_json()
+
+    start_date = data.get("start_date")
+    end_date = data.get("end_date")
+    status = data.get("status", False)
+    client_id = data.get("client_id")
+    storage_id = data.get("storage_id")
+
+    if None in [start_date, end_date, client_id, storage_id]:
+        return jsonify({"message": "Missing required IDs or dates"}), 400
+    
+    new_lease = Leases(
+        start_date = start_date,
+        end_date = end_date,
+        status = status,
+        client_id = client_id,
+        storage_id =storage_id
+    )
+
+    db.session.add(new_lease)
+    db.session.commit()
+    
+    return jsonify(new_lease.serialize()), 201
+
+# delete a lease
+
+@api.route('/leases/<int:lease_id>', methods=['DELETE'])
+def delete_lease(lease_id):
+    lease = db.session.get(Leases, lease_id)
+ 
+    if not lease:
+        return jsonify({"message": "Lease not found"}), 404
+
+    db.session.delete(lease)
+    db.session.commit()
+
+    return jsonify({"message": "Lease deleted"}), 200
+
+# edit a lease
+
+@api.route('/leases/<int:lease_id>', methods=['PUT'])
+def update_lease(lease_id):
+    data = request.get_json()
+
+    lease = db.session.get(Leases, lease_id)
+    if not lease:
+        return jsonify({'message': "lease not found"}), 404
+    
+    lease.start_date = data.get("start_date", lease.start_date)
+    lease.end_date = data.get("end_date", lease.end_date)
+    lease.status = data.get("status", lease.status)
+    lease.client_id = data.get("client_id", lease.client_id)
+    lease.storage_id = data.get("storage_id", lease.storage_id)
+
+    db.session.commit()
+
+    return jsonify(lease.serialize()), 200
 # All Storages
 
 @api.route("/storage", methods=["GET", "POST"])

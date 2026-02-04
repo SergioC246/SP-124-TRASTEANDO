@@ -13,6 +13,10 @@ import { AdminUserEdit } from "./pages/AdminUserEdit";
 import { Companies } from "./pages/Companies";
 import { CreateCompanies } from "./pages/CreateCompanies";
 import { CompanieDetails } from "./pages/CompanieDetails";
+import { Leases } from "./pages/Leases";
+import { LeasesCreate } from "./pages/LeasesCreate";
+import { LeasesEdit } from "./pages/LeasesEdit";
+import { LeasesDetails } from "./pages/LeasesDetails";
 import { AdminUserDetails } from "./pages/AdminUserDetails";
 //import { ClientList } from "./pages/ClientList";
 //import { ClientCreate } from "./pages/ClientCreate";
@@ -43,6 +47,10 @@ export const router = createBrowserRouter(
       <Route path="/companies" element={<Companies />} />
       <Route path="/createCompanies" element={<CreateCompanies />} />
       <Route path="/companies/:id" element={<CompanieDetails />} />
+      <Route path="/leases" element={<Leases/>} />
+      <Route path="/leasesCreate" element={<LeasesCreate/>} />
+      <Route path="/leasesEdit/:id" element={<LeasesEdit/>} />
+      <Route path="/leasesDetails/:id" element={<LeasesDetails/>} />      
 
       {/* Rutas storage */}
       <Route path="/storages" element={<StorageList />} />

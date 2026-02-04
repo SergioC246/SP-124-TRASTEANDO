@@ -37,6 +37,11 @@ export const Navbar = () => {
 								<button className="btn btn-primary">Companies</button>
 							</Link>
 						</li>
+						<li className="nav-item ms-2">
+							<Link to="/leases">
+								<button className="btn btn-primary">Leases</button>
+							</Link>
+						</li>
 					</ul>
 
 				</div>
