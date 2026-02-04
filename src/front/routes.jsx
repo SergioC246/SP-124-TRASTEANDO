@@ -15,6 +15,10 @@ import { Companies } from "./pages/Companies";
 import { CreateCompanies } from "./pages/CreateCompanies";
 import { CompanieDetails } from "./pages/CompanieDetails";
 import { AdminUserDetails } from "./pages/AdminUserDetails";
+import { Location } from "./pages/Location";
+import { LocationCreate } from "./pages/LocationCreate";
+import { LocationDetails } from "./pages/LocationDetails";
+import { LocationEdit } from "./pages/LocationsEdit";
 
 
 
@@ -36,6 +40,13 @@ export const router = createBrowserRouter(
       <Route path="/companies" element={<Companies />} />
       <Route path="/createCompanies" element={<CreateCompanies />} />
       <Route path="/companies/:id" element={<CompanieDetails />} />
+
+      {/* Rutas location */}
+      <Route path="/location" element={<Location />} />
+      <Route path="/location-create" element={<LocationCreate />} />
+      <Route path="/location-details/:id" element={<LocationDetails />} />
+      <Route path="/location-edit" element={<LocationEdit />} />
+
     </Route>
   )
 )

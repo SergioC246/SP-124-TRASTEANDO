@@ -48,8 +48,8 @@ export const AdminUsers = () => {
                     <>
                         <div className="d-flex justify-content-between align-items-center mb-3">
                             <h2 className="mb-0">Admins</h2>
-                            <button className="btn btn-success" onClick={() => navigate("/admin-create")} >
-                                Create AdminUser
+                            <button className="btn btn-success" onClick={() => navigate("/admin-create")}>
+                                Create Admin
                             </button>
                         </div>
 

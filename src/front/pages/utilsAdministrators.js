@@ -44,7 +44,7 @@ export const updateAdminUsers = async (id, name, email, password) => {
         body: JSON.stringify({ name, email, password })
     })
 
-    if (response.status !== 200){
+    if (response.status !== 200) {
         return null;
     }
 
