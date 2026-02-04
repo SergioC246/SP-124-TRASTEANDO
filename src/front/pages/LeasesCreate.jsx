@@ -1,10 +1,13 @@
 import { useNavigate } from "react-router-dom"
 import { createLease } from "../utilsLeases"
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { getAllClients } from "../utilsClients";
 
 export const LeasesCreate = () => {
 
     const navigate = useNavigate()
+    const [clients, setClients] = useState([]);
+    const [storages, setStorages] = useState([]);
 
     const [formData, setFormData] = useState({
         start_date: "",
@@ -13,6 +16,15 @@ export const LeasesCreate = () => {
         client_id: "",
         storage_id: ""
     });
+
+    const loadClients = async () =>{
+        try {
+            const data =  await getAllClients();
+            setClients(data);
+        } catch (err){
+            consolole.error(err);
+        }
+    };
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -39,6 +51,12 @@ export const LeasesCreate = () => {
             console.error(error);
         }
     };
+
+    useEffect(() => {
+        loadClients();
+    }, []);
+
+
 
     return (
         <>
@@ -68,12 +86,26 @@ export const LeasesCreate = () => {
 
                     <div className="mb-3">
                         <label className="form-label d-block text-start fw-bold">Client ID</label>
-                        <input type="number" className="form-control" name="client_id" value={formData.client_id} onChange={handleChange} placeholder="Enter Client ID" required />
+                        <select className="form-select" name="client_id" value={formData.client_id} onChange={handleChange} required>
+                            <option value="" disabled>Selecciona un cliente activo...</option>
+                            {clients.filter(e => e.is_active).map(e => (
+                                    <option key={e.id} value={e.id}>
+                                        {e.email} (ID:{e.id})
+                                    </option>                        
+                                ))}
+                        </select>
                     </div>
 
                     <div className="mb-3">
                         <label className="form-label d-block text-start fw-bold">Storage ID</label>
-                        <input type="number" className="form-control" name="storage_id" value={formData.storage_id} onChange={handleChange} placeholder="Enter Storage ID" required />
+                        <select type="number" className="form-select" name="storage_id" value={formData.storage_id} onChange={handleChange} required>
+                             <option value="" disabled>Selecciona un cliente activo...</option>
+                             {storages.filter(e => e.is_active).map(e => (
+                                    <option key={e.id} value={e.id}>
+                                        {e.email} (ID:{e.id})
+                                    </option>                        
+                                ))}                    
+                        </select>
                     </div>
 
                     <div className="mt-3 p-3 bg-light rounded-3 border text-start">

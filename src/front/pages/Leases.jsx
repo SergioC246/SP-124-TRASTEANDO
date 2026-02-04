@@ -58,7 +58,7 @@ export const Leases = () => {
                         </div>
                     </div>
                 </div>
-                        <button type="button" className="btn btn-success ms-3 mt-4" onClick={() => navigate("/leasesCreate")} >Create a lease</button>
+                <button type="button" className="btn btn-success ms-3 mt-4" onClick={() => navigate("/leasesCreate")} >Create a lease</button>
             </div>
         </>
 
