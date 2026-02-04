@@ -1,4 +1,4 @@
-const STORAGES_URL = `${import.meta.env.VITE_BACKEND_URL}/api/storages`;
+const STORAGES_URL = `${import.meta.env.VITE_BACKEND_URL}api/storage`;
 
 // Get one storage
 
@@ -29,6 +29,7 @@ export const getAllStorages = async () => {
 // Create storage
 
 export const createStorage = async (storageData) => {
+    console.log(storageData)
     const response = await fetch(STORAGES_URL, {
         method: "POST",
         headers: {
@@ -37,12 +38,13 @@ export const createStorage = async (storageData) => {
         body: JSON.stringify(storageData)
     });
 
-    if (!response.ok) {
-        throw new  Error("Create storage failed");
-    }
+    console.log(response)
+    // if (!response.ok) {
+    //     throw new  Error("Create storage failed");
+    // }
 
-    const data = await response.json();
-    return data;
+    // const data = await response.json();
+    // return data;
 };
 
 // Edit storage

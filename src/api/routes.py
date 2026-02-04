@@ -241,6 +241,7 @@ def delete_company(company_id):
 
 @api.route("/storage", methods=["GET", "POST"])
 def storage():
+    print("Acabas de entrar a esta funcion")
     if request.method == "POST":
         data = request.get_json()
 
@@ -263,11 +264,21 @@ def storage():
         db.session.commit()
 
         return jsonify(new_storage.serialize()), 201
-    
     else:
-
+        print("Vas a hacer un GET de todos los Storage")
         result = db.session.execute(select(Storage)).scalars().all()
         return jsonify([storage.serialize() for storage in result]), 200
+    
+# Get Storage
+@api.route("/storage/<int:storage_id>", methods=["GET"])
+def get_storage(storage_id):
+    storage = db.session.execute(select(Storage).where(Storage.id == storage_id)).scalar_one_or_none()
+
+    if storage is None:
+        return jsonify({"message": "Storage not found"}), 404
+
+    return jsonify(storage.serialize()),200
+
 
 
 # Update Storage
@@ -302,7 +313,7 @@ def delete_storage(storage_id):
     if storage.status == "occupied":
         return jsonify({"mesage": "Cannot delete occupied storage"}), 400
     
-    db.session.delete(Storage)
+    db.session.delete(storage)
     db.session.commit()
 
     return jsonify({"message": "Storage deleted"}), 200

@@ -8,7 +8,7 @@ export const StorageCreate = () => {
     const [form, setForm] = useState({
         size: "",
         price: "",
-        status: "available",
+        status: true,
         location_id: ""
     });
 
@@ -17,7 +17,7 @@ export const StorageCreate = () => {
         const { name, value } = e.target;
         setForm({
             ...form,
-            [name]: value
+            [name]: name=== "location_id" ? parseInt(value) : value
         });
     };
 
@@ -61,8 +61,8 @@ export const StorageCreate = () => {
                     value={form.status}
                     onChange={handleChange}
                 >
-                    <option value="available">Available</option>
-                    <option value="occupied">Occupied</option>
+                    <option value={true}>Available</option>
+                    <option value={false}>Occupied</option>
                 </select>
             </div>
 
