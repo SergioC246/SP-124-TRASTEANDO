@@ -301,7 +301,7 @@ def update_location(location_id):
 
     db.session.commit()
 
-    return jsonify(location.serialize()), 2000
+    return jsonify(location.serialize()), 200
 
 
 # eliminar un location

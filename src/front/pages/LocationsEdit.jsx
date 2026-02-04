@@ -4,9 +4,8 @@ import { getLocation, updateLocations } from "./utilsLocations"
 
 
 export const LocationEdit = () => {
-    
+
     const { id } = useParams()
-    const locationId = Number(id)
     const [address, setAddress] = useState("")
     const [city, setCity] = useState("")
     const [latitude, setLatitude] = useState("")
@@ -17,7 +16,7 @@ export const LocationEdit = () => {
 
     useEffect(() => {
         const loadLocation = async () => {
-            const data = await getLocation(locationId)
+            const data = await getLocation(id)
             if (data) {
                 setAddress(data.address || "")
                 setCity(data.city || "")
@@ -30,16 +29,18 @@ export const LocationEdit = () => {
             }
         }
         loadLocation()
-    }, [locationId])
+    }, [id])
 
     const handleEdit = async () => {
-        if (!address || !city || !latitude || !longitude || !companyId) return
+    if (!address || !city || !latitude || !longitude || !companyId) return;
 
-        const updatedLocation = await updateLocations(locationId, address, city, latitude, longitude, Number(companyId))
-        if (updatedLocation) {           
-            navigate("/location")
-        }
+    try {
+        await updateLocations(id, address, city, latitude, longitude, Number(companyId));
+        navigate("/location");
+    } catch (error) {
+        alert("Error updating location: " + error.message);
     }
+}
 
     return (
         <div className="container py-4">
@@ -80,7 +81,7 @@ export const LocationEdit = () => {
                         Cancel
                     </button>
                 </div>
-            </div>            
+            </div>
         </div>
     )
 }

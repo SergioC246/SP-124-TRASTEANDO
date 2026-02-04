@@ -45,7 +45,7 @@ export const router = createBrowserRouter(
       <Route path="/location" element={<Location />} />
       <Route path="/location-create" element={<LocationCreate />} />
       <Route path="/location-details/:id" element={<LocationDetails />} />
-      <Route path="/location-edit" element={<LocationEdit />} />
+      <Route path="/location-edit/:id" element={<LocationEdit />} />
 
     </Route>
   )
