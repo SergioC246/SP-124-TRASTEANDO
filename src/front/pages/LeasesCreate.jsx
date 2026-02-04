@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom"
 import { createLease } from "../utilsLeases"
 import { useState, useEffect } from "react"
 import { getAllClients } from "../utilsClients";
+import { getAllStorages } from "../utilsStorages"; 
 
 export const LeasesCreate = () => {
 
@@ -22,9 +23,19 @@ export const LeasesCreate = () => {
             const data =  await getAllClients();
             setClients(data);
         } catch (err){
-            consolole.error(err);
+            console.error(err);
         }
     };
+
+    const loadStorage = async () =>{
+        try {
+            const data =  await getAllStorages();
+            setStorages(data);
+        } catch (err){
+            console.error(err);
+        }
+    };
+
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -54,6 +65,7 @@ export const LeasesCreate = () => {
 
     useEffect(() => {
         loadClients();
+        loadStorage();
     }, []);
 
 
@@ -88,7 +100,7 @@ export const LeasesCreate = () => {
                         <label className="form-label d-block text-start fw-bold">Client ID</label>
                         <select className="form-select" name="client_id" value={formData.client_id} onChange={handleChange} required>
                             <option value="" disabled>Selecciona un cliente activo...</option>
-                            {clients.filter(e => e.is_active).map(e => (
+                            {clients.map(e => (
                                     <option key={e.id} value={e.id}>
                                         {e.email} (ID:{e.id})
                                     </option>                        
@@ -100,9 +112,9 @@ export const LeasesCreate = () => {
                         <label className="form-label d-block text-start fw-bold">Storage ID</label>
                         <select type="number" className="form-select" name="storage_id" value={formData.storage_id} onChange={handleChange} required>
                              <option value="" disabled>Selecciona un cliente activo...</option>
-                             {storages.filter(e => e.is_active).map(e => (
+                             {storages.map(e =>(
                                     <option key={e.id} value={e.id}>
-                                        {e.email} (ID:{e.id})
+                                        Size: {e.size} - Price: {e.price} (Id: {e.id}) 
                                     </option>                        
                                 ))}                    
                         </select>
