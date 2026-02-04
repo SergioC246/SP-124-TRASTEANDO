@@ -29,12 +29,17 @@ export const Navbar = () => {
 						</li>
 						<li className="nav-item ms-2">
 							<Link to="/admin-users" className="btn btn-outline-secondary" >
-								AdminUser
+								Admins
 							</Link>
 						</li>
 						<li className="nav-item ms-2">
-							<Link to="/companies">
-								<button className="btn btn-primary">Companies</button>
+							<Link to="/companies" className="btn btn-outline-secondary">
+								Companies
+							</Link>
+						</li>
+						<li className="nav-item ms-2">
+							<Link to="/location" className="btn btn-outline-secondary">
+								Locations
 							</Link>
 						</li>
 						<li className="nav-item ms-2">
@@ -43,9 +48,7 @@ export const Navbar = () => {
 							</Link>
 						</li>
 					</ul>
-
 				</div>
-
 			</div>
 		</nav>
 	);

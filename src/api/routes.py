@@ -23,6 +23,8 @@ def handle_hello():
     return jsonify(response_body), 200
 
 # conseguir un admin_user
+
+
 @api.route('/admin_user/<int:admin_user_id>', methods=['GET'])
 def get_one_admin_user(admin_user_id):
     admin_user = db.session.get(AdminUser, admin_user_id)
@@ -238,6 +240,82 @@ def delete_company(company_id):
     return jsonify({"message": "Company deleted"}), 200
 
 
+
+# conseguir location
+@api.route('/location/<int:location_id>', methods=['GET'])
+def get_one_location(location_id):
+    location = db.session.get(Location, location_id)
+
+    if not location:
+        return jsonify({"message": "location not found"}), 404
+
+    return jsonify(location.serialize()), 200
+    
+
+# crear un location
+@api.route('/location', methods=['POST', 'GET'])
+def create_or_get_location():
+    if request.method == "POST":
+        data = request.get_json()
+
+        address = data.get("address")
+        city = data.get("city")
+        latitude = data.get("latitude")
+        longitude = data.get("longitude")
+        company_id = data.get("company_id")
+
+        if not all([address, city, latitude, longitude, company_id]):
+            return jsonify({"message": "Missing data"}), 400
+
+        new_location = Location(address=address, city=city, latitude=latitude, longitude=longitude, company_id=company_id)
+        db.session.add(new_location)
+        db.session.commit()
+
+        return jsonify(new_location.serialize()), 201
+
+    else:
+        result = db.session.execute(select(Location)).scalars().all()
+        return jsonify([location.serialize() for location in result]), 200
+    
+
+# editar un location
+@api.route('/location/<int:location_id>', methods=["PUT"])
+def update_location(location_id):
+    data = request.get_json()
+
+    location = db.session.get(Location, location_id)
+    if not location:
+       return jsonify({"message": "location not found"}), 404
+
+    location.address = data.get("address", location.address)
+    location.city = data.get("city", location.city)
+    location.latitude = data.get("latitude", location.latitude)
+    location.longitude = data.get("longitude", location.longitude)
+
+    company_id = data.get("company_id")
+    if company_id is not None:
+        try:
+            location.company_id = int(company_id)
+        except ValueError:
+            return jsonify({"message": "Invalid company_id"}), 400
+
+    db.session.commit()
+
+    return jsonify(location.serialize()), 200
+
+
+# eliminar un location
+@api.route('/location/<int:location_id>', methods=["DELETE"])
+def delete_location(location_id):
+    location = db.session.get(Location, location_id)
+    
+    if not location:
+        return jsonify({"message": "location not found"}), 404
+
+    db.session.delete(location)
+    db.session.commit()
+
+    return jsonify({"message": "location deleted"}), 201
 # get all leases
 
 @api.route('/leases', methods=["GET"])

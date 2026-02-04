@@ -18,6 +18,10 @@ import { LeasesCreate } from "./pages/LeasesCreate";
 import { LeasesEdit } from "./pages/LeasesEdit";
 import { LeasesDetails } from "./pages/LeasesDetails";
 import { AdminUserDetails } from "./pages/AdminUserDetails";
+import { Location } from "./pages/Location";
+import { LocationCreate } from "./pages/LocationCreate";
+import { LocationDetails } from "./pages/LocationDetails";
+import { LocationEdit } from "./pages/LocationsEdit";
 //import { ClientList } from "./pages/ClientList";
 //import { ClientCreate } from "./pages/ClientCreate";
 //import { ClientDetails } from "./pages/ClientDetails";
@@ -47,6 +51,12 @@ export const router = createBrowserRouter(
       <Route path="/companies" element={<Companies />} />
       <Route path="/createCompanies" element={<CreateCompanies />} />
       <Route path="/companies/:id" element={<CompanieDetails />} />
+
+      {/* Rutas location */}
+      <Route path="/location" element={<Location />} />
+      <Route path="/location-create" element={<LocationCreate />} />
+      <Route path="/location-details/:id" element={<LocationDetails />} />
+      <Route path="/location-edit/:id" element={<LocationEdit />} />
       <Route path="/leases" element={<Leases/>} />
       <Route path="/leasesCreate" element={<LeasesCreate/>} />
       <Route path="/leasesEdit/:id" element={<LeasesEdit/>} />

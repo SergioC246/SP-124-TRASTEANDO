@@ -138,7 +138,7 @@ class Location(db.Model):
     address: Mapped[str] = mapped_column(primary_key=False)
     city: Mapped[str] = mapped_column(nullable=False)
     latitude: Mapped[str] = mapped_column(nullable=False)
-    longitude: Mapped[str] = mapped_column(nullable=False)
+    longitude: Mapped[str] = mapped_column(nullable=False)    
 
     company_id: Mapped[int] = mapped_column(ForeignKey("companies.id"), nullable=False)
     
@@ -149,8 +149,9 @@ class Location(db.Model):
         return {
             "id":self.id,
             "address": self.address,
-            "city": self.city,
+            "city": self.city,            
             "latitude": self.latitude,
             "longitude": self.longitude,
-            "company_id": self.company_id
+            "company_id": self.company_id,
+            "company_name": self.company.name
         }
