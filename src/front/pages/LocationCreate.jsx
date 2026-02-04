@@ -1,6 +1,7 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { createLocations } from "./utilsLocations"
+import { getAllCompanies } from "../utilsCompanies"
 
 export const LocationCreate = () => {
 
@@ -9,8 +10,18 @@ export const LocationCreate = () => {
     const [latitude, setLatitude] = useState("")
     const [longitude, setLongitude] = useState("")
     const [companyId, setCompanyId] = useState("")
+    const [companies, setCompanies] = useState([])
 
     const navigate = useNavigate()
+
+    const loadCompanies = async () => {
+        const loadedCompanies = await getAllCompanies()
+        setCompanies(loadedCompanies)
+    }
+
+    useEffect(() => {
+        loadCompanies()
+    }, [])
 
     const handleCreate = async () => {
         if (!address || !city || !latitude || !longitude || !companyId) return
@@ -49,8 +60,16 @@ export const LocationCreate = () => {
                 </div>
 
                 <div className="mb-3">
-                    <label className="form-label">Company ID</label>
-                    <input type="number" className="form-control" value={companyId} onChange={(e) => setCompanyId(e.target.value)} />
+                    <label className="form-label">Companies</label>
+                    <select className="form-select" aria-label="Default select example" value={companyId} onChange={(e) => setCompanyId(e.target.value)}>
+
+                        <option value="">Select your Company</option>
+                        {companies.map((company) => {
+                            return (
+                                <option key={company.id} value={company.id}>{company.name}</option>
+                            )
+                        })}
+                    </select>
                 </div>
 
                 <div className="d-flex gap-2">

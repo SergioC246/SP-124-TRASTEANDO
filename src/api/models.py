@@ -153,5 +153,6 @@ class Location(db.Model):
             "city": self.city,            
             "latitude": self.latitude,
             "longitude": self.longitude,
-            "company_id": self.company_id
+            "company_id": self.company_id,
+            "company_name": self.company.name
         }

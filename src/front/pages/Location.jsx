@@ -39,7 +39,7 @@ export const Location = () => {
                     <div key={location.id} className="card mb-2">
                         <div className="card-body d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center">
                             <div>
-                                <h5 className="card-title">Company ID: {location.company_id}</h5>
+                                <h5 className="card-title">Company Name: {location.company_name}</h5>
                                 <p className="mb-0">Address: {location.address}</p>
                                 <p className="mb-0">City: {location.city}</p>
                                 <p className="mb-0">Latitude: {location.latitude}</p>

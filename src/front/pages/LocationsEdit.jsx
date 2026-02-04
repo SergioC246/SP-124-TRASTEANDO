@@ -10,7 +10,7 @@ export const LocationEdit = () => {
     const [city, setCity] = useState("")
     const [latitude, setLatitude] = useState("")
     const [longitude, setLongitude] = useState("")
-    const [companyId, setCompanyId] = useState("")
+    const [companyId, setCompanyId] = useState("")    
 
     const navigate = useNavigate()
 
