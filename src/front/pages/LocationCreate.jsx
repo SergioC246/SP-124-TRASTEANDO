@@ -6,13 +6,16 @@ export const LocationCreate = () => {
 
     const [address, setAddress] = useState("")
     const [city, setCity] = useState("")
+    const [latitude, setLatitude] = useState("")
+    const [longitude, setLongitude] = useState("")
     const [companyId, setCompanyId] = useState("")
+
     const navigate = useNavigate()
 
     const handleCreate = async () => {
-        if (!address || !city || !companyId) return
+        if (!address || !city || !latitude || !longitude || !companyId) return
 
-        const newLocation = await createLocations(address, city, Number(companyId))
+        const newLocation = await createLocations(address, city, latitude, longitude, Number(companyId))
 
         if (newLocation) {
             navigate("/location")
@@ -33,6 +36,16 @@ export const LocationCreate = () => {
                 <div className="mb-3">
                     <label className="form-label">City</label>
                     <input type="text" className="form-control" value={city} onChange={(e) => setCity(e.target.value)} />
+                </div>
+
+                <div className="mb-3">
+                    <label className="form-label">Latitude</label>
+                    <input type="text" className="form-control" value={latitude} onChange={(e) => setLatitude(e.target.value)} />
+                </div>
+
+                <div className="mb-3">
+                    <label className="form-label">Longitude</label>
+                    <input type="text" className="form-control" value={longitude} onChange={(e) => setLongitude(e.target.value)} />
                 </div>
 
                 <div className="mb-3">

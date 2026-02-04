@@ -21,7 +21,7 @@ export const Location = () => {
 
         const success = await deleteLocations(id)
         if (success) {
-            setAllLocation(allLocation.filter(loc => loc.id !== id))
+            setAllLocation(prev => prev.filter(loc => loc.id !== id))
         }
     }
 
@@ -42,6 +42,8 @@ export const Location = () => {
                                 <h5 className="card-title">Company ID: {location.company_id}</h5>
                                 <p className="mb-0">Address: {location.address}</p>
                                 <p className="mb-0">City: {location.city}</p>
+                                <p className="mb-0">Latitude: {location.latitude}</p>
+                                <p className="mb-0">Longitude: {location.longitude}</p>
                                 <p className="mb-0">ID: {location.id}</p>
                             </div>
                             <div className="d-flex flex-column flex-sm-row gap-1 mt-3 mt-sm-0">

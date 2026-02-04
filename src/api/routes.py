@@ -260,12 +260,14 @@ def create_or_get_location():
 
         address = data.get("address")
         city = data.get("city")
+        latitude = data.get("latitude")
+        longitude = data.get("longitude")
         company_id = data.get("company_id")
 
-        if not all([address, city, company_id]):
+        if not all([address, city, latitude, longitude, company_id]):
             return jsonify({"message": "Missing data"}), 400
 
-        new_location = Location(address=address, city=city, company_id=company_id)
+        new_location = Location(address=address, city=city, latitude=latitude, longitude=longitude, company_id=company_id)
         db.session.add(new_location)
         db.session.commit()
 
@@ -274,6 +276,7 @@ def create_or_get_location():
     else:
         result = db.session.execute(select(Location)).scalars().all()
         return jsonify([location.serialize() for location in result]), 200
+    
 
 # editar un location
 @api.route('/location/<int:location_id>', methods=["PUT"])
@@ -286,13 +289,20 @@ def update_location(location_id):
 
     location.address = data.get("address", location.address)
     location.city = data.get("city", location.city)
+    location.latitude = data.get("latitude", location.latitude)
+    location.longitude = data.get("longitude", location.longitude)
+
     company_id = data.get("company_id")
-    if company_id:
-        location.company_id = company_id
-    
+    if company_id is not None:
+        try:
+            location.company_id = int(company_id)
+        except ValueError:
+            return jsonify({"message": "Invalid company_id"}), 400
+
     db.session.commit()
-    
-    return jsonify(location.serialize()), 200
+
+    return jsonify(location.serialize()), 2000
+
 
 # eliminar un location
 @api.route('/location/<int:location_id>', methods=["DELETE"])

@@ -21,11 +21,11 @@ export const getLocation = async(id) => {
 
 
 // Fetch para crear
-export const createLocations = async (address, city, company_id) => {
+export const createLocations = async (address, city, latitude, longitude, company_id) => {
     const response = await fetch(`${BACKEND_URL}api/location`,{
         method: "POST",
         headers: { "Content-type": "application/json" },
-        body: JSON.stringify({ address, city, company_id })
+        body: JSON.stringify({ address, city, latitude, longitude, company_id })
     })
 
     if (response.status !== 201) {
@@ -37,14 +37,16 @@ export const createLocations = async (address, city, company_id) => {
 
 
 // Fetch para editar
-export const updateLocations = async (id, address, city, company_id) => {
+export const updateLocations = async (id, address, city, latitude, longitude, company_id) => {
     const response = await fetch(`${BACKEND_URL}/api/location/${id}`, {
         method: "PUT",
         headers: { "Content-type": "application/json" },
-        body: JSON.stringify({ address, city, company_id })
+        body: JSON.stringify({ address, city, latitude, longitude, company_id })
     })
 
-    if (response.status !== 200) {
+    if (!response.ok) {
+        const text = await response.text()
+        console.error("Update failed:", response.status, text)
         return null
     }
 
@@ -58,5 +60,5 @@ export const deleteLocations = async(locationId) => {
     const response = await fetch(`${BACKEND_URL}api/location/${locationId}`, {
         method: "DELETE"
     })
-    return response.status === 200
+    return response.ok
 }

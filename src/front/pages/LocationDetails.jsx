@@ -30,9 +30,11 @@ export const LocationDetails = () => {
                                 <div className="col-md-6">
                                     <strong>ID:</strong> <span className="text-muted">{location.id}</span>
                                 </div>
-                                <div className="col-md-6 d-flex flex-column align-items-center">
+                                <div className="col-md-6 d-flex flex-column align-items-start">
                                     <strong>Address:</strong> <span className="text-muted">{location.address}</span>
                                     <strong>City:</strong> <span className="text-muted">{location.city}</span>
+                                    <strong>Latitude:</strong> <span className="text-muted">{location.latitude}</span>
+                                    <strong>Longitude:</strong> <span className="text-muted">{location.longitude}</span>
                                 </div>
                             </div>
                         </div>
