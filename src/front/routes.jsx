@@ -10,14 +10,27 @@ import { Home } from "./pages/Home";
 import { AdminUsers } from "./pages/AdminUsers"
 import { AdminUserCreate } from "./pages/AdminUserCreate";
 import { AdminUserEdit } from "./pages/AdminUserEdit";
-import { AdminUserDetails } from "./pages/AdminUserDetails";
 import { Companies } from "./pages/Companies";
 import { CreateCompanies } from "./pages/CreateCompanies";
 import { CompanieDetails } from "./pages/CompanieDetails";
-import { ClientList } from "./pages/ClientList";
-import { ClientCreate } from "./pages/ClientCreate";
-import { ClientDetails } from "./pages/ClientDetails";
-import { ClientEdit } from "./pages/ClientEdit";
+import { Leases } from "./pages/Leases";
+import { LeasesCreate } from "./pages/LeasesCreate";
+import { LeasesEdit } from "./pages/LeasesEdit";
+import { LeasesDetails } from "./pages/LeasesDetails";
+import { AdminUserDetails } from "./pages/AdminUserDetails";
+import { Location } from "./pages/Location";
+import { LocationCreate } from "./pages/LocationCreate";
+import { LocationDetails } from "./pages/LocationDetails";
+import { LocationEdit } from "./pages/LocationsEdit";
+//import { ClientList } from "./pages/ClientList";
+//import { ClientCreate } from "./pages/ClientCreate";
+//import { ClientDetails } from "./pages/ClientDetails";
+//import { ClientEdit } from "./pages/ClientEdit";
+import { StorageList } from "./pages/StorageList";
+import { StorageCreate } from "./pages/StorageCreate";
+import { StorageDetails } from "./pages/StorageDetails";
+import { StorageEdit } from "./pages/StorageEdit";
+
 
 
 
@@ -36,24 +49,29 @@ export const router = createBrowserRouter(
       <Route path="/clients/new" element={<ClientCreate />} />
       <Route path="/clients/:id" element={<ClientDetails />} />
       <Route path="/clients/:id/edit" element={<ClientEdit />} />
+      {/* Rutas client 
+      <Route path="/clients" element={<Clients />} />*/}
 
       {/* Rutas company */}
       <Route path="/companies" element={<Companies />} />
       <Route path="/createCompanies" element={<CreateCompanies />} />
       <Route path="/companies/:id" element={<CompanieDetails />} />
-      
-  
-    // CreateRoutesFromElements function allows you to build route elements declaratively.
-    // Create your routes here, if you want to keep the Navbar and Footer in all views, add your new routes inside the containing Route.
-    // Root, on the contrary, create a sister Route, if you have doubts, try it!
-    // Note: keep in mind that errorElement will be the default page when you don't get a route, customize that page to make your project more attractive.
-    // Note: The child paths of the Layout element replace the Outlet component with the elements contained in the "element" attribute of these child paths.
 
-    // Root Route: All navigation will start from here.
-    {/*<Route path="/" element={<Layout />} errorElement={<h1>Not found!</h1>} >*/}
+      {/* Rutas location */}
+      <Route path="/location" element={<Location />} />
+      <Route path="/location-create" element={<LocationCreate />} />
+      <Route path="/location-details/:id" element={<LocationDetails />} />
+      <Route path="/location-edit/:id" element={<LocationEdit />} />
+      <Route path="/leases" element={<Leases/>} />
+      <Route path="/leasesCreate" element={<LeasesCreate/>} />
+      <Route path="/leasesEdit/:id" element={<LeasesEdit/>} />
+      <Route path="/leasesDetails/:id" element={<LeasesDetails/>} />      
 
-      {/* Nested Routes: Defines sub-routes within the BaseHome component. */}
-      {/*<Route path="/" element={<Home />} />*/}
+      {/* Rutas storage */}
+      <Route path="/storages" element={<StorageList />} />
+      <Route path="/storages/create" element={<StorageCreate />} />
+      <Route path="/storages/:id/edit" element={<StorageEdit />} />
+      <Route path="/storages/:id" element={<StorageDetails />} />
 
     </Route>
   )

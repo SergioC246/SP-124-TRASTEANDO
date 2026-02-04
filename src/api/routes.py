@@ -2,7 +2,7 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, User, AdminUser, Client, Company
+from api.models import db, User, AdminUser, Client, Company, Leases
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from sqlalchemy import select
@@ -23,6 +23,8 @@ def handle_hello():
     return jsonify(response_body), 200
 
 # conseguir un admin_user
+
+
 @api.route('/admin_user/<int:admin_user_id>', methods=['GET'])
 def get_one_admin_user(admin_user_id):
     admin_user = db.session.get(AdminUser, admin_user_id)
@@ -236,3 +238,241 @@ def delete_company(company_id):
     db.session.commit()
 
     return jsonify({"message": "Company deleted"}), 200
+
+
+
+# conseguir location
+@api.route('/location/<int:location_id>', methods=['GET'])
+def get_one_location(location_id):
+    location = db.session.get(Location, location_id)
+
+    if not location:
+        return jsonify({"message": "location not found"}), 404
+
+    return jsonify(location.serialize()), 200
+    
+
+# crear un location
+@api.route('/location', methods=['POST', 'GET'])
+def create_or_get_location():
+    if request.method == "POST":
+        data = request.get_json()
+
+        address = data.get("address")
+        city = data.get("city")
+        latitude = data.get("latitude")
+        longitude = data.get("longitude")
+        company_id = data.get("company_id")
+
+        if not all([address, city, latitude, longitude, company_id]):
+            return jsonify({"message": "Missing data"}), 400
+
+        new_location = Location(address=address, city=city, latitude=latitude, longitude=longitude, company_id=company_id)
+        db.session.add(new_location)
+        db.session.commit()
+
+        return jsonify(new_location.serialize()), 201
+
+    else:
+        result = db.session.execute(select(Location)).scalars().all()
+        return jsonify([location.serialize() for location in result]), 200
+    
+
+# editar un location
+@api.route('/location/<int:location_id>', methods=["PUT"])
+def update_location(location_id):
+    data = request.get_json()
+
+    location = db.session.get(Location, location_id)
+    if not location:
+       return jsonify({"message": "location not found"}), 404
+
+    location.address = data.get("address", location.address)
+    location.city = data.get("city", location.city)
+    location.latitude = data.get("latitude", location.latitude)
+    location.longitude = data.get("longitude", location.longitude)
+
+    company_id = data.get("company_id")
+    if company_id is not None:
+        try:
+            location.company_id = int(company_id)
+        except ValueError:
+            return jsonify({"message": "Invalid company_id"}), 400
+
+    db.session.commit()
+
+    return jsonify(location.serialize()), 200
+
+
+# eliminar un location
+@api.route('/location/<int:location_id>', methods=["DELETE"])
+def delete_location(location_id):
+    location = db.session.get(Location, location_id)
+    
+    if not location:
+        return jsonify({"message": "location not found"}), 404
+
+    db.session.delete(location)
+    db.session.commit()
+
+    return jsonify({"message": "location deleted"}), 201
+# get all leases
+
+@api.route('/leases', methods=["GET"])
+def get_leases():
+    leases = db.session.execute(select(Leases)).scalars().all()
+    return jsonify([lease.serialize()for lease in leases]), 200
+
+# get one lease
+
+@api.route('/leases/<int:lease_id>', methods=['GET'])
+def get_one_lease(lease_id):
+    lease = db.session.get(Leases, lease_id)
+
+    if not lease:
+        return jsonify({"message":"Lease not found"}), 404
+    return jsonify(lease.serialize()), 200
+    
+
+
+# crear un lease
+
+@api.route('/leases', methods=['POST'])
+def create_lease():
+    data = request.get_json()
+
+    start_date = data.get("start_date")
+    end_date = data.get("end_date")
+    status = data.get("status", False)
+    client_id = data.get("client_id")
+    storage_id = data.get("storage_id")
+
+    if None in [start_date, end_date, client_id, storage_id]:
+        return jsonify({"message": "Missing required IDs or dates"}), 400
+    
+    new_lease = Leases(
+        start_date = start_date,
+        end_date = end_date,
+        status = status,
+        client_id = client_id,
+        storage_id =storage_id
+    )
+
+    db.session.add(new_lease)
+    db.session.commit()
+    
+    return jsonify(new_lease.serialize()), 201
+
+# delete a lease
+
+@api.route('/leases/<int:lease_id>', methods=['DELETE'])
+def delete_lease(lease_id):
+    lease = db.session.get(Leases, lease_id)
+ 
+    if not lease:
+        return jsonify({"message": "Lease not found"}), 404
+
+    db.session.delete(lease)
+    db.session.commit()
+
+    return jsonify({"message": "Lease deleted"}), 200
+
+# edit a lease
+
+@api.route('/leases/<int:lease_id>', methods=['PUT'])
+def update_lease(lease_id):
+    data = request.get_json()
+
+    lease = db.session.get(Leases, lease_id)
+    if not lease:
+        return jsonify({'message': "lease not found"}), 404
+    
+    lease.start_date = data.get("start_date", lease.start_date)
+    lease.end_date = data.get("end_date", lease.end_date)
+    lease.status = data.get("status", lease.status)
+    lease.client_id = data.get("client_id", lease.client_id)
+    lease.storage_id = data.get("storage_id", lease.storage_id)
+
+    db.session.commit()
+
+    return jsonify(lease.serialize()), 200
+# All Storages
+
+@api.route("/storage", methods=["GET", "POST"])
+def storage():
+    print("Acabas de entrar a esta funcion")
+    if request.method == "POST":
+        data = request.get_json()
+
+        size = data.get("size")
+        price = data.get("price")
+        status = data.get("status", "available")
+        location_id = data.get("location_id")
+
+        if not all([size, price, location_id]):
+            return jsonify({"message": "Missing data"}), 400
+        
+        new_storage = Storage(
+            size=size,
+            price=price,
+            status=status,
+            location_id=location_id
+        )
+
+        db.session.add(new_storage)
+        db.session.commit()
+
+        return jsonify(new_storage.serialize()), 201
+    else:
+        print("Vas a hacer un GET de todos los Storage")
+        result = db.session.execute(select(Storage)).scalars().all()
+        return jsonify([storage.serialize() for storage in result]), 200
+    
+# Get Storage
+@api.route("/storage/<int:storage_id>", methods=["GET"])
+def get_storage(storage_id):
+    storage = db.session.execute(select(Storage).where(Storage.id == storage_id)).scalar_one_or_none()
+
+    if storage is None:
+        return jsonify({"message": "Storage not found"}), 404
+
+    return jsonify(storage.serialize()),200
+
+
+
+# Update Storage
+
+@api.route('/storage/<int:storage_id>', methods=["PUT"])
+def upadate_storage(storage_id):
+    storage = db.session.get(Storage, storage_id)
+
+    if storage is None:
+        return jsonify({"message": "Storage not found"}), 404
+    
+    data = request.get_json()
+
+    storage.size = data.get("size", storage.size)
+    storage.price = data.get("price", storage.price)
+    storage.location = data.get("location", storage.location)
+    storage.location_id = data.get("location_id", storage.location_id)
+
+    db.session.commit()
+
+    return jsonify(storage.serialize()), 200
+
+# Delete Storage
+
+@api.route('/storage/<int:storage_id>', methods=["DELETE"])
+def delete_storage(storage_id):
+    storage = db.session.get(Storage, storage_id)
+
+    if storage is None:
+        return jsonify({"message": "Storage not found"}), 404
+    
+    if storage.status == "occupied":
+        return jsonify({"mesage": "Cannot delete occupied storage"}), 400
+    
+    db.session.delete(storage)
+    db.session.commit()
+
+    return jsonify({"message": "Storage deleted"}), 200

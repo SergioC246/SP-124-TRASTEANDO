@@ -39,8 +39,7 @@ export const AdminUserEdit = ({ admin, onUpdate, onBack }) => {
 
                 <div className="mb-4">
                     <label className="form-label">Password</label>
-                    <input type="password" className="form-control" value={password} onChange={(e) => setPassword(e.target.value)}
-                    />
+                    <input type="password" className="form-control" value={password} onChange={(e) => setPassword(e.target.value)}/>
                 </div>
 
                 <div className="d-flex gap-2">
@@ -51,7 +50,6 @@ export const AdminUserEdit = ({ admin, onUpdate, onBack }) => {
                         Cancel
                     </button>
                 </div>
-
             </div>
         </div>
     )

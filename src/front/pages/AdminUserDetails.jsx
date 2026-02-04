@@ -11,8 +11,7 @@ export const AdminUserDetails = () => {
     useEffect(() => { 
         const loadAdmin = async () => {
             const data = await getAdminUser(id)
-            setAdmin(data)
-            console.log("data es --->", data)
+            setAdmin(data)            
             }
             loadAdmin()
         }, [id])        
