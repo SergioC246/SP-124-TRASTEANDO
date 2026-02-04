@@ -476,3 +476,25 @@ def delete_storage(storage_id):
     db.session.commit()
 
     return jsonify({"message": "Storage deleted"}), 200
+
+# All storages Overview
+
+@api.route('/storage/overview', methods=["GET"])
+def get_all_storage_overview():
+    
+    result = db.session.execute(select(Storage)).scalars().all()
+
+
+    detailed_list = []
+    for storage in result:
+        storage_data = storage.serialize()
+
+        location = db.session.get(Location, storage.location_id)
+        company = db.session.get(Company, location.company_id)
+
+        storage_data["company_name"] = company.name
+        storage_data["city"] = location.city
+        
+        detailed_list.append(storage_data)
+        
+    return jsonify(detailed_list), 200
