@@ -44,6 +44,11 @@ export const router = createBrowserRouter(
       <Route path="/admin-edit" element={<AdminUserEdit />} />
       <Route path="/admin-details/:id" element={<AdminUserDetails />} />
 
+      {/* Rutas client */}
+      <Route path="/clients" element={<ClientList />} />
+      <Route path="/clients/new" element={<ClientCreate />} />
+      <Route path="/clients/:id" element={<ClientDetails />} />
+      <Route path="/clients/:id/edit" element={<ClientEdit />} />
       {/* Rutas client 
       <Route path="/clients" element={<Clients />} />*/}
 
@@ -70,4 +75,4 @@ export const router = createBrowserRouter(
 
     </Route>
   )
-)
+);
