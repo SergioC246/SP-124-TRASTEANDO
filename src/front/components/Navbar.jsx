@@ -1,6 +1,21 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import useGlobalReducer from "../hooks/useGlobalReducer";
 
 export const Navbar = () => {
+
+	const navigate = useNavigate()
+	const { dispatch } = useGlobalReducer()
+
+	function handleLogout() {
+		localStorage.removeItem("token")
+
+		dispatch({
+			type: "set_auth",
+			payload: false
+		})
+
+		navigate("/")
+	}
 
 	return (
 		<nav className="navbar navbar-expand-lg navbar-light bg-light">
@@ -47,12 +62,10 @@ export const Navbar = () => {
 								Company Private
 							</Link>
 						</li>
-						<li className="nav-item ms-2">
-							<Link to="/">
-							<button className="btn btn-outline-danger">
+						<li className="nav-item ms-2">							
+							<button className="btn btn-outline-danger" onClick={handleLogout}>
 								Company Logout
-							</button>
-							</Link>
+							</button>							
 						</li>
 						<li className="nav-item ms-2">
 							<Link to="/location" className="btn btn-outline-secondary">

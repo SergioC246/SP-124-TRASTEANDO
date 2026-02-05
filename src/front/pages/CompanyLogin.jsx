@@ -2,18 +2,15 @@ import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import useGlobalReducer from "../hooks/useGlobalReducer"
 
-
 export const CompanyLogin = () => {
 
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const navigate = useNavigate()
-
     const { store, dispatch } = useGlobalReducer()
 
     function sendData(e) {
         e.preventDefault()
-
 
         const requestOptions = {
             method: "POST",
@@ -25,7 +22,6 @@ export const CompanyLogin = () => {
                 }
             )
         }
-
         fetch(import.meta.env.VITE_BACKEND_URL + '/api/login/company', requestOptions)
             .then(response => response.json())
             .then(data => {
@@ -44,9 +40,6 @@ export const CompanyLogin = () => {
                 }
             })
     }
-
-
-
 
     return (
         <div className="container py-4">
