@@ -43,6 +43,8 @@ export const router = createBrowserRouter(
       <Route path="/admin-create" element={<AdminUserCreate />} />
       <Route path="/admin-edit" element={<AdminUserEdit />} />
       <Route path="/admin-details/:id" element={<AdminUserDetails />} />
+      <Route path="/admin/login" element={<AdminLogin />} />
+      <Route path="/admin/private" element={<AdminPrivate />} />
 
       {/* Rutas client */}
       <Route path="/clients" element={<ClientList />} />

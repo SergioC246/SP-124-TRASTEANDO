@@ -2,6 +2,7 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 from flask import Flask, request, jsonify, url_for, Blueprint
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 from api.models import db, User, AdminUser, Client, Company, Leases, Storage, Location, Storage
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
@@ -522,3 +523,44 @@ def get_storage_overview(storage_id):
     storage_data["city"] = location.city
         
     return jsonify(storage_data), 200
+
+# Login admin
+
+@api.route('/login/admin', methods=['POST'])
+def login_admin():
+    body = request.get_json()
+    if body is None:
+        return jsonify({"message": "User and Password is mandatory"}), 400
+    
+    email = body.get("email")
+    password = body.get("password")
+
+    admin = db.session.execute(
+        select(AdminUser).where(AdminUser.email == email)
+    ).scalar_one_or_one()
+
+    if admin is None or admin.password != password:
+        return jsonify({"message": "Wrong email or password"}), 401
+    
+    acces_token = create_access_token(identity=str(admin.id))
+
+    return jsonify({
+        "token": access_token,
+        "admin_id": admin.id
+    }), 200
+
+# Private admin   
+
+@api.route('/private/admin', methods=['GET'])
+@jwt_required()
+def private_admin():
+    admin_id = int(get_jwt_identity())
+
+    admin = db.session.execute(
+        select(AdminUser).where(AdminUser.id == admin.id)
+    ).scalar_one_or_one()
+
+    if admin is None:
+        return jsonify({"message": "Admin not found"}), 404
+    
+    return jsonify(admin.serialize()), 200
