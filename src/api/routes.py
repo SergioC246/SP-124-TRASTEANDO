@@ -406,8 +406,8 @@ def storage():
 
         size = data.get("size")
         price = data.get("price")
-        status = data.get("status", "available")
         location_id = data.get("location_id")
+        status= data.get("status", True)    
 
         if not all([size, price, location_id]):
             return jsonify({"message": "Missing data"}), 400
@@ -443,7 +443,7 @@ def get_storage(storage_id):
 # Update Storage
 
 @api.route('/storage/<int:storage_id>', methods=["PUT"])
-def upadate_storage(storage_id):
+def update_storage(storage_id):
     storage = db.session.get(Storage, storage_id)
 
     if storage is None:
@@ -453,8 +453,13 @@ def upadate_storage(storage_id):
 
     storage.size = data.get("size", storage.size)
     storage.price = data.get("price", storage.price)
-    storage.location = data.get("location", storage.location)
     storage.location_id = data.get("location_id", storage.location_id)
+
+    if "status" in data:
+        val = data.get("status")
+        if isinstance(val, bool):
+            storage.status = val
+        else: storage.status = True if str(val).lower() == "available" else False        
 
     db.session.commit()
 
