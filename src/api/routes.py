@@ -503,3 +503,22 @@ def get_all_storage_overview():
         detailed_list.append(storage_data)
         
     return jsonify(detailed_list), 200
+
+# Get Storage Overview
+
+@api.route("/storage/<int:storage_id>/overview", methods=["GET"])
+def get_storage_overview(storage_id):
+    storage = db.session.execute(select(Storage).where(Storage.id == storage_id)).scalar_one_or_none()
+
+    if storage is None:
+        return jsonify({"message": "Storage not found"}), 404
+    
+    storage_data = storage.serialize()
+
+    location = db.session.get(Location, storage.location_id)
+    company = db.session.get(Company, location.company_id)
+
+    storage_data["company_name"] = company.name
+    storage_data["city"] = location.city
+        
+    return jsonify(storage_data), 200
