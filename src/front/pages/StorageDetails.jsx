@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { getStorage } from "../utilsStorages.js";
+import { getStorageOverview } from "../utilsStorages.js";
 
 
 export const StorageDetails = () => {
@@ -9,7 +9,7 @@ export const StorageDetails = () => {
     const [storage, setStorage] = useState(null);
 
     useEffect(() => {
-        getStorage(id)
+        getStorageOverview(id)
             .then((data) => setStorage(data))
             .catch(console.error);
     }, [id]);
@@ -21,6 +21,12 @@ export const StorageDetails = () => {
             <h1>Storage Details</h1>
          
         <ul className="list-group mb-3">
+                        <li className="list-group-item">
+               <strong>City:</strong> <strong className="text-primary fs-5"> {storage.city}</strong>
+            </li>
+            <li className="list-group-item">
+               <strong>Company:</strong> <strong className="text-secondary"> {storage.company_name}</strong>
+            </li>
             <li className="list-group-item">
                <strong>ID:</strong> {storage.id}
             </li>
@@ -32,8 +38,8 @@ export const StorageDetails = () => {
             </li>
             <li className="list-group-item">
                <strong>Status:</strong>{" "}
-               {storage.status === "available"
-               ? "Available" : "Occupied"}
+               {storage.status === "Available"
+               ? <em className="text-success">Available</em> : <em className="text-danger">Occupied</em>}
             </li>
             <li className="list-group-item">
                <strong>Location ID:</strong> {storage.location_id}
