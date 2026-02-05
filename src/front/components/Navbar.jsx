@@ -38,6 +38,23 @@ export const Navbar = () => {
 							</Link>
 						</li>
 						<li className="nav-item ms-2">
+							<Link to="/companies/login" className="btn btn-outline-secondary">
+								Company Login
+							</Link>
+						</li>
+						<li className="nav-item ms-2">
+							<Link to="/companies/private" className="btn btn-outline-secondary">
+								Company Private
+							</Link>
+						</li>
+						<li className="nav-item ms-2">
+							<Link to="/">
+							<button className="btn btn-outline-danger">
+								Company Logout
+							</button>
+							</Link>
+						</li>
+						<li className="nav-item ms-2">
 							<Link to="/location" className="btn btn-outline-secondary">
 								Locations
 							</Link>
