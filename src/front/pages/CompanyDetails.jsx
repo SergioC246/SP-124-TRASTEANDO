@@ -2,7 +2,7 @@ import { useState, useEffect } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import { getCompany } from "../utilsCompanies"
 
-export const CompanieDetails = () => {
+export const CompanyDetails = () => {
 
     const { id } = useParams()
     const navigate = useNavigate()

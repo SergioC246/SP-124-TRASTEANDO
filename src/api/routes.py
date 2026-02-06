@@ -7,6 +7,9 @@ from api.models import db, User, AdminUser, Client, Company, Leases, Storage, Lo
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from sqlalchemy import select
+from flask_jwt_extended import create_access_token
+from flask_jwt_extended import get_jwt_identity
+from flask_jwt_extended import jwt_required
 
 api = Blueprint('api', __name__)
 
@@ -483,6 +486,32 @@ def delete_storage(storage_id):
 
     return jsonify({"message": "Storage deleted"}), 200
 
+
+
+@api.route('/login/company', methods=["POST"])
+def login_company():
+    email = request.json.get("email", None)
+    password = request.json.get("password", None)
+    company = db.session.execute(select(Company).where(Company.email == email, Company.password == password)).scalar_one_or_none()
+
+    if not company: 
+        return jsonify({"msg": "Bad email or password"}), 401
+    
+    company_token = create_access_token(identity=str(company.id))
+    return jsonify({"company_token":company_token}), 200
+
+
+@api.route("/private/company", methods=["GET"])
+@jwt_required()
+def private_company():
+    company_id = get_jwt_identity()
+
+    company = db.session.get(Company, int(company_id))
+
+    if not company:
+        return jsonify({"messagge": "Company not found"}), 404
+    
+    return jsonify(company.serialize()), 200
 # All storages Overview
 
 @api.route('/storage/overview', methods=["GET"])
