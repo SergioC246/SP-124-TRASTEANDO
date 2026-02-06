@@ -1,22 +1,20 @@
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { useNavigate } from "react-router-dom"
+import useGlobalReducer from "../hooks/useGlobalReducer.jsx";
 
 
 export const ClientLogin = () => {
+
+    const { store, dispatch } = useGlobalReducer();
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("")
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
-    const [isLogged, setIsLogged] = useState(false);
+ 
 
     const navigate = useNavigate();
-
-    useEffect(() => {
-        const token = localStorage.getItem("token");
-        setIsLogged(!!token);
-    }, []);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -38,9 +36,13 @@ export const ClientLogin = () => {
                 setError(data.message || data.msg || "Login failed");
                 return;
             }
-            // para guardar el token
-            localStorage.setItem("token", data.token);
-            setIsLogged(true);
+
+            localStorage.setItem("tokenClient", data.token);
+            
+            dispatch({
+                type: "set_auth_client",
+                payload: { tokenClient: data.token},
+            });
 
             navigate("/client/private");
         } catch (err) {
@@ -59,13 +61,13 @@ export const ClientLogin = () => {
 
                     <div className="text-center mb-4">
                         <h2 className="fw-bold text-primary">Welcome Back</h2>
-                        <div className={`badge ${isLogged ? 'bg-success-subtle text-success' : 'bg-warning-subtle text-warning'} p-2 mt-2`}>
-                            {isLogged ? "● Online" : "● Offline - Please log in"}
+                        <div className={`badge ${store.authClient ? "bg-success-subtle text-success" : "bg-warning-subtle text-warning"} p-2 mt-2`}>
+                            {store.authClient ? "● Online" : "● Offline - Please log in"}
                         </div>
                     </div>
 
                     <form onSubmit={handleSubmit}>
-    
+
                         <div className="form-floating mb-3 text-start">
                             <input type="email" className="form-control" id="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="name@example.com" disabled={loading} required />
                             <label htmlFor="email">Email address</label>
@@ -82,7 +84,7 @@ export const ClientLogin = () => {
                             </div>
                         )}
 
-                        <button type="submit" className="btn btn-primary w-100 py-2 fw-bold" disabled={loading} style={{ borderRadius: "8px" }}>
+                        <button type="submit" className="btn btn-primary w-100 py-2 fw-bold" disabled={loading} style={{ borderRadius: "8px" }} >
                             {loading ? <><span className="spinner-border spinner-border-sm me-2"></span>Logging in...</> : "Login"}
                         </button>
                     </form>

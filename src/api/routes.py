@@ -2,7 +2,7 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, User, AdminUser, Client, Company, Leases, Location, Storage
+from api.models import db, User, AdminUser, Client, Company, Leases, Storage, Location, Storage
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from sqlalchemy import select
@@ -409,8 +409,8 @@ def storage():
 
         size = data.get("size")
         price = data.get("price")
-        status = data.get("status", "available")
         location_id = data.get("location_id")
+        status= data.get("status", True)    
 
         if not all([size, price, location_id]):
             return jsonify({"message": "Missing data"}), 400
@@ -446,7 +446,7 @@ def get_storage(storage_id):
 # Update Storage
 
 @api.route('/storage/<int:storage_id>', methods=["PUT"])
-def upadate_storage(storage_id):
+def update_storage(storage_id):
     storage = db.session.get(Storage, storage_id)
 
     if storage is None:
@@ -456,8 +456,13 @@ def upadate_storage(storage_id):
 
     storage.size = data.get("size", storage.size)
     storage.price = data.get("price", storage.price)
-    storage.location = data.get("location", storage.location)
     storage.location_id = data.get("location_id", storage.location_id)
+
+    if "status" in data:
+        val = data.get("status")
+        if isinstance(val, bool):
+            storage.status = val
+        else: storage.status = True if str(val).lower() == "available" else False        
 
     db.session.commit()
 
@@ -511,3 +516,43 @@ def private():
     client_id = int(get_jwt_identity())
     client = db.session.execute(select(Client).where(Client.id == client_id)).scalar_one()
     return jsonify(client.serialize()),200
+# All storages Overview
+
+@api.route('/storage/overview', methods=["GET"])
+def get_all_storage_overview():
+    
+    result = db.session.execute(select(Storage)).scalars().all()
+
+
+    detailed_list = []
+    for storage in result:
+        storage_data = storage.serialize()
+
+        location = db.session.get(Location, storage.location_id)
+        company = db.session.get(Company, location.company_id)
+
+        storage_data["company_name"] = company.name
+        storage_data["city"] = location.city
+        
+        detailed_list.append(storage_data)
+        
+    return jsonify(detailed_list), 200
+
+# Get Storage Overview
+
+@api.route("/storage/<int:storage_id>/overview", methods=["GET"])
+def get_storage_overview(storage_id):
+    storage = db.session.execute(select(Storage).where(Storage.id == storage_id)).scalar_one_or_none()
+
+    if storage is None:
+        return jsonify({"message": "Storage not found"}), 404
+    
+    storage_data = storage.serialize()
+
+    location = db.session.get(Location, storage.location_id)
+    company = db.session.get(Company, location.company_id)
+
+    storage_data["company_name"] = company.name
+    storage_data["city"] = location.city
+        
+    return jsonify(storage_data), 200

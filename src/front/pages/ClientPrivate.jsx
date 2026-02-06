@@ -1,7 +1,10 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import useGlobalReducer from "../hooks/useGlobalReducer.jsx";
+
 
 export const ClientPrivate = () => {
+    const { store, dispatch} = useGlobalReducer();
 
     const [client, setClient] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -9,25 +12,34 @@ export const ClientPrivate = () => {
 
     const navigate = useNavigate();
 
+    const handleLogout = () => {
+        localStorage.removeItem("tokenClient");
+        dispatch({type: "logout_client"});
+        navigate("/client/login")
+    }
+
     useEffect(() => {
+        const token = store.tokenClient;
 
-        const loadClient = async () => {
-            const token = localStorage.getItem("token");
-            if (!token) {
-                navigate("/client/login");
-                return;
-            }
+        if (!token){
+            navigate("/client/login");
+            return
+        }
 
+        const loadClient = async () => {        
             try {
                 const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
                 const resp = await fetch(`${backendUrl}/api/private/client`, {
                     method: "GET",
                     headers: { Authorization: `Bearer ${token}` },
                 });
+
                 const data = await resp.json();
 
                 if (!resp.ok) {
-                    localStorage.removeItem("token");
+                    localStorage.removeItem("tokenClient");
+                    dispatch({ type: "logout_client" });
                     navigate("/client/login");
                     return;
                 }
@@ -39,11 +51,12 @@ export const ClientPrivate = () => {
             }
         };
         loadClient();
-    }, [navigate]);
+    }, [store.tokenClient, dispatch, navigate]);
 
     if (loading) return <div className="text-center p-5">Cargando...</div>;
     if (error) return <div className="text-center p-5 alert alert-danger">{error}</div>;
-
+    if (!client) return null;
+    
     return (
 
         <div className="container d-flex justify-content-center align-items-center" style={{ minHeight: "70vh" }}>
@@ -85,7 +98,7 @@ export const ClientPrivate = () => {
                 </div>
 
                 <div className="card-footer bg-white border-0 p-4 pt-0">
-                    <button className="btn btn-outline-danger w-100 fw-bold py-2" onClick={() => { localStorage.removeItem("token"); window.location.href = "/client/login"; }}>
+                    <button className="btn btn-outline-danger w-100 fw-bold py-2" onClick={handleLogout}>
                         <i className="bi bi-box-arrow-left me-2"></i>Logout from Secret Area
                     </button>
                 </div>

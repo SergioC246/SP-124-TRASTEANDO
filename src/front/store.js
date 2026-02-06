@@ -1,4 +1,6 @@
 export const initialStore=()=>{
+  const tokenClient = localStorage.getItem("tokenClient");
+
   return{
     message: null,
     todos: [
@@ -12,7 +14,9 @@ export const initialStore=()=>{
         title: "Do my homework",
         background: null,
       }
-    ]
+    ],
+      tokenClient: tokenClient || null,
+      authClient: !!tokenClient,
   }
 }
 
@@ -34,5 +38,14 @@ export default function storeReducer(store, action = {}) {
       };
     default:
       throw Error('Unknown action.');
+    
+    case "set_auth_client": {
+      const { tokenClient } = action.payload;
+      return {...store, tokenClient, authClient: true};
+    }
+
+    case "logout_client":
+      return { ...store, tokenClient: null, authClient: false };
+
   }    
 }

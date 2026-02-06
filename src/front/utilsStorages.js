@@ -80,3 +80,31 @@ export const deleteStorage = async (storageId) => {
     const data = await response.json();
     return data;
 };
+
+// Get all Storage Overview
+
+export const getAllStoragesOverview = async () => {
+    
+    const response = await fetch (`${STORAGES_URL}/overview`);
+
+    if (!response.ok) {   
+        throw new Error("Get all storages overview failed");
+    }
+
+const data = await response.json();
+return data;
+};
+
+// Get one Storage Overview
+
+export const getStorageOverview = async (storageId) => {
+    
+    const response = await fetch (`${STORAGES_URL}/${storageId}/overview`);
+
+    if (!response.ok) {   
+        throw new Error("Storages overview failed");
+    }
+
+const data = await response.json();
+return data;
+};

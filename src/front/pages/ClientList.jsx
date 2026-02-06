@@ -1,19 +1,21 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getAllStoragesOverview, deleteStorage } from "../utilsStorages.js";
+import { getAllClients, deleteClient } from "../utilsClients.js";
 
 
-export const StorageList = () => {
-    const [storages, setStorages] = useState([]);
+
+
+export const ClientList = () => {
+    const [clients, setClients] = useState([]);
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
 
-    // Load Storages
-    const loadStorages = () => {
+    // Load Clients
+    const loadClients = () => {
         setLoading(true);
-        getAllStoragesOverview()
+        getAllClients()
             .then(data => {
-                setStorages(data);
+                setClients(data);
                 setLoading(false);
             })
             .catch(err => {
@@ -23,21 +25,21 @@ export const StorageList = () => {
     };
 
     useEffect(() => {
-        loadStorages()
+        loadClients()
     }, []);
 
     //Delete
 
     const handleDelete = (id) => {
-        if (!confirm("Are you sure to delete this storage?"))
+        if (!confirm("Are you sure to delete this client?"))
             return;
 
-        deleteStorage (id)
-            .then(loadStorages)
+        deleteClient(id)
+            .then(loadClients)
             .catch(err => console.error(err));
     };
 
-    if (loading) return <p>Loading storages...</p>;
+    if (loading) return <p>Loading clients...</p>;
 
 
     return (
@@ -47,47 +49,46 @@ export const StorageList = () => {
 
 
                 <button className="btn btn-success"
-                    onClick={() => navigate("/storages/create")}
+                    onClick={() => navigate("/clients/new")}
                 >
-                        Create Storage
+                        Create Client
                 </button>
 
 
             </div>          
-        {storages.length === 0 ? (
-            <p>No storages found</p>
+        {clients.length === 0 ? (
+            <p>No clients found</p>
         ) : (
         <ul className="list-group">
-            {storages.map(storage => (
+            {clients.map(client => (
                 <li
-                    key={storage.id}
+                    key={client.id}
                     className="list-group-item d-flex 
                              justify-content-between align-items-center"
                 >
                     <span>
-                        <strong class= "text-primary fs-4" >{storage.city}</strong> - <strong class="text-secondary">{storage.company_name}</strong>
-                         - {storage.size} - {storage.price} € - {storage.status === "Available"
-               ?        <em className="text-success"> Available</em> : <em className="text-danger"> Occupied</em>}
+                        <strong>{client.email}</strong> : {" "}
+                        {client.is_active ? "Active" : "Inactive"}
                     </span>
 
                     <div>
                         <button
                             className="btn btn-sm btn-success me-2"
-                            onClick={() => navigate(`/storages/${storage.id}`)}
+                            onClick={() => navigate(`/clients/${client.id}`)}
                         >
                             Details
                         </button>
 
                         <button
                             className="btn btn-sm btn-primary me-2"
-                            onClick={() => navigate(`/storages/${storage.id}/edit`)}
+                            onClick={() => navigate(`/clients/${client.id}/edit`)}
                         >
                             Edit
                         </button>
 
                         <button
                             className="btn btn-sm btn-danger"
-                            onClick={() => handleDelete(storage.id)}
+                            onClick={() => handleDelete(client.id)}
                         >
                             Delete
                         </button>
