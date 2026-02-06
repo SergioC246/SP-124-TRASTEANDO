@@ -537,12 +537,12 @@ def login_admin():
 
     admin = db.session.execute(
         select(AdminUser).where(AdminUser.email == email)
-    ).scalar_one_or_one()
+    ).scalar_one_or_none()
 
     if admin is None or admin.password != password:
         return jsonify({"message": "Wrong email or password"}), 401
     
-    acces_token = create_access_token(identity=str(admin.id))
+    access_token = create_access_token(identity=str(admin.id))
 
     return jsonify({
         "token": access_token,
@@ -557,8 +557,8 @@ def private_admin():
     admin_id = int(get_jwt_identity())
 
     admin = db.session.execute(
-        select(AdminUser).where(AdminUser.id == admin.id)
-    ).scalar_one_or_one()
+        select(AdminUser).where(AdminUser.id == admin_id)
+    ).scalar_one_or_none()
 
     if admin is None:
         return jsonify({"message": "Admin not found"}), 404
