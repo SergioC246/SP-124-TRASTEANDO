@@ -1,21 +1,21 @@
 import { useEffect, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
-import { getAdminUser } from "./utilsAdministrators"
+import { getAdminUser } from "./utilsAdministrator"
 
 export const AdminUserDetails = () => {
 
     const { id } = useParams()
     const navigate = useNavigate()
     const [admin, setAdmin] = useState({})
-    
-    useEffect(() => { 
+
+    useEffect(() => {
         const loadAdmin = async () => {
             const data = await getAdminUser(id)
-            setAdmin(data)            
-            }
-            loadAdmin()
-        }, [id])        
-      
+            setAdmin(data)
+        }
+        loadAdmin()
+    }, [id])
+
     return (
         <div className="container mt-5">
             <div className="row justify-content-center">
@@ -29,10 +29,10 @@ export const AdminUserDetails = () => {
                             <div className="row g-3">
                                 <div className="col-md-6">
                                     <strong>ID:</strong> <span className="text-muted">{admin.id}</span>
-                                </div> 
+                                </div>
                                 <div className="col-md-6 text-center">
                                     <strong>Email:</strong> <span className="text-muted">{admin.email}</span>
-                                </div>                        
+                                </div>
                             </div>
                         </div>
                     </div>

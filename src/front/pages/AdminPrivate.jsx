@@ -1,30 +1,39 @@
 import { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { Context } from "../store/appContext";
-import {verifyAdminToken, logoutAdmin } from "../utilsAdminisatrator";
+import useGlobalReducer from "../hooks/useGlobalReducer";
+import { verifyAdminToken, logoutAdmin } from "./utilsAdministrator";
 
 export const AdminPrivate = () => {
     const navigate = useNavigate();
-    const { store, dispatch } = useContext(Context);
+    const { store, dispatch } = useGlobalReducer();
 
     const [loading, setLoading] = useState(true);
-   
+
     useEffect(() => {
+        console.log("🔍 AdminPrivate montado. Verificando token...");
+        console.log("Token en store:", store.admin_token);
+        console.log("Info en store:", store.admin_info);
+
         const token = store.admin_token;
 
         if (!token) {
+            console.log("❌ No hay token, redirigiendo al login...");
             navigate("/admin/login");
             return;
         }
 
+        console.log("✅ Token encontrado, verificando con el backend...");
+
         verifyAdminToken(token, dispatch).then(res => {
-                if (!res.ok) {
-                    navigate("/admin/login");
-                } else {
+            if (!res.success) {
+                console.log("❌ Token inválido");
+                navigate("/admin/login");
+            } else {
+                console.log("✅ Token válido, mostrando panel");
                 setLoading(false);
-                }
-            });
-    }, []);
+            }
+        });
+    }, [store.admin_token]);
 
     const handleLogout = () => {
         logoutAdmin(dispatch);

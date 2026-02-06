@@ -1,5 +1,4 @@
 export const initialStore=()=>{
-  const tokenClient = localStorage.getItem("tokenClient");
 
   return{
     message: null,
@@ -18,15 +17,16 @@ export const initialStore=()=>{
 
     auth_admin: false,
     admin_token: localStorage.getItem("admin_token") || null,
-    admin_info: JSON.parse(localStorage.getItem("admin_info")) || null
+    admin_info: JSON.parse(localStorage.getItem("admin_info")) || null,
+  
+      tokenClient: localStorage.getItem("admin_token") || null,
+      authClient: !!localStorage.getItem("tokenClient"),
+      auth_company: false
+  
   };
 };
 
-      tokenClient: tokenClient || null,
-      authClient: !!tokenClient,
-      auth_company: false
-  }
-}
+     
 
 export default function storeReducer(store, action = {}) {
   switch(action.type){
@@ -41,6 +41,7 @@ export default function storeReducer(store, action = {}) {
 
     case 'set_admin_login':
         localStorage.setItem("admin_token", (action.payload.token));
+        localStorage.removeItem("admin_info", JSON.stringify(action.payload.admin));
         return {
           ...store,
           admin_token: action.payload.token,

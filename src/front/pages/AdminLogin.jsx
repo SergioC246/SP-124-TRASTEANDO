@@ -8,13 +8,15 @@ export const AdminLogin = () => {
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState("");
     const [error, setError] = useState("");
-    
+
     const handleSubmit = async (a) => {
         a.preventDefault();
+        console.log("1 - Botón pulsado..")
         setLoading(true);
         setError(null);
 
         try {
+            console.log("2 - Enviando a back..")
             const resp = await fetch(
                 `${import.meta.env.VITE_BACKEND_URL}/api/login/admin`,
                 {
@@ -30,21 +32,27 @@ export const AdminLogin = () => {
             );
 
             const data = await resp.json();
+            console.log("3 - Respuesta recibida", data)
 
             if (!resp.ok) {
                 throw new Error(data.message || "Login failed");
             }
 
-            localStorage.setItem("token", data.token);
-            localStorage.setItem("admin_id", data.admin_id);
+            console.log("4 - Login correcto")
+            localStorage.setItem("admin_token", data.admin_token);
+            localStorage.setItem("admin_info", JSON.stringify(data.admin));
 
-            navigate("/admin/private");
+            console.log("5 - Actualizando estado global (dispatch)...");
+           
+
+            console.log("6 - Intentando navegar a /admin/private...")
+            window.location.href = "/admin/private";
 
         } catch (err) {
             setError(err.message);
         } finally {
             setLoading(false);
-        }  
+        }
     };
 
     return (
@@ -56,7 +64,7 @@ export const AdminLogin = () => {
                     <form onSubmit={handleSubmit}>
                         <div className="mb-3">
                             <label className="form-label">Email</label>
-                            <input 
+                            <input
                                 type="email"
                                 className="form-control"
                                 value={email}
@@ -67,7 +75,7 @@ export const AdminLogin = () => {
 
                         <div className="mb-3">
                             <label className="form-label">Password</label>
-                            <input 
+                            <input
                                 type="password"
                                 className="form-control"
                                 value={password}
@@ -76,7 +84,7 @@ export const AdminLogin = () => {
                             />
                         </div>
 
-                        {error &&(
+                        {error && (
                             <div className="alert alert-danger">
                                 {error}
                             </div>
