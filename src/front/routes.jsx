@@ -30,6 +30,8 @@ import { StorageList } from "./pages/StorageList";
 import { StorageCreate } from "./pages/StorageCreate";
 import { StorageDetails } from "./pages/StorageDetails";
 import { StorageEdit } from "./pages/StorageEdit";
+import { AdminLogin } from "./pages/AdminLogin";
+import { AdminPrivate } from "./pages/AdminPrivate";
 
 
 
