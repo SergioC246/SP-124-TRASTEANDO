@@ -2,10 +2,11 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, User, AdminUser, Client, Company, Leases
+from api.models import db, User, AdminUser, Client, Company, Leases, Location, Storage
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from sqlalchemy import select
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 
 api = Blueprint('api', __name__)
 
@@ -118,10 +119,12 @@ def get_client(client_id):
 @api.route('/clients', methods=['POST'])
 def create_client():
     body = request.get_json()
+    email = body.get("email")
+    password = body.get("password")
 
     if not body.get("email") or not body.get("password"):
         return jsonify({"msg": "Email and password are required"}), 400
-
+    
     new_client = Client(
         email=body["email"],
         password=body["password"],
@@ -476,3 +479,35 @@ def delete_storage(storage_id):
     db.session.commit()
 
     return jsonify({"message": "Storage deleted"}), 200
+
+
+# api para hacer login de cliente
+@api.route('/login/client', methods=['POST'])
+def login_client():
+    body = request.get_json()
+    if body is None:
+        return jsonify({"message":"Bad request"}), 400
+    
+    email = body.get("email")
+    password = body.get("password")
+
+    client = db.session.execute(select(Client).where(Client.email == email)).scalar_one_or_none()
+
+    if client is None or client.password != password:
+        return jsonify({"message":"Wrong email or password"}), 401
+
+    access_token = create_access_token(identity=str(client.id))
+   
+    return jsonify({
+        "token":access_token,
+        "client_id":client.id
+    }), 200
+
+# private
+
+@api.route('/private/client', methods=['GET'])
+@jwt_required()
+def private():
+    client_id = int(get_jwt_identity())
+    client = db.session.execute(select(Client).where(Client.id == client_id)).scalar_one()
+    return jsonify(client.serialize()),200

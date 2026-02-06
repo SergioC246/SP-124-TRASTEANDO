@@ -30,6 +30,10 @@ import { StorageList } from "./pages/StorageList";
 import { StorageCreate } from "./pages/StorageCreate";
 import { StorageDetails } from "./pages/StorageDetails";
 import { StorageEdit } from "./pages/StorageEdit";
+import { ClientLogin } from "./pages/ClientLogin";
+import { ClientPrivate } from "./pages/ClientPrivate";
+import { Clients } from "./pages/Clients";
+
 
 
 
@@ -44,7 +48,7 @@ export const router = createBrowserRouter(
       <Route path="/admin-edit" element={<AdminUserEdit />} />
       <Route path="/admin-details/:id" element={<AdminUserDetails />} />
 
-      {/* Rutas client 
+      {/* Rutas client */}
       <Route path="/clients" element={<Clients />} />*/}
 
       {/* Rutas company */}
@@ -67,6 +71,8 @@ export const router = createBrowserRouter(
       <Route path="/storages/create" element={<StorageCreate />} />
       <Route path="/storages/:id/edit" element={<StorageEdit />} />
       <Route path="/storages/:id" element={<StorageDetails />} />
+      <Route path="/client/login" element={<ClientLogin />} />
+      <Route path="/client/private" element={<ClientPrivate />} />
 
     </Route>
   )
