@@ -1,4 +1,4 @@
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 // Fetch para conseguir todos
 export const getAdminUsers = async() =>{
@@ -62,3 +62,70 @@ export const deleteAdminUsers = async(adminUserId) => {
     return response.status === 200
 }
 
+// Login Admin
+
+export const loginAdmin = async (email, password, dispatch) => {
+    try{
+        const response = await fetch(`${BACKEND_URL}/api/login/admin`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password })
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || "Login failed");
+        }
+
+        const data = await response.json();
+
+        dispatch({
+            type: "set_admin_login",
+            payload: {
+                token: data.admin_token,
+                admin: data.admin
+            }
+        });
+
+        return { success: true};
+    } catch (error) {
+        console.error(error);
+        return { success: false, error: error.message };
+    }
+};
+
+export const verifyAdminToken = async (token, dispatch) => {
+    try {
+        const response = await
+fetch (`${BACKEND_URL}/api/private/admin`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            }
+    });
+
+    if (!response.ok) {
+        throw new Error("Token inválido");
+    }
+
+    const data = await response.json();
+
+    dispatch({
+        type: "set_admin_info",
+        payload: data
+    });
+
+    return { success: true };
+  } catch (error) {
+      console.error("Error verifying token:", error);
+
+      dispatch({ type: "logout_admin" });
+
+      return { success: false, error: error.message };
+  }
+};  
+
+export const logoutAdmin = (dispatch) => {
+    dispatch({ type: "logout_admin" });
+};

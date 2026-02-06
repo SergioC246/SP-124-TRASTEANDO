@@ -535,6 +535,9 @@ def login_admin():
     email = body.get("email")
     password = body.get("password")
 
+    if not email or not password:
+        return jsonify({"message": "Email and password are required"}), 400
+
     admin = db.session.execute(
         select(AdminUser).where(AdminUser.email == email)
     ).scalar_one_or_none()
@@ -542,11 +545,11 @@ def login_admin():
     if admin is None or admin.password != password:
         return jsonify({"message": "Wrong email or password"}), 401
     
-    access_token = create_access_token(identity=str(admin.id))
+    admin_token = create_access_token(identity=str(admin.id))
 
     return jsonify({
-        "token": access_token,
-        "admin_id": admin.id
+        "admin_token": admin_token,
+        "admin": admin.serialize()
     }), 200
 
 # Private admin   
