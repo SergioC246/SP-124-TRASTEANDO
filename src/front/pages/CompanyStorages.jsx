@@ -10,7 +10,9 @@ export const CompanyStorages = () => {
         const token = localStorage.getItem("token_company");
         if (!token) return;
 
-        fetch(import.meta.env.VITE_BACKEND_URL + "/private/company/storages", {
+        const url = `${import.meta.env.VITE_BACKEND_URL}/private/company/storages}`
+
+        fetch(url, {
             headers: {
                 "Authorization": "Bearer " + token,
             }
@@ -22,7 +24,7 @@ export const CompanyStorages = () => {
             })
     }, [])
 
-    if (loading) return <h2>Loading storages</h2>
+    if (loading) return <h2>Loading storages...</h2>
     if (storages.length === 0) return <h2>No storages found</h2>
 
     return (

@@ -12,9 +12,10 @@ export const CompanyStoragesDetails = () => {
         const token = localStorage.getItem("token_company")
         if (!token) return
 
-        fetch(import.meta.env.VITE_BACKEND_URL + `/private/company/storages/${id}`, {
+        fetch(import.meta.env.VITE_BACKEND_URL + `private/company/storages/${id}`, {
             headers: {
                 "Authorization": "Bearer " + token,
+                "Content-Type": "application/json",
             },
         })
 
