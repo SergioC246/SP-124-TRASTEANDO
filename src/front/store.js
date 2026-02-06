@@ -28,7 +28,7 @@ export default function storeReducer(store, action = {}) {
       case 'set_auth_company':
       return {
         ...store,
-        auth: action.payload
+        auth_company: action.payload
       };
       
     case 'add_task':

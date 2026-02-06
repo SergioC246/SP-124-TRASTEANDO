@@ -1,11 +1,25 @@
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
+import useGlobalReducer from "../hooks/useGlobalReducer"
 
 export const CompanyPrivate = () => {
 
     const [company, setCompany] = useState(null)
 
     const navigate = useNavigate()
+
+    const { dispatch } = useGlobalReducer()
+
+    function handleLogout() {
+        localStorage.removeItem("token_company")
+
+        dispatch({
+            type: 'set_auth_company',
+            payload: false
+        })
+
+        navigate("/")
+    }
 
     useEffect(() => {
         const token = localStorage.getItem("token_company")
@@ -52,6 +66,7 @@ export const CompanyPrivate = () => {
                             <p><strong>Email:</strong> {company.email}</p>
                             <p><strong>CIF:</strong> {company.cif}</p>
                             <p><strong>Address:</strong> {company.address}</p>
+                            <button className="btn btn-danger" onClick={handleLogout}>Logout</button>
                         </div>
                     </div>
                 </div>
