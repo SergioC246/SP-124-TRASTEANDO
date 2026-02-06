@@ -13,7 +13,7 @@ export const initialStore=()=>{
         background: null,
       }
     ],
-    auth: false
+    auth_company: false
   }
 }
 
@@ -25,7 +25,7 @@ export default function storeReducer(store, action = {}) {
         message: action.payload
       };
 
-      case 'set_auth':
+      case 'set_auth_company':
       return {
         ...store,
         auth: action.payload

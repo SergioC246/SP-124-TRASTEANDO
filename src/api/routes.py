@@ -498,5 +498,11 @@ def login_company():
 @api.route("/private/company", methods=["GET"])
 @jwt_required()
 def private_company():
-    current_user = get_jwt_identity()
-    return jsonify(company_Id=current_user), 200
+    company_id = get_jwt_identity()
+
+    company = db.session.get(Company, int(company_id))
+
+    if not company:
+        return jsonify({"messagge": "Company not found"}), 404
+    
+    return jsonify(company.serialize()), 200

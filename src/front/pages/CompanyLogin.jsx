@@ -26,10 +26,10 @@ export const CompanyLogin = () => {
             .then(response => response.json())
             .then(data => {
                 if (data.company_token) {
-                    localStorage.setItem("token", data.company_token)
+                    localStorage.setItem("token_company", data.company_token)
 
                     dispatch({
-                        type: "set_auth",
+                        type: "set_auth_company",
                         payload: true
                     })
 

@@ -7,10 +7,10 @@ export const Navbar = () => {
 	const { dispatch } = useGlobalReducer()
 
 	function handleLogout() {
-		localStorage.removeItem("token")
+		localStorage.removeItem("token_company")
 
 		dispatch({
-			type: "set_auth",
+			type: 'set_auth_company',
 			payload: false
 		})
 
@@ -62,10 +62,10 @@ export const Navbar = () => {
 								Company Private
 							</Link>
 						</li>
-						<li className="nav-item ms-2">							
+						<li className="nav-item ms-2">
 							<button className="btn btn-outline-danger" onClick={handleLogout}>
 								Company Logout
-							</button>							
+							</button>
 						</li>
 						<li className="nav-item ms-2">
 							<Link to="/location" className="btn btn-outline-secondary">
