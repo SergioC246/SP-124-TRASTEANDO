@@ -2,7 +2,8 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, User, AdminUser, Client, Company, Leases, Storage, Location
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
+from api.models import db, User, AdminUser, Client, Company, Leases, Storage, Location, Storage
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from sqlalchemy import select
@@ -409,8 +410,8 @@ def storage():
 
         size = data.get("size")
         price = data.get("price")
-        status = data.get("status", "available")
         location_id = data.get("location_id")
+        status= data.get("status", True)    
 
         if not all([size, price, location_id]):
             return jsonify({"message": "Missing data"}), 400
@@ -446,7 +447,7 @@ def get_storage(storage_id):
 # Update Storage
 
 @api.route('/storage/<int:storage_id>', methods=["PUT"])
-def upadate_storage(storage_id):
+def update_storage(storage_id):
     storage = db.session.get(Storage, storage_id)
 
     if storage is None:
@@ -456,8 +457,13 @@ def upadate_storage(storage_id):
 
     storage.size = data.get("size", storage.size)
     storage.price = data.get("price", storage.price)
-    storage.location = data.get("location", storage.location)
     storage.location_id = data.get("location_id", storage.location_id)
+
+    if "status" in data:
+        val = data.get("status")
+        if isinstance(val, bool):
+            storage.status = val
+        else: storage.status = True if str(val).lower() == "available" else False        
 
     db.session.commit()
 
@@ -506,3 +512,84 @@ def private_company():
         return jsonify({"messagge": "Company not found"}), 404
     
     return jsonify(company.serialize()), 200
+# All storages Overview
+
+@api.route('/storage/overview', methods=["GET"])
+def get_all_storage_overview():
+    
+    result = db.session.execute(select(Storage)).scalars().all()
+
+
+    detailed_list = []
+    for storage in result:
+        storage_data = storage.serialize()
+
+        location = db.session.get(Location, storage.location_id)
+        company = db.session.get(Company, location.company_id)
+
+        storage_data["company_name"] = company.name
+        storage_data["city"] = location.city
+        
+        detailed_list.append(storage_data)
+        
+    return jsonify(detailed_list), 200
+
+# Get Storage Overview
+
+@api.route("/storage/<int:storage_id>/overview", methods=["GET"])
+def get_storage_overview(storage_id):
+    storage = db.session.execute(select(Storage).where(Storage.id == storage_id)).scalar_one_or_none()
+
+    if storage is None:
+        return jsonify({"message": "Storage not found"}), 404
+    
+    storage_data = storage.serialize()
+
+    location = db.session.get(Location, storage.location_id)
+    company = db.session.get(Company, location.company_id)
+
+    storage_data["company_name"] = company.name
+    storage_data["city"] = location.city
+        
+    return jsonify(storage_data), 200
+
+# Login admin
+
+@api.route('/login/admin', methods=['POST'])
+def login_admin():
+    body = request.get_json()
+    if body is None:
+        return jsonify({"message": "User and Password is mandatory"}), 400
+    
+    email = body.get("email")
+    password = body.get("password")
+
+    admin = db.session.execute(
+        select(AdminUser).where(AdminUser.email == email)
+    ).scalar_one_or_none()
+
+    if admin is None or admin.password != password:
+        return jsonify({"message": "Wrong email or password"}), 401
+    
+    access_token = create_access_token(identity=str(admin.id))
+
+    return jsonify({
+        "token": access_token,
+        "admin_id": admin.id
+    }), 200
+
+# Private admin   
+
+@api.route('/private/admin', methods=['GET'])
+@jwt_required()
+def private_admin():
+    admin_id = int(get_jwt_identity())
+
+    admin = db.session.execute(
+        select(AdminUser).where(AdminUser.id == admin_id)
+    ).scalar_one_or_none()
+
+    if admin is None:
+        return jsonify({"message": "Admin not found"}), 404
+    
+    return jsonify(admin.serialize()), 200

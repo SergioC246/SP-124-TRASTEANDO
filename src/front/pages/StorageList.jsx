@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getAllStorages, deleteStorage  } from "../utilsStorages.js";
+import { getAllStoragesOverview, deleteStorage } from "../utilsStorages.js";
 
 
 export const StorageList = () => {
@@ -11,7 +11,7 @@ export const StorageList = () => {
     // Load Storages
     const loadStorages = () => {
         setLoading(true);
-        getAllStorages()
+        getAllStoragesOverview()
             .then(data => {
                 setStorages(data);
                 setLoading(false);
@@ -65,8 +65,9 @@ export const StorageList = () => {
                              justify-content-between align-items-center"
                 >
                     <span>
-                        <strong>{storage.size}</strong> - {storage.price} € (
-                        {storage.status})
+                        <strong class= "text-primary fs-4" >{storage.city}</strong> - <strong class="text-secondary">{storage.company_name}</strong>
+                         - {storage.size} - {storage.price} € - {storage.status === "Available"
+               ?        <em className="text-success"> Available</em> : <em className="text-danger"> Occupied</em>}
                     </span>
 
                     <div>

@@ -11,7 +11,7 @@ export const StorageEdit = () => {
   const [form, setForm] = useState({
     size: "",
     price: "",
-    status: "available",
+    status: "Available",
     location_id: "",
   });
 
@@ -22,6 +22,8 @@ export const StorageEdit = () => {
   useEffect(() => {
     getStorage(id)
       .then((data) => {
+        console.log("datos recibidos del back", data);
+        console.log( "datos revibidos del back", data.status, typeof data.status);
         setForm({
           size: data.size,
           price: data.price,
@@ -85,8 +87,8 @@ export const StorageEdit = () => {
           value={form.status}
           onChange={handleChange}
         >
-          <option value="available">Available</option>
-          <option value="occupied">Occupied</option>
+          <option value="Available">Available</option>
+          <option value="Occupied">Occupied</option>
         </select>
       </div>
 
