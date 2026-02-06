@@ -2,11 +2,13 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 from flask import Flask, request, jsonify, url_for, Blueprint
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 from api.models import db, User, AdminUser, Client, Company, Leases, Storage, Location, Storage
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from sqlalchemy import select
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
+
 
 api = Blueprint('api', __name__)
 
@@ -516,6 +518,31 @@ def private():
     client_id = int(get_jwt_identity())
     client = db.session.execute(select(Client).where(Client.id == client_id)).scalar_one()
     return jsonify(client.serialize()),200
+
+@api.route('/login/company', methods=["POST"])
+def login_company():
+    email = request.json.get("email", None)
+    password = request.json.get("password", None)
+    company = db.session.execute(select(Company).where(Company.email == email, Company.password == password)).scalar_one_or_none()
+
+    if not company: 
+        return jsonify({"msg": "Bad email or password"}), 401
+    
+    company_token = create_access_token(identity=str(company.id))
+    return jsonify({"company_token":company_token}), 200
+
+
+@api.route("/private/company", methods=["GET"])
+@jwt_required()
+def private_company():
+    company_id = get_jwt_identity()
+
+    company = db.session.get(Company, int(company_id))
+
+    if not company:
+        return jsonify({"messagge": "Company not found"}), 404
+    
+    return jsonify(company.serialize()), 200
 # All storages Overview
 
 @api.route('/storage/overview', methods=["GET"])
@@ -556,3 +583,44 @@ def get_storage_overview(storage_id):
     storage_data["city"] = location.city
         
     return jsonify(storage_data), 200
+
+# Login admin
+
+@api.route('/login/admin', methods=['POST'])
+def login_admin():
+    body = request.get_json()
+    if body is None:
+        return jsonify({"message": "User and Password is mandatory"}), 400
+    
+    email = body.get("email")
+    password = body.get("password")
+
+    admin = db.session.execute(
+        select(AdminUser).where(AdminUser.email == email)
+    ).scalar_one_or_none()
+
+    if admin is None or admin.password != password:
+        return jsonify({"message": "Wrong email or password"}), 401
+    
+    access_token = create_access_token(identity=str(admin.id))
+
+    return jsonify({
+        "token": access_token,
+        "admin_id": admin.id
+    }), 200
+
+# Private admin   
+
+@api.route('/private/admin', methods=['GET'])
+@jwt_required()
+def private_admin():
+    admin_id = int(get_jwt_identity())
+
+    admin = db.session.execute(
+        select(AdminUser).where(AdminUser.id == admin_id)
+    ).scalar_one_or_none()
+
+    if admin is None:
+        return jsonify({"message": "Admin not found"}), 404
+    
+    return jsonify(admin.serialize()), 200

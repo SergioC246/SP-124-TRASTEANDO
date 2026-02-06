@@ -12,7 +12,7 @@ import { AdminUserCreate } from "./pages/AdminUserCreate";
 import { AdminUserEdit } from "./pages/AdminUserEdit";
 import { Companies } from "./pages/Companies";
 import { CreateCompanies } from "./pages/CreateCompanies";
-import { CompanieDetails } from "./pages/CompanieDetails";
+import { CompanyDetails } from "./pages/CompanyDetails";
 import { Leases } from "./pages/Leases";
 import { LeasesCreate } from "./pages/LeasesCreate";
 import { LeasesEdit } from "./pages/LeasesEdit";
@@ -34,6 +34,10 @@ import { ClientLogin } from "./pages/ClientLogin";
 import { ClientPrivate } from "./pages/ClientPrivate";
 import { Clients } from "./pages/Clients";
 
+import { CompanyLogin } from "./pages/CompanyLogin";
+import { CompanyPrivate } from "./pages/CompanyPrivate";
+import { AdminLogin } from "./pages/AdminLogin";
+import { AdminPrivate } from "./pages/AdminPrivate";
 
 
 
@@ -47,6 +51,8 @@ export const router = createBrowserRouter(
       <Route path="/admin-create" element={<AdminUserCreate />} />
       <Route path="/admin-edit" element={<AdminUserEdit />} />
       <Route path="/admin-details/:id" element={<AdminUserDetails />} />
+      <Route path="/admin/login" element={<AdminLogin />} />
+      <Route path="/admin/private" element={<AdminPrivate />} />
 
       {/* Rutas client */}
       <Route path="/clients" element={<ClientList />} />
@@ -60,7 +66,9 @@ export const router = createBrowserRouter(
       {/* Rutas company */}
       <Route path="/companies" element={<Companies />} />
       <Route path="/createCompanies" element={<CreateCompanies />} />
-      <Route path="/companies/:id" element={<CompanieDetails />} />
+      <Route path="/companies/:id" element={<CompanyDetails />} />
+      <Route path="/companies/login" element={<CompanyLogin />} />
+      <Route path="/companies/private" element={<CompanyPrivate />} />
 
       {/* Rutas location */}
       <Route path="/location" element={<Location />} />
@@ -73,12 +81,17 @@ export const router = createBrowserRouter(
       <Route path="/leasesCreate" element={<LeasesCreate/>} />
       <Route path="/leasesEdit/:id" element={<LeasesEdit/>} />
       <Route path="/leasesDetails/:id" element={<LeasesDetails/>} />      
+      <Route path="/leases" element={<Leases />} />
+      <Route path="/leasesCreate" element={<LeasesCreate />} />
+      <Route path="/leasesEdit/:id" element={<LeasesEdit />} />
+      <Route path="/leasesDetails/:id" element={<LeasesDetails />} />
 
       {/* Rutas storage */}
       <Route path="/storages" element={<StorageList />} />
       <Route path="/storages/create" element={<StorageCreate />} />
       <Route path="/storages/:id/edit" element={<StorageEdit />} />
       <Route path="/storages/:id" element={<StorageDetails />} />
+
 
     </Route>
   )

@@ -17,6 +17,7 @@ export const initialStore=()=>{
     ],
       tokenClient: tokenClient || null,
       authClient: !!tokenClient,
+      auth_company: false
   }
 }
 
@@ -26,6 +27,12 @@ export default function storeReducer(store, action = {}) {
       return {
         ...store,
         message: action.payload
+      };
+
+      case 'set_auth_company':
+      return {
+        ...store,
+        auth_company: action.payload
       };
       
     case 'add_task':
