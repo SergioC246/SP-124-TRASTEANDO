@@ -1,6 +1,8 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export const Navbar = () => {
+
+	const navigate = useNavigate()
 
 	return (
 		<nav className="navbar navbar-expand-lg navbar-light bg-light">
@@ -42,13 +44,28 @@ export const Navbar = () => {
 							</Link>
 						</li>
 						<li className="nav-item ms-2">
+							<Link to="/companies/login" className="btn btn-outline-secondary">
+								Company Login
+							</Link>
+						</li>
+						<li className="nav-item ms-2">
+							<Link to="/companies/private" className="btn btn-outline-secondary">
+								Company Private
+							</Link>
+						</li>
+						<li className="nav-item ms-2">
 							<Link to="/location" className="btn btn-outline-secondary">
 								Locations
 							</Link>
 						</li>
 						<li className="nav-item ms-2">
 							<Link to="/leases">
-								<button className="btn btn-primary">Leases</button>
+								<button className="btn btn-outline-secondary">Leases</button>
+							</Link>
+						</li>
+						<li className="nav-item ms-2">
+							<Link to="/client/login">
+								<button className="btn btn-outline-secondary">Login as client</button>
 							</Link>
 						</li>
 					</ul>

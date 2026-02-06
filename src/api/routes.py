@@ -7,6 +7,8 @@ from api.models import db, User, AdminUser, Client, Company, Leases, Storage, Lo
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from sqlalchemy import select
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
+
 
 api = Blueprint('api', __name__)
 
@@ -119,10 +121,12 @@ def get_client(client_id):
 @api.route('/clients', methods=['POST'])
 def create_client():
     body = request.get_json()
+    email = body.get("email")
+    password = body.get("password")
 
     if not body.get("email") or not body.get("password"):
         return jsonify({"msg": "Email and password are required"}), 400
-
+    
     new_client = Client(
         email=body["email"],
         password=body["password"],
@@ -483,6 +487,62 @@ def delete_storage(storage_id):
 
     return jsonify({"message": "Storage deleted"}), 200
 
+
+# api para hacer login de cliente
+@api.route('/login/client', methods=['POST'])
+def login_client():
+    body = request.get_json()
+    if body is None:
+        return jsonify({"message":"Bad request"}), 400
+    
+    email = body.get("email")
+    password = body.get("password")
+
+    client = db.session.execute(select(Client).where(Client.email == email)).scalar_one_or_none()
+
+    if client is None or client.password != password:
+        return jsonify({"message":"Wrong email or password"}), 401
+
+    access_token = create_access_token(identity=str(client.id))
+   
+    return jsonify({
+        "token":access_token,
+        "client_id":client.id
+    }), 200
+
+# private
+
+@api.route('/private/client', methods=['GET'])
+@jwt_required()
+def private():
+    client_id = int(get_jwt_identity())
+    client = db.session.execute(select(Client).where(Client.id == client_id)).scalar_one()
+    return jsonify(client.serialize()),200
+
+@api.route('/login/company', methods=["POST"])
+def login_company():
+    email = request.json.get("email", None)
+    password = request.json.get("password", None)
+    company = db.session.execute(select(Company).where(Company.email == email, Company.password == password)).scalar_one_or_none()
+
+    if not company: 
+        return jsonify({"msg": "Bad email or password"}), 401
+    
+    company_token = create_access_token(identity=str(company.id))
+    return jsonify({"company_token":company_token}), 200
+
+
+@api.route("/private/company", methods=["GET"])
+@jwt_required()
+def private_company():
+    company_id = get_jwt_identity()
+
+    company = db.session.get(Company, int(company_id))
+
+    if not company:
+        return jsonify({"messagge": "Company not found"}), 404
+    
+    return jsonify(company.serialize()), 200
 # All storages Overview
 
 @api.route('/storage/overview', methods=["GET"])
