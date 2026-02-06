@@ -10,7 +10,7 @@ export const AdminLogin = () => {
     const [error, setError] = useState("");
     
     const handleSubmit = async (a) => {
-        a.preventDefaulr();
+        a.preventDefault();
         setLoading(true);
         setError(null);
 
@@ -65,6 +65,17 @@ export const AdminLogin = () => {
                             />
                         </div>
 
+                        <div className="mb-3">
+                            <label className="form-label">Password</label>
+                            <input 
+                                type="password"
+                                className="form-control"
+                                value={password}
+                                onChange={(a) => setPassword(a.target.value)}
+                                required
+                            />
+                        </div>
+
                         {error &&(
                             <div className="alert alert-danger">
                                 {error}
@@ -76,7 +87,7 @@ export const AdminLogin = () => {
                             className="btn btn-primary w-100"
                             disabled={loading}
                         >
-                            {loading ? "Logging in..." : "Login"}
+                            {loading ? "Loging in..." : "Login"}
                         </button>
                     </form>
                 </div>
