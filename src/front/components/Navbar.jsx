@@ -31,6 +31,10 @@ export const Navbar = () => {
 							<Link to="/admin-users" className="btn btn-outline-secondary" >
 								Admins
 							</Link>
+						</li><li className="nav-item ms-2">
+							<Link to="/admin/login" className="btn btn-outline-secondary" >
+								Admin Login
+							</Link>
 						</li>
 						<li className="nav-item ms-2">
 							<Link to="/companies" className="btn btn-outline-secondary">
