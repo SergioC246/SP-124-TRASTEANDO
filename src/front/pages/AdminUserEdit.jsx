@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
-import { updateAdminUsers } from "./utilsAdministrators"
+import { updateAdminUsers } from "./utilsAdministrator"
 
 export const AdminUserEdit = ({ admin, onUpdate, onBack }) => {
 
@@ -29,17 +29,17 @@ export const AdminUserEdit = ({ admin, onUpdate, onBack }) => {
 
                 <div className="mb-3">
                     <label className="form-label">Full Name</label>
-                    <input type="text" className="form-control" value={name} onChange={(e) => setName(e.target.value)}/>
+                    <input type="text" className="form-control" value={name} onChange={(e) => setName(e.target.value)} />
                 </div>
 
                 <div className="mb-3">
                     <label className="form-label">Email</label>
-                    <input type="email" className="form-control" value={email} onChange={(e) => setEmail(e.target.value)}/>
+                    <input type="email" className="form-control" value={email} onChange={(e) => setEmail(e.target.value)} />
                 </div>
 
                 <div className="mb-4">
                     <label className="form-label">Password</label>
-                    <input type="password" className="form-control" value={password} onChange={(e) => setPassword(e.target.value)}/>
+                    <input type="password" className="form-control" value={password} onChange={(e) => setPassword(e.target.value)} />
                 </div>
 
                 <div className="d-flex gap-2">

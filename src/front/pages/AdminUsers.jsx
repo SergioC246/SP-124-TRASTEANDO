@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { deleteAdminUsers, getAdminUser, getAdminUsers } from "./utilsAdministrators"
+import { deleteAdminUsers, getAdminUser, getAdminUsers } from "./utilsAdministrator"
 import { useNavigate } from "react-router-dom"
 import { AdminUserEdit } from "./AdminUserEdit"
 
