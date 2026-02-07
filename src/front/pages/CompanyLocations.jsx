@@ -15,7 +15,7 @@ export const CompanyLocations = () => {
       return
     }
 
-    const url = `${import.meta.env.VITE_BACKEND_URL}private/company/locations`
+    const url = `${import.meta.env.VITE_BACKEND_URL}api/private/company/locations`
 
     fetch(url, {
       headers: {

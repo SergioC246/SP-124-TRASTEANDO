@@ -29,7 +29,7 @@ export const CompanyPrivate = () => {
             return
         }
 
-        fetch(import.meta.env.VITE_BACKEND_URL + "/api/private/company", {
+        fetch(import.meta.env.VITE_BACKEND_URL + "api/private/company", {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",

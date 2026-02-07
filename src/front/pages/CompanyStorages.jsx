@@ -10,7 +10,7 @@ export const CompanyStorages = () => {
         const token = localStorage.getItem("token_company");
         if (!token) return;
 
-        const url = `${import.meta.env.VITE_BACKEND_URL}/private/company/storages}`
+        const url = `${import.meta.env.VITE_BACKEND_URL}api/private/company/storages`
 
         fetch(url, {
             headers: {
