@@ -33,11 +33,16 @@ import { StorageEdit } from "./pages/StorageEdit";
 import { ClientLogin } from "./pages/ClientLogin";
 import { ClientPrivate } from "./pages/ClientPrivate";
 import { Clients } from "./pages/Clients";
-
 import { CompanyLogin } from "./pages/CompanyLogin";
 import { CompanyPrivate } from "./pages/CompanyPrivate";
 import { AdminLogin } from "./pages/AdminLogin";
 import { AdminPrivate } from "./pages/AdminPrivate";
+
+import { AdminProtectedRoute } from "./pages/AdminProtectedRoute";
+import { CompanyProtectedRoute } from "./pages/CompanyProtectedRoute";
+import { ClientProtectedRoute } from "./pages/ClientProtectedRoute";
+
+
 
 
 
@@ -47,28 +52,22 @@ export const router = createBrowserRouter(
     <Route path="/" element={<Layout />} errorElement={<h1>Not found!</h1>} >
       <Route path="/" element={<Home />} />
       {/* Rutas adminUser */}
-      <Route path="/admin-users" element={<AdminUsers />} />
-      <Route path="/admin-create" element={<AdminUserCreate />} />
-      <Route path="/admin-edit" element={<AdminUserEdit />} />
-      <Route path="/admin-details/:id" element={<AdminUserDetails />} />
+  
       <Route path="/admin/login" element={<AdminLogin />} />
-      <Route path="/admin/private" element={<AdminPrivate />} />
-
+      
       {/* Rutas client */}
-      <Route path="/clients" element={<ClientList />} />
-      <Route path="/clients/new" element={<ClientCreate />} />
-      <Route path="/clients/:id" element={<ClientDetails />} />
-      <Route path="/clients/:id/edit" element={<ClientEdit />} />
-      <Route path="/clients" element={<Clients />} />     
-      <Route path="/client/login" element={<ClientLogin />} />
-      <Route path="/client/private" element={<ClientPrivate />} />
+      
+      <Route path="/clients-edit/:id/edit" element={<ClientEdit />} />
+      <Route path="/clients-info" element={<Clients />} />     
+      <Route path="/client-login/login" element={<ClientLogin />} />
+      
 
       {/* Rutas company */}
       <Route path="/companies" element={<Companies />} />
       <Route path="/createCompanies" element={<CreateCompanies />} />
       <Route path="/companies/:id" element={<CompanyDetails />} />
       <Route path="/companies/login" element={<CompanyLogin />} />
-      <Route path="/companies/private" element={<CompanyPrivate />} />
+      
 
       {/* Rutas location */}
       <Route path="/location" element={<Location />} />
@@ -77,11 +76,7 @@ export const router = createBrowserRouter(
       <Route path="/location-edit/:id" element={<LocationEdit />} />
 
       {/* Rutas leases */}
-      <Route path="/leases" element={<Leases/>} />
-      <Route path="/leasesCreate" element={<LeasesCreate/>} />
-      <Route path="/leasesEdit/:id" element={<LeasesEdit/>} />
-      <Route path="/leasesDetails/:id" element={<LeasesDetails/>} />      
-      <Route path="/leases" element={<Leases />} />
+            
       <Route path="/leasesCreate" element={<LeasesCreate />} />
       <Route path="/leasesEdit/:id" element={<LeasesEdit />} />
       <Route path="/leasesDetails/:id" element={<LeasesDetails />} />
@@ -92,6 +87,36 @@ export const router = createBrowserRouter(
       <Route path="/storages/:id/edit" element={<StorageEdit />} />
       <Route path="/storages/:id" element={<StorageDetails />} />
 
+            {/* ==== Rutas Protegidas Solo Admin ==== */}
+
+      {/* AdminUsers - Solo Admin */}
+      <Route path="/admin-users" element={<AdminProtectedRoute><AdminUsers /></AdminProtectedRoute>} />
+      <Route path="/admin-create" element={<AdminProtectedRoute><AdminUserCreate /></AdminProtectedRoute>} />
+      <Route path="/admin-edit" element={<AdminProtectedRoute><AdminUserEdit /></AdminProtectedRoute>} />
+      <Route path="/admin-details/:id" element={<AdminProtectedRoute><AdminUserDetails /></AdminProtectedRoute>} />
+
+      {/* Panel privado de Admin */}
+      <Route path="/admin/private" element={<AdminProtectedRoute><AdminPrivate /></AdminProtectedRoute>} />
+
+      {/* Clients - Solo Admin puede ver la lista completa */}
+      <Route path="/clients" element={<ClientProtectedRoute><ClientList /></ClientProtectedRoute>} />
+      <Route path="/clients/new" element={<ClientProtectedRoute><ClientCreate /></ClientProtectedRoute>} />
+      <Route path="/clients/:id" element={<ClientProtectedRoute><ClientDetails /></ClientProtectedRoute>} />
+
+            {/* ==== Rutas Protegidas Solo Company ==== */} 
+      
+      <Route path="/companies/private" element={<CompanyProtectedRoute><CompanyPrivate /></CompanyProtectedRoute>} />
+
+            {/* ==== Rutas Protegidas Solo Client ==== */} 
+
+      <Route path="/client/private" element={<ClientProtectedRoute><ClientPrivate /></ClientProtectedRoute>} />
+
+      {/* Leases del cliente - Solo el cliente logueado puede ver sus alquileres */}
+
+      <Route path="/leases" element={<ClientProtectedRoute><Leases/></ClientProtectedRoute>} />
+      <Route path="/leasesCreate" element={<ClientProtectedRoute><LeasesCreate/></ClientProtectedRoute>} />
+      <Route path="/leasesEdit/:id" element={<ClientProtectedRoute><LeasesEdit/></ClientProtectedRoute>} />
+      <Route path="/leasesDetails/:id" element={<ClientProtectedRoute><LeasesDetails/></ClientProtectedRoute>} />
 
     </Route>
   )

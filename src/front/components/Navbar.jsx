@@ -1,6 +1,11 @@
 import { Link, useNavigate } from "react-router-dom";
+import { getUserRole } from "../store";
+import useGlobalReducer from "../hooks/useGlobalReducer";
 
 export const Navbar = () => {
+
+	const { store, dispatch } = useGlobalReducer();
+	const role = getUserRole(store);
 
 	const navigate = useNavigate()
 
@@ -18,57 +23,80 @@ export const Navbar = () => {
 								<button className="btn btn-primary">No esperes más y alquila tu trastero ;-)</button>
 							</Link>
 						</li>
-
-						<li className="nav-item ms-2">
-							<Link to="/clients" className="btn btn-outline-secondary" >
-								Clients
-							</Link>
-						</li>
-						<li className="nav-item ms-2">
-							<Link to="/storages" className="btn btn-outline-success" >
-								Storages
-							</Link>
-						</li>
-						<li className="nav-item ms-2">
-							<Link to="/admin-users" className="btn btn-outline-secondary" >
-								Admins
-							</Link>
-						</li><li className="nav-item ms-2">
-							<Link to="/admin/login" className="btn btn-outline-secondary" >
-								Admin Login
-							</Link>
-						</li>
-						<li className="nav-item ms-2">
-							<Link to="/companies" className="btn btn-outline-secondary">
-								Companies
-							</Link>
-						</li>
-						<li className="nav-item ms-2">
-							<Link to="/companies/login" className="btn btn-outline-secondary">
-								Company Login
-							</Link>
-						</li>
-						<li className="nav-item ms-2">
-							<Link to="/companies/private" className="btn btn-outline-secondary">
-								Company Private
-							</Link>
-						</li>
 						<li className="nav-item ms-2">
 							<Link to="/location" className="btn btn-outline-secondary">
 								Locations
 							</Link>
 						</li>
-						<li className="nav-item ms-2">
-							<Link to="/leases">
-								<button className="btn btn-outline-secondary">Leases</button>
-							</Link>
-						</li>
-						<li className="nav-item ms-2">
-							<Link to="/client/login">
-								<button className="btn btn-outline-secondary">Login as client</button>
-							</Link>
-						</li>
-					</ul>
+					</li>
+					<li className="nav-item ms-2">
+						<Link to="/storages" className="btn btn-outline-success" >
+							Storages
+						</Link>
+					</li>
+					{/* ==== SOLO ADMIN ==== */}
+
+					{role === "admin" && (
+						<>
+							<li className="nav-item ms-2">
+								<Link to="/clients" className="btn btn-outline-secondary" >
+									Clients
+								</Link>
+								<li className="nav-item ms-2">
+									<Link to="/admin-users" className="btn btn-outline-secondary" >
+										Admins
+									</Link>
+								</li>
+								<li className="nav-item ms-2">
+									<Link to="/companies" className="btn btn-outline-secondary">
+										Companies
+									</Link>
+								</li>
+								<li className="nav-item ms-2">
+									<Link to="/admin/login" className="btn btn-outline-secondary" >
+										Admin Login
+									</Link>
+								</li>
+							</>
+					     )}
+					
+					{/* ==== SOLO ADMIN ==== */}
+
+					{role === "company" && (
+						<>
+							<li className="nav-item ms-2">
+								<Link to="/companies/login" className="btn btn-outline-secondary">
+									Company Login
+								</Link>
+							</li>
+							<li className="nav-item ms-2">
+								<Link to="/companies/private" className="btn btn-outline-secondary">
+									Company Private
+								</Link>
+							</li>
+						</>
+
+					)}
+
+					{/* ==== SOLO CLIENT ==== */}
+
+					{role === "client" && (
+						<>
+							<li className="nav-item ms-2">
+								<Link to="/leases">
+									<button className="btn btn-outline-secondary">Leases</button>
+								</Link>
+							</li>
+							<li className="nav-item ms-2">
+								<Link to="/client/login">
+									<button className="btn btn-outline-secondary">Login as client</button>
+								</Link>
+							</li>
+						</>
+					)}
+
+
+						</ul>
 				</div>
 			</div>
 		</nav>

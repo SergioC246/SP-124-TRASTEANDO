@@ -20,6 +20,12 @@ export const initialStore=()=>{
       auth_company: false
   }
 }
+export const getUserRole = (store) => {
+  if (store.admin_token) return "admin";
+  if (store.company_token) return "company";
+  if (store.client_token) return "client";
+  return null; // User not login
+};
 
 export default function storeReducer(store, action = {}) {
   switch(action.type){

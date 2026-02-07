@@ -1,9 +1,13 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getAllStoragesOverview, deleteStorage } from "../utilsStorages.js";
+import { getUserRole } from "../store.js";
+import useGlobalReducer from "../hooks/useGlobalReducer.jsx";
 
 
 export const StorageList = () => {
+    const { store } = useGlobalReducer();
+    const role = getUserRole(store);
     const [storages, setStorages] = useState([]);
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
@@ -45,15 +49,17 @@ export const StorageList = () => {
 
             <div className="d-flex gap-3 mb-4 justify-content-center">
 
-
+                {/* Solo Admin y Company pueden crear storages */}
+                {(role === "admin" || role === "company") && (
                 <button className="btn btn-success"
                     onClick={() => navigate("/storages/create")}
                 >
                         Create Storage
                 </button>
 
-
+                )}
             </div>          
+
         {storages.length === 0 ? (
             <p>No storages found</p>
         ) : (
@@ -65,9 +71,9 @@ export const StorageList = () => {
                              justify-content-between align-items-center"
                 >
                     <span>
-                        <strong class= "text-primary fs-4" >{storage.city}</strong> - <strong class="text-secondary">{storage.company_name}</strong>
-                         - {storage.size} - {storage.price} € - {storage.status === "Available"
-               ?        <em className="text-success"> Available</em> : <em className="text-danger"> Occupied</em>}
+                        <strong className= "text-primary fs-4" >{storage.city}</strong> - <strong className="text-secondary">{storage.company_name}</strong>
+                         - {storage.size} - {storage.price} € - {storage.status === "Available" ? 
+                         <em className="text-success"> Available</em> : <em className="text-danger"> Occupied</em>}
                     </span>
 
                     <div>
@@ -77,20 +83,39 @@ export const StorageList = () => {
                         >
                             Details
                         </button>
+                            
+                            {/* Solo Admin y Company pueden editar */}
 
-                        <button
+                        {(role === "admin" || role === "company" ) && (    
+                          <button
                             className="btn btn-sm btn-primary me-2"
                             onClick={() => navigate(`/storages/${storage.id}/edit`)}
-                        >
+                          >
                             Edit
-                        </button>
+                          </button>
+                        )}
 
-                        <button
+                            {/* Solo Admin y Company pueden editar */}
+                        
+                        {(role === "admin" || role === "company" ) && (
+                          <button
                             className="btn btn-sm btn-danger"
                             onClick={() => handleDelete(storage.id)}
-                        >
+                          >
                             Delete
-                        </button>
+                          </button>
+                        )}
+
+                            {/* Solo Client puede alquilar,si está disponible */}
+
+                        {role === "client" && storage.status  === "Available" && (
+                          <button 
+                            className="btn btn-sm btn-warning"
+                            onClick={() => navigate(`/leasesCreate?storage_id=${storage.id}`)}
+                          >
+                            Rent
+                          </button>
+                        )}
                     </div>
                 </li>
             ))}

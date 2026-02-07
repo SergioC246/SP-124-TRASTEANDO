@@ -1,8 +1,13 @@
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { deleteLocations, getLocations } from "./utilsLocations"
+import { getUserRole } from "../store"
+import useGlobalReducer from "../hooks/useGlobalReducer"
 
 export const Location = () => {
+
+    const { store } = useGlobalReducer();
+    const role = getUserRole(store);
 
     const [allLocation, setAllLocation] = useState([])
     const navigate = useNavigate()
@@ -30,9 +35,13 @@ export const Location = () => {
             <div>
                 <div className="d-flex justify-content-between align-items-center mb-3">
                     <h2 className="mb-0">Locations</h2>
-                    <button className="btn btn-success" onClick={() => navigate("/location-create")}>
+
+                    {/* Solo Admin y Company pueden crear locations */}
+                    {(role === "admin" || role === "company") && (
+                      <button className="btn btn-success" onClick={() => navigate("/location-create")}>
                         Create Location
-                    </button>
+                      </button>
+                    )}
                 </div>
 
                 {allLocation.map((location) =>
