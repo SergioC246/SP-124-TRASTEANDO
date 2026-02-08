@@ -29,17 +29,18 @@ export const Navbar = () => {
 						{!role && (
 							<>
 								<li className="nav-item ms-2">
-									<Link to="/client/login">
-										<button className="btn btn-outline-primary">Login as client</button>
+									<Link to="/client/login" className="btn btn-outline-primary">
+										Login as client
 									</Link>
 								</li>
 								<li className="nav-item ms-2">
 									<Link to="/companies/login" className="btn btn-outline-secondary">
-										<button className="btn btn-outline-secondary">Login as Company</button>
+										Login as Company
 									</Link>
+								</li>
 								<li className="nav-item ms-2">
-									<Link to="/admin/login" className="btn btn-outline-secondary" >
-										<button className="btn btn-outline-success">Login as Admin</button>
+									<Link to="/admin/login" className="btn btn-outline-success" >
+										Login as Admin
 									</Link>
 								</li>
 							</>
@@ -66,6 +67,7 @@ export const Navbar = () => {
 								<Link to="/clients" className="btn btn-outline-secondary" >
 									Clients
 								</Link>
+							</li>
 							<li className="nav-item ms-2">
 								<Link to="/admin-users" className="btn btn-outline-secondary" >
 									Admins
@@ -77,7 +79,7 @@ export const Navbar = () => {
 								</Link>
 							</li>
 							<li className="nav-item ms-2">
-								<Link to="/companies/private" className="btn btn-outline-secondary">
+								<Link to="/admin/private" className="btn btn-outline-secondary">
 									Company Private
 								</Link>
 							</li>
@@ -95,16 +97,17 @@ export const Navbar = () => {
 					)}
 
 					{/* ==== Solo CLient ==== */}
+					
 					{role === "client" && (
 						<>
 							<li className="nav-item ms-2">
-								<Link to="/leases">
-									<button className="btn btn-outline-secondary">My Leases</button>
-								</Link>
+								<Link to="/leases" className="btn btn-outline-primary">
+								My leases
+							</Link>
 							</li>
 							<li className="nav-item ms-2">
 								<Link to="/client/private" className="btn btn-outline-secondary">
-									<button className="btn btn-outline-primary">My Profile</button>
+									My Profile
 								</Link>
 							</li>
 						</>
@@ -118,8 +121,6 @@ export const Navbar = () => {
 							</li>
 
 					)}
-
-
 				  </ul>
 				</div>
 			</div>
