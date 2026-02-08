@@ -181,7 +181,7 @@ def get_one_company(company_id):
         return jsonify({"message": "Company not found"}), 404
     return jsonify(company.serialize()), 200
 
-# crear una comàñia
+# crear una compañia
 
 
 @api.route('/companies', methods=["POST", "GET"])

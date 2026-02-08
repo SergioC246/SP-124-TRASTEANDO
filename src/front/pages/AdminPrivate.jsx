@@ -9,7 +9,7 @@ export const AdminPrivate = () => {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        const token = localStorage.getItem("token");
+        const token = localStorage.getItem("admin_token");
 
         if (!token) {
             navigate("/admin/login");
@@ -36,8 +36,8 @@ export const AdminPrivate = () => {
             .catch(err => {
                 console.error(err);
                 setError(err.message);
-                localStorage.removeItem("token")
-                navigate("admin/login");
+                localStorage.removeItem("admin_token")
+                navigate("/admin/login");
             });
     }, []);
 
@@ -51,7 +51,7 @@ export const AdminPrivate = () => {
 
             <button className="btn btn-danger mb-3"
                 onClick={() => {
-                    localStorage.removeItem("token");
+                    localStorage.removeItem("admin_token");
                     localStorage.removeItem("admin_id");
                     navigate("/admin/login");
                 }}

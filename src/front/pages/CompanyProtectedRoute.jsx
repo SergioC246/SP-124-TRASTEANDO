@@ -6,7 +6,7 @@ export const CompanyProtectedRoute = ({ children }) => {
 
     // Si no hay token de company, enviar al login
     if (!store.company_token) {
-        console.log("CompanyProtectedRoute: No hay token de company, redirigiendo a /admin/login");
+        console.log("CompanyProtectedRoute: No hay token de company, redirigiendo a /companies/login");
         return <Navigate to="/companies/login" replace />
     }
 

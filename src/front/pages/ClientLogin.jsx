@@ -38,6 +38,7 @@ export const ClientLogin = () => {
             }
 
             localStorage.setItem("tokenClient", data.token);
+            localStorage.setItem("client_id", data.client_id)
             
             dispatch({
                 type: "set_auth_client",

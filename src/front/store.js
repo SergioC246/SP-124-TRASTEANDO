@@ -1,5 +1,7 @@
 export const initialStore=()=>{
   const tokenClient = localStorage.getItem("tokenClient");
+  const tokenCompany = localStorage.getItem("token_company");
+  const tokenAdmin = localStorage.getItem("token_admin");
 
   return{
     message: null,
@@ -17,13 +19,18 @@ export const initialStore=()=>{
     ],
       tokenClient: tokenClient || null,
       authClient: !!tokenClient,
-      auth_company: false
+
+      company_token: tokenCompany || null,
+      auth_company: !!tokenCompany,
+
+      admin_token: tokenAdmin || null,
   }
 }
+
 export const getUserRole = (store) => {
   if (store.admin_token) return "admin";
   if (store.company_token) return "company";
-  if (store.client_token) return "client";
+  if (store.tokenClient) return "client";
   return null; // User not login
 };
 
@@ -35,30 +42,49 @@ export default function storeReducer(store, action = {}) {
         message: action.payload
       };
 
-      case 'set_auth_company':
+    case 'set_auth_admin': {
+      const { token } = action.payload;
       return {
         ...store,
-        auth_company: action.payload
+        admin_token: token
       };
-      
+    } 
+
+    case 'set_auth_company': {
+      const tokenCompany = localStorage.getItem("token_company")
+      return {
+        ...store,
+        auth_company: !!tokenCompany,
+        company_token: tokenCompany
+      };
+    } 
+    
     case 'add_task':
 
       const { id,  color } = action.payload
 
       return {
         ...store,
-        todos: store.todos.map((todo) => (todo.id === id ? { ...todo, background: color } : todo))
+        todos: store.todos.map((todo) => todo.id === id ? { ...todo, background: color } : todo
+        )
       };
-    default:
-      throw Error('Unknown action.');
+    
     
     case "set_auth_client": {
       const { tokenClient } = action.payload;
-      return {...store, tokenClient, authClient: true};
+      return {...store, tokenClient, authClient: true
+      };
     }
 
     case "logout_client":
       return { ...store, tokenClient: null, authClient: false };
 
+    case "LOGOUT":
+      return {...store, tokenClient: null, authClient: false, 
+        admin_token: null, company_token: null, auth_company:false
+      };
+
+    default:  
+        return store;
   }    
 }

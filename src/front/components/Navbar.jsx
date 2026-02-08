@@ -29,17 +29,17 @@ export const Navbar = () => {
 						{!role && (
 							<>
 								<li className="nav-item ms-2">
-									<Link to="/client/login" className="btn btn-outline-primary">
+									<Link to="/client-login/login" className="btn btn-outline-primary">
 										Login as client
 									</Link>
 								</li>
 								<li className="nav-item ms-2">
-									<Link to="/companies/login" className="btn btn-outline-secondary">
+									<Link to="/companies/login" className="btn btn-outline-warning">
 										Login as Company
 									</Link>
 								</li>
 								<li className="nav-item ms-2">
-									<Link to="/admin/login" className="btn btn-outline-success" >
+									<Link to="/admin/login" className="btn btn-outline-danger" >
 										Login as Admin
 									</Link>
 								</li>
@@ -49,7 +49,7 @@ export const Navbar = () => {
 					{/* ==== Siempre visibles ==== */}
 
 						<li className="nav-item ms-2">
-							<Link to="/location" className="btn btn-outline-secondary">
+							<Link to="/location" className="btn btn-outline-success">
 								Locations
 							</Link>
 						</li>
@@ -64,23 +64,23 @@ export const Navbar = () => {
 					{role === "admin" && (
 						<>
 							<li className="nav-item ms-2">
-								<Link to="/clients" className="btn btn-outline-secondary" >
+								<Link to="/clients-info" className="btn btn-outline-warning" >
 									Clients
 								</Link>
 							</li>
 							<li className="nav-item ms-2">
-								<Link to="/admin-users" className="btn btn-outline-secondary" >
-									Admins
-								</Link>
-							</li>
-							<li className="nav-item ms-2">
-								<Link to="/companies" className="btn btn-outline-secondary">
+								<Link to="/companies" className="btn btn-outline-warning">
 									Companies
 								</Link>
 							</li>
 							<li className="nav-item ms-2">
-								<Link to="/admin/private" className="btn btn-outline-secondary">
-									Company Private
+								<Link to="/admin-users" className="btn btn-outline-warning" >
+									Admins
+								</Link>
+							</li>
+							<li className="nav-item ms-2">
+								<Link to="/admin/private" className="btn btn-outline-danger" >
+									  My Profile
 								</Link>
 							</li>
 						</>
@@ -90,7 +90,7 @@ export const Navbar = () => {
 					
 					{role === "company" && (
 						<li className="nav-item ms-2">
-							<Link to="/companies/private" className="btn btn-outline-secondary">
+							<Link to="/companies/private" className="btn btn-outline-warning">
 								Company Private
 							</Link>
 						</li>
@@ -101,12 +101,12 @@ export const Navbar = () => {
 					{role === "client" && (
 						<>
 							<li className="nav-item ms-2">
-								<Link to="/leases" className="btn btn-outline-primary">
+								<Link to="/leases" className="btn btn-outline-warning">
 								My leases
 							</Link>
 							</li>
 							<li className="nav-item ms-2">
-								<Link to="/client/private" className="btn btn-outline-secondary">
+								<Link to="/client/private" className="btn btn-outline-warning">
 									My Profile
 								</Link>
 							</li>

@@ -99,9 +99,9 @@ export const router = createBrowserRouter(
       <Route path="/admin/private" element={<AdminProtectedRoute><AdminPrivate /></AdminProtectedRoute>} />
 
       {/* Clients - Solo Admin puede ver la lista completa */}
-      <Route path="/clients" element={<ClientProtectedRoute><ClientList /></ClientProtectedRoute>} />
-      <Route path="/clients/new" element={<ClientProtectedRoute><ClientCreate /></ClientProtectedRoute>} />
-      <Route path="/clients/:id" element={<ClientProtectedRoute><ClientDetails /></ClientProtectedRoute>} />
+      <Route path="/clients" element={<AdminProtectedRoute><ClientList /></AdminProtectedRoute>} />
+      <Route path="/clients/new" element={<AdminProtectedRoute><ClientCreate /></AdminProtectedRoute>} />
+      <Route path="/clients/:id" element={<AdminProtectedRoute><ClientDetails /></AdminProtectedRoute>} />
 
             {/* ==== Rutas Protegidas Solo Company ==== */} 
       

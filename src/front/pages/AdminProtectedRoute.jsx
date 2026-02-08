@@ -4,12 +4,18 @@ import useGlobalReducer from "../hooks/useGlobalReducer";
 export const AdminProtectedRoute = ({ children }) => {
     const { store } = useGlobalReducer();
 
+    // Busca el token
+
+    const tokenStore = store.admin_token;
+    const tokenLocal = localStorage.getItem("admin_token");
+
     // Si no hay token de admin, enviar al login
-    if (!store.admin_token) {
-        console.log("AdminProtectedRoute: No hay token de admin, redirigiendo a /admin/login");
-        return <Navigate to="/admin/login" replace />
+
+    if (!tokenStore && !tokenLocal) {
+       return <Navigate to="/admin/login" replace />
     }
 
     // Si hay token, mostrar contenido protegido
+ 
     return children;
 };
