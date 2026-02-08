@@ -1,7 +1,7 @@
 export const initialStore=()=>{
   const tokenClient = localStorage.getItem("tokenClient");
   const tokenCompany = localStorage.getItem("token_company");
-  const tokenAdmin = localStorage.getItem("token_admin");
+  const tokenAdmin = localStorage.getItem("admin_token");
 
   return{
     message: null,
@@ -28,9 +28,14 @@ export const initialStore=()=>{
 }
 
 export const getUserRole = (store) => {
+  const adminToken = store.admin_token || localStorage.getItem("admin_token");
+  const companyToken = store.company_token || localStorage.getItem("token_company");
+  const clientToken = store.tokenClient || localStorage.getItem("tokenClient");
+
   if (store.admin_token) return "admin";
   if (store.company_token) return "company";
   if (store.tokenClient) return "client";
+  
   return null; // User not login
 };
 

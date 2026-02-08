@@ -108,3 +108,23 @@ export const getStorageOverview = async (storageId) => {
 const data = await response.json();
 return data;
 };
+
+// Get all storages by company
+
+export const getCompanyStorage = async () => {
+    const token = localStorage.getItem("token_company");
+    const backendUrl = import.meta.env.VITE_BACKEND_URL;
+    const response = await fetch (`${backendUrl}/api/company/storages/`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+        }
+    });
+
+    if (!response.ok) {
+        throw new Error("Failed to fetch company storages");
+    }
+
+    return await response.json();
+};

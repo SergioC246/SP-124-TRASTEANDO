@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getAllStoragesOverview, deleteStorage } from "../utilsStorages.js";
+import { getAllStoragesOverview, deleteStorage, getCompanyStorage } from "../utilsStorages.js";
 import { getUserRole } from "../store.js";
 import useGlobalReducer from "../hooks/useGlobalReducer.jsx";
 
@@ -15,20 +15,27 @@ export const StorageList = () => {
     // Load Storages
     const loadStorages = () => {
         setLoading(true);
-        getAllStoragesOverview()
+
+        const fetchFunction = role === "company"
+            ? getCompanyStorage()
+            : getAllStoragesOverview()
+
+        fetchFunction
             .then(data => {
+                console.log(`Storages cargados (${role}):`, data)
+
                 setStorages(data);
                 setLoading(false);
             })
             .catch(err => {
-                console.error(err);
+                console.error("Error cargando storages:", err);
                 setLoading(false);
             });
     };
 
     useEffect(() => {
         loadStorages()
-    }, []);
+    }, [role]);
 
     //Delete
 
@@ -71,7 +78,10 @@ export const StorageList = () => {
                              justify-content-between align-items-center"
                 >
                     <span>
-                        <strong className= "text-primary fs-4" >{storage.city}</strong> - <strong className="text-secondary">{storage.company_name}</strong>
+                        <strong className= "text-primary fs-4" >{storage.city}</strong> 
+                        {role !== "company" && (
+                            <> - <strong className="text-secondary">{storage.company_name}</strong></>
+                        )}
                          - {storage.size} - {storage.price} € - {storage.status === "Available" ? 
                          <em className="text-success"> Available</em> : <em className="text-danger"> Occupied</em>}
                     </span>

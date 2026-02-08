@@ -1,11 +1,11 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import useGlobalReducer from "../hooks/useGlobalReducer.jsx";
 
 
 export const ClientLogin = () => {
-
     const { store, dispatch } = useGlobalReducer();
+    const navigate = useNavigate();
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("")
@@ -13,8 +13,14 @@ export const ClientLogin = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
  
-
-    const navigate = useNavigate();
+    useEffect(() => {
+        if (store.tokenClient) {
+            const timer = setTimeout(() => {
+                navigate("/client/private");
+            }, 1500);
+            return () => clearTimeout(timer)
+        }
+    }, [store.tokenClient, navigate]);    
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -45,7 +51,8 @@ export const ClientLogin = () => {
                 payload: { tokenClient: data.token},
             });
 
-            navigate("/client/private");
+            setTimeout(()=> navigate("/client/private"), 1000);
+
         } catch (err) {
             setError("Network error");
         } finally {
