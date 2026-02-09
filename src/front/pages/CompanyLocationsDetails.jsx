@@ -45,9 +45,11 @@ export const CompanyLocationsDetails = () => {
                                 <p><strong>City:</strong> {location.city}</p>
                                 <p><strong>Latitude:</strong> {location.latitude}</p>
                                 <p><strong>Longitude:</strong> {location.longitude}</p>
-                                <button className="btn btn-secondary mt-0" onClick={() => navigate("/companies/private/locations")}>
-                                    Back
-                                </button>
+                                <div className="card-footer d-flex justify-content-end">
+                                    <button className="btn btn-secondary mb-0" onClick={() => navigate("/companies/private/locations")}>
+                                        Back
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>

@@ -658,9 +658,7 @@ def company_locations():
     company_id = int(get_jwt_identity())
     
     if request.method == "GET":
-        locations = db.session.execute(
-            select(Location).where(Location.company_id == company_id)
-        ).scalars().all()
+        locations = db.session.execute(select(Location).where(Location.company_id == company_id)).scalars().all()
 
         return jsonify([location.serialize() for location in locations]), 200
     
@@ -757,3 +755,58 @@ def company_location_by_id(location_id):
         db.session.commit()
 
         return jsonify(location.serialize()), 200
+    
+
+# Company private Locations Delete
+
+@api.route('/private/company/locations/<int:location_id>', methods=["DELETE"])
+@jwt_required()
+def delete_company_location(location_id):
+    company_id = int(get_jwt_identity())
+
+    location = db.session.execute(select(Location).where(Location.id == location_id, Location.company_id == company_id)).scalar_one_or_none()
+
+    if not location:
+        return jsonify({"message": "Location not found or not yours"}), 404
+
+    db.session.delete(location)
+    db.session.commit()
+
+    return jsonify({"message": "Location deleted"}), 200
+
+
+
+# Company private create storage
+@api.route('/private/company/storages', methods=['POST'])
+@jwt_required()
+def create_company_storage():
+    company_id = get_jwt_identity() 
+    data = request.get_json()
+
+    size = data.get("size")
+    price = data.get("price")
+    location_id = data.get("location_id")
+
+    # Validar que no falte ningún dato
+    if not all([size, price, location_id]):
+        return jsonify({"message": "Missing data"}), 400
+
+    # Validar que la location pertenece a esta company
+    location = db.session.get(Location, location_id)
+    if not location or location.company_id != int(company_id):
+        return jsonify({"message": "Invalid location or does not belong to your company"}), 400
+
+    # Crear el Storage
+    new_storage = Storage(
+        size=size,
+        price=price,
+        location_id=location_id,
+        status=True
+    )
+
+    db.session.add(new_storage)
+    db.session.commit()
+
+    return jsonify(new_storage.serialize()), 201
+
+
