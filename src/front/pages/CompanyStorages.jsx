@@ -29,21 +29,29 @@ export const CompanyStorages = () => {
 
     return (
         <div className="container py-4">
-            <h2>My Storages</h2>
-            <ul className="list-group">
-                {storages.map(storage => (
-                    <li key={storage.id} className="list-group-item d-flex justify-content-between align-items-center">
-                        <div>
-                            <strong>Size:</strong> {storage.size} <br />
-                            <strong>Price:</strong> {storage.price} <br />
-                            <strong>Status:</strong> {storage.status}
+            <div className="row justify-content-center">
+                <div className="col-md-6">
+                    <div className="card show">
+                        <div className="card-header bg-primary text-white">
+                        <h4 className="mb-0">My Storages</h4>
                         </div>
-                        <Link to={`/companies/private/storages/${storage.id}`} className="btn btn-sm btn-primary">
-                            Ver Detalles
-                        </Link>
-                    </li>
-                ))}
-            </ul>
+                        <ul className="list-group">
+                            {storages.map(storage => (
+                                <li key={storage.id} className="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong>Size:</strong> {storage.size} <br />
+                                        <strong>Price:</strong> {storage.price} <br />
+                                        <strong>Status:</strong> {storage.status}
+                                    </div>
+                                    <Link to={`/companies/private/storages/${storage.id}`} className="btn btn-sm btn-success">
+                                        Details
+                                    </Link>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                </div>
+            </div>
         </div>
     )
 }

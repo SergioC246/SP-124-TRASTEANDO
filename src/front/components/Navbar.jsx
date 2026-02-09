@@ -19,7 +19,7 @@ export const Navbar = () => {
 							</Link>
 						</li>
 						<li className="nav-item ms-2">
-							<Link to="/storages" className="btn btn-outline-success" >
+							<Link to="/storages" className="btn btn-outline-secondary" >
 								Storages
 							</Link>
 						</li>
@@ -54,7 +54,7 @@ export const Navbar = () => {
 						</li>
 						<li className="nav-item ms-2">
 							<Link to="/leases">
-								<button className="btn btn-primary">Leases</button>
+								<button className="btn btn-outline-secondary">Leases</button>
 							</Link>
 						</li>
 					</ul>

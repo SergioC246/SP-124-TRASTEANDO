@@ -597,13 +597,41 @@ def private_admin():
 
 
 # Company private locations
-@api.route('/private/company/locations', methods=["GET"])
+@api.route('/private/company/locations', methods=["GET", "POST"])
 @jwt_required()
-def get_company_locations():
-    company_id = get_jwt_identity()
-    locations = db.session.execute(select(Location).where(Location.company_id == company_id)).scalars().all()
+def company_locations():
+    company_id = int(get_jwt_identity())
+    
+    if request.method == "GET":
+        locations = db.session.execute(
+            select(Location).where(Location.company_id == company_id)
+        ).scalars().all()
 
-    return jsonify([location.serialize() for location in locations]), 200
+        return jsonify([location.serialize() for location in locations]), 200
+    
+    if request.method == "POST":
+        data = request.get_json()
+
+        address = data.get("address")
+        city = data.get("city")
+        latitude = data.get("latitude")
+        longitude = data.get("longitude")
+
+        if not all([address, city, latitude, longitude]):
+            return jsonify({"message": "Missing data"}), 400
+
+        new_location = Location(
+            address=address,
+            city=city,
+            latitude=latitude,
+            longitude=longitude,
+            company_id=company_id
+        )
+
+        db.session.add(new_location)
+        db.session.commit()
+
+        return jsonify(new_location.serialize()), 201
 
 
 # Company private storages

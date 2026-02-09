@@ -39,15 +39,26 @@ export const CompanyLocations = () => {
 
   return (
     <div className="container py-4">
-      <h2>Mis Locations</h2>
-      <ul className="list-group">
-        {locations.map(location => (
-          <li key={location.id} className="list-group-item">
-            <strong>Address:</strong> {location.address} <br />
-            <strong>City:</strong> {location.city}
-          </li>
-        ))}
-      </ul>
+      <div className="row justify-content-center">
+        <div className="col-md-6">
+          <div className="card show">
+            <div className="card-header justify-content-between d-flex bg-primary text-white">
+              <div>
+                <h4 className="mb-0">My Locations</h4>
+              </div>
+              <button className="btn btn-success btn-sm" onClick={() => navigate("/companies/private/locations/create")}>Create Location</button>
+            </div>
+            <ul className="list-group">
+              {locations.map(location => (
+                <li key={location.id} className="list-group-item">
+                  <strong>Address:</strong> {location.address} <br />
+                  <strong>City:</strong> {location.city}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
