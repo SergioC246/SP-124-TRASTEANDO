@@ -408,7 +408,8 @@ def update_lease(lease_id):
 def get_company_storage():
     
     try:
-        company_id = int(get_jwt_identity())
+        identity = get_jwt_identity()
+        company_id = int(identity)
         
         # Obtener storages cuya location pertenezca a esta company
         storages = db.session.query(Storage).join(Location).filter(

@@ -1,4 +1,4 @@
-const STORAGES_URL = `${import.meta.env.VITE_BACKEND_URL}api/storage`;
+const STORAGES_URL = `${import.meta.env.VITE_BACKEND_URL}/api/storage`;
 
 // Get one storage
 
