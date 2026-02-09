@@ -50,12 +50,39 @@ export const CompanyLocations = () => {
             </div>
             <ul className="list-group">
               {locations.map(location => (
-                <li key={location.id} className="list-group-item">
-                  <strong>Address:</strong> {location.address} <br />
-                  <strong>City:</strong> {location.city}
+                <li
+                  key={location.id}
+                  className="list-group-item d-flex justify-content-between align-items-center"
+                >
+                  <div>
+                    <strong>Address:</strong> {location.address} <br />
+                    <strong>City:</strong> {location.city}
+                  </div>
+
+                  <div className="d-flex gap-2">
+                    <button className="btn btn-sm btn-outline-primary"
+                      onClick={() => navigate(`/companies/private/locations/${location.id}`)}>
+                      Details
+                    </button>
+
+                    <button className="btn btn-sm btn-outline-warning"
+                      onClick={() => navigate(`/companies/private/locations/edit/${location.id}`)}>
+                      Edit
+                    </button>
+
+                    <button className="btn btn-sm btn-outline-danger"
+                      onClick={() => handleDelete(location.id)}>
+                      Delete
+                    </button>
+                  </div>
                 </li>
               ))}
             </ul>
+            <div className="card-footer text-end">
+              <button className="btn btn-sm btn-secondary" onClick={() => navigate("/companies/private")}>
+                Back
+              </button>
+            </div>
           </div>
         </div>
       </div>

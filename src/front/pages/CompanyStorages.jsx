@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 
 export const CompanyStorages = () => {
 
     const [storages, setStorages] = useState([])
     const [loading, setLoading] = useState(true)
+    const navigate = useNavigate()
 
     useEffect(() => {
         const token = localStorage.getItem("token_company");
@@ -33,7 +34,7 @@ export const CompanyStorages = () => {
                 <div className="col-md-6">
                     <div className="card show">
                         <div className="card-header bg-primary text-white">
-                        <h4 className="mb-0">My Storages</h4>
+                            <h4 className="mb-0">My Storages</h4>
                         </div>
                         <ul className="list-group">
                             {storages.map(storage => (
@@ -49,6 +50,11 @@ export const CompanyStorages = () => {
                                 </li>
                             ))}
                         </ul>
+                        <div className="card-footer text-end">
+                            <button className="btn btn-sm btn-secondary" onClick={() => navigate("/companies/private")}>
+                                Back
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>

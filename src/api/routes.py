@@ -712,3 +712,48 @@ def get_company_storage_by_id(storage_id):
     
     return jsonify(storage.serialize()), 200
 
+
+
+# Company private Locations Details
+
+@api.route('/private/company/locations/<int:location_id>', methods=["GET"])
+@jwt_required()
+def get_company_location_by_id(location_id):
+    company_id = int(get_jwt_identity())
+
+    location = db.session.execute(select(Location).where(Location.id == location_id, Location.company_id == company_id)).scalar_one_or_none()
+
+    if not location:
+        return jsonify({"message": "Location not found or not yours"}), 404
+
+    return jsonify(location.serialize()), 200
+
+
+
+# Company private Locations Edit
+
+@api.route('/private/company/locations/<int:location_id>', methods=["GET", "PUT"])
+@jwt_required()
+def company_location_by_id(location_id):
+    company_id = int(get_jwt_identity())
+
+    location = db.session.execute(
+        select(Location).where(Location.id == location_id, Location.company_id == company_id)).scalar_one_or_none()
+
+    if not location:
+        return jsonify({"message": "Location not found or not yours"}), 404
+
+    if request.method == "GET":
+        return jsonify(location.serialize()), 200
+
+    if request.method == "PUT":
+        data = request.get_json()
+
+        location.address = data.get("address", location.address)
+        location.city = data.get("city", location.city)
+        location.latitude = data.get("latitude", location.latitude)
+        location.longitude = data.get("longitude", location.longitude)
+
+        db.session.commit()
+
+        return jsonify(location.serialize()), 200
