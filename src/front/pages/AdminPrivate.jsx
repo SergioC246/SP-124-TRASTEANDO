@@ -27,8 +27,8 @@ export const AdminPrivate = () => {
             } else {
                 console.log("✅ Token válido, mostrando panel");
                 setLoading(false);
-            })
-            .catch(err => {
+            }
+            }).catch(err => {
                 console.error(err);
                 setError(err.message);
                 localStorage.removeItem("admin_token")
