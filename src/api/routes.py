@@ -7,9 +7,8 @@ from api.models import db, User, AdminUser, Client, Company, Leases, Storage, Lo
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from sqlalchemy import select
-from flask_jwt_extended import create_access_token
-from flask_jwt_extended import get_jwt_identity
-from flask_jwt_extended import jwt_required
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
+
 
 api = Blueprint('api', __name__)
 
@@ -122,10 +121,12 @@ def get_client(client_id):
 @api.route('/clients', methods=['POST'])
 def create_client():
     body = request.get_json()
+    email = body.get("email")
+    password = body.get("password")
 
     if not body.get("email") or not body.get("password"):
         return jsonify({"msg": "Email and password are required"}), 400
-
+    
     new_client = Client(
         email=body["email"],
         password=body["password"],
@@ -487,6 +488,36 @@ def delete_storage(storage_id):
     return jsonify({"message": "Storage deleted"}), 200
 
 
+# api para hacer login de cliente
+@api.route('/login/client', methods=['POST'])
+def login_client():
+    body = request.get_json()
+    if body is None:
+        return jsonify({"message":"Bad request"}), 400
+    
+    email = body.get("email")
+    password = body.get("password")
+
+    client = db.session.execute(select(Client).where(Client.email == email)).scalar_one_or_none()
+
+    if client is None or client.password != password:
+        return jsonify({"message":"Wrong email or password"}), 401
+
+    access_token = create_access_token(identity=str(client.id))
+   
+    return jsonify({
+        "token":access_token,
+        "client_id":client.id
+    }), 200
+
+# private
+
+@api.route('/private/client', methods=['GET'])
+@jwt_required()
+def private():
+    client_id = int(get_jwt_identity())
+    client = db.session.execute(select(Client).where(Client.id == client_id)).scalar_one()
+    return jsonify(client.serialize()),200
 
 @api.route('/login/company', methods=["POST"])
 def login_company():
@@ -564,6 +595,9 @@ def login_admin():
     email = body.get("email")
     password = body.get("password")
 
+    if not email or not password:
+        return jsonify({"message": "Email and password are required"}), 400
+
     admin = db.session.execute(
         select(AdminUser).where(AdminUser.email == email)
     ).scalar_one_or_none()
@@ -571,11 +605,11 @@ def login_admin():
     if admin is None or admin.password != password:
         return jsonify({"message": "Wrong email or password"}), 401
     
-    access_token = create_access_token(identity=str(admin.id))
+    admin_token = create_access_token(identity=str(admin.id))
 
     return jsonify({
-        "token": access_token,
-        "admin_id": admin.id
+        "admin_token": admin_token,
+        "admin": admin.serialize()
     }), 200
 
 # Private admin   

@@ -1,4 +1,5 @@
 export const initialStore=()=>{
+
   return{
     message: null,
     todos: [
@@ -13,9 +14,19 @@ export const initialStore=()=>{
         background: null,
       }
     ],
-    auth_company: false
-  }
-}
+
+    auth_admin: false,
+    admin_token: localStorage.getItem("admin_token") || null,
+    admin_info: JSON.parse(localStorage.getItem("admin_info")) || null,
+  
+      tokenClient: localStorage.getItem("admin_token") || null,
+      authClient: !!localStorage.getItem("tokenClient"),
+      auth_company: false
+  
+  };
+};
+
+     
 
 export default function storeReducer(store, action = {}) {
   switch(action.type){
@@ -25,6 +36,31 @@ export default function storeReducer(store, action = {}) {
         message: action.payload
       };
 
+    case 'set_auth_admin':
+        return {...store, auth_admin: action.payload };
+
+    case 'set_admin_login':
+        localStorage.setItem("admin_token", (action.payload.token));
+        localStorage.removeItem("admin_info", JSON.stringify(action.payload.admin));
+        return {
+          ...store,
+          admin_token: action.payload.token,
+          admin_info: action.payload.admin,
+          auth_admin: true
+        };
+
+    case 'logout_admin':
+        localStorage.removeItem("admin_token");
+        localStorage.removeItem("admin_info");
+        return {
+          ...store,
+          admin_token: null,
+          admin_info: null,
+          auth_admin: false
+        };
+
+    case 'set_admin_info':
+      return {...store, admin_info: action.payload, auth_admin: true };
       case 'set_auth_company':
       return {
         ...store,
@@ -41,5 +77,14 @@ export default function storeReducer(store, action = {}) {
       };
     default:
       throw Error('Unknown action.');
+    
+    case "set_auth_client": {
+      const { tokenClient } = action.payload;
+      return {...store, tokenClient, authClient: true};
+    }
+
+    case "logout_client":
+      return { ...store, tokenClient: null, authClient: false };
+
   }    
 }
