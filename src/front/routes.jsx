@@ -38,6 +38,11 @@ import { CompanyLogin } from "./pages/CompanyLogin";
 import { CompanyPrivate } from "./pages/CompanyPrivate";
 import { AdminLogin } from "./pages/AdminLogin";
 import { AdminPrivate } from "./pages/AdminPrivate";
+import { ClientSignup } from "./pages/ClientSignup";
+import { ClientLocations } from "./pages/ClientLocations";
+import { StoragesPrivateDetails } from "./pages/StoragesPrivateDetails";
+import { StoragesPrivateList } from "./pages/StoragesPrivateList";
+import { StoragePrivateCheckout } from "./pages/StoragePrivateCheckout";
 
 
 
@@ -62,7 +67,13 @@ export const router = createBrowserRouter(
       <Route path="/clients" element={<Clients />} />     
       <Route path="/client/login" element={<ClientLogin />} />
       <Route path="/client/private" element={<ClientPrivate />} />
-
+      <Route path="/client/signup" element={<ClientSignup />} />
+      <Route path="/client/private/locations" element={<ClientLocations />} />
+      <Route path="/client/private/storages/:locationId" element={<StoragesPrivateList />} />
+      <Route path="/client/private/storage/:storageId" element={<StoragesPrivateDetails />} />
+      <Route path="/client/private/checkout/:storageId" element={<StoragePrivateCheckout />} />
+      
+            
       {/* Rutas company */}
       <Route path="/companies" element={<Companies />} />
       <Route path="/createCompanies" element={<CreateCompanies />} />
