@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import useGlobalReducer from "../hooks/useGlobalReducer"
 
 export const CompanyPrivate = () => {
@@ -29,7 +29,7 @@ export const CompanyPrivate = () => {
             return
         }
 
-        fetch(import.meta.env.VITE_BACKEND_URL + "/api/private/company", {
+        fetch(import.meta.env.VITE_BACKEND_URL + "api/private/company", {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -53,7 +53,7 @@ export const CompanyPrivate = () => {
     }
 
     return (
-        <div className="container py-5">
+        <div className="container py-4">
             <div className="row justify-content-center">
                 <div className="col-md-6">
                     <div className="card show">
@@ -66,7 +66,16 @@ export const CompanyPrivate = () => {
                             <p><strong>Email:</strong> {company.email}</p>
                             <p><strong>CIF:</strong> {company.cif}</p>
                             <p><strong>Address:</strong> {company.address}</p>
-                            <button className="btn btn-danger" onClick={handleLogout}>Logout</button>
+
+                            <div className="d-flex flex-row gap-2">
+                                <Link to="/companies/private/locations" className="btn btn-primary btn-sm">
+                                    My Locations
+                                </Link>
+                                <Link to="/companies/private/storages" className="btn btn-primary btn-sm">
+                                    My Storages
+                                </Link>
+                                <button className="btn btn-danger btn-sm" onClick={handleLogout}>Logout</button>
+                            </div>
                         </div>
                     </div>
                 </div>

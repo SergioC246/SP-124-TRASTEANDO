@@ -1,67 +1,60 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import useGlobalReducer from "../hooks/useGlobalReducer";
+import { verifyAdminToken, logoutAdmin } from "./utilsAdministrator";
 
 export const AdminPrivate = () => {
     const navigate = useNavigate();
+    const { store, dispatch } = useGlobalReducer();
 
-    const [admin, setAdmin] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
 
     useEffect(() => {
-        const token = localStorage.getItem("token");
+        console.log("🔍 AdminPrivate montado. Verificando token...");
+        console.log("Token en store:", store.admin_token);
+        console.log("Info en store:", store.admin_info);
+
+        const token = store.admin_token;
 
         if (!token) {
+            console.log("❌ No hay token, redirigiendo al login...");
             navigate("/admin/login");
             return;
         }
 
-        fetch(import.meta.env.VITE_BACKEND_URL + "/api/private/admin", {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: "Bearer " + token
-            }
-        })
-            .then(res => {
-                if (!res.ok) {
-                    throw new Error("Token is not valid");
-                }
-                return res.json();
-            })
-            .then(data => {
-                setAdmin(data);
+        console.log("✅ Token encontrado, verificando con el backend...");
+
+        verifyAdminToken(token, dispatch).then(res => {
+            if (!res.success) {
+                console.log("❌ Token inválido");
+                navigate("/admin/login");
+            } else {
+                console.log("✅ Token válido, mostrando panel");
                 setLoading(false);
-            })
-            .catch(err => {
-                console.error(err);
-                setError(err.message);
-                localStorage.removeItem("token")
-                navigate("admin/login");
-            });
-    }, []);
+            }
+        });
+    }, [store.admin_token]);
+
+    const handleLogout = () => {
+        logoutAdmin(dispatch);
+        navigate("/admin/login");
+    };
 
     if (loading) return <p>Load administrator data...</p>;
 
-    if (error) return <p>Error: {error}</p>;
+    const admin = store.admin_info;
 
     return (
         <div className="container mt-4">
             <h1>Admin private panel</h1>
 
-            <button className="btn btn-danger mb-3"
-                onClick={() => {
-                    localStorage.removeItem("token");
-                    localStorage.removeItem("admin_id");
-                    navigate("/admin/login");
-                }}
-            >
+            <button className="btn btn-danger mb-3" onClick={handleLogout}>
                 Logout
             </button>
 
             <div className="card mt-3">
                 <div className="card-body">
-                    <p><strong>ID:</strong> {admin.id}</p>
+                    <p><strong>Admin ID:</strong> {admin.id}</p>
                     <p><strong>Email:</strong> {admin.email}</p>
                     {admin.name && <p><strong>Nombre:</strong> {admin.name}</p>}
                 </div>
