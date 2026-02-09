@@ -1,8 +1,19 @@
 import { Link, useNavigate } from "react-router-dom";
+import { getUserRole } from "../store";
+import useGlobalReducer from "../hooks/useGlobalReducer";
 
 export const Navbar = () => {
 
+	const { store, dispatch } = useGlobalReducer();
+	const role = getUserRole(store);
+
 	const navigate = useNavigate()
+
+	const handleLogout = () => {
+		localStorage.clear();
+		dispatch({ type: "LOGOUT"});
+		navigate("/");
+	};
 
 	return (
 		<nav className="navbar navbar-expand-lg navbar-light bg-light">
@@ -12,9 +23,34 @@ export const Navbar = () => {
 				</Link>
 				<div className="collapse navbar-collapse show">
 					<ul className="navbar-nav ms-auto mb-2 mb-lg-0">
+
+					{/* ==== Si no hay nadie logueado ==== */}
+
+						{!role && (
+							<>
+								<li className="nav-item ms-2">
+									<Link to="/client-login/login" className="btn btn-outline-primary">
+										Login as client
+									</Link>
+								</li>
+								<li className="nav-item ms-2">
+									<Link to="/companies/login" className="btn btn-outline-warning">
+										Login as Company
+									</Link>
+								</li>
+								<li className="nav-item ms-2">
+									<Link to="/admin/login" className="btn btn-outline-danger" >
+										Login as Admin
+									</Link>
+								</li>
+							</>
+						)}
+
+					{/* ==== Siempre visibles ==== */}
+
 						<li className="nav-item ms-2">
-							<Link to="/clients" className="btn btn-outline-secondary" >
-								Clients
+							<Link to="/location" className="btn btn-outline-success">
+								Locations
 							</Link>
 						</li>
 						<li className="nav-item ms-2">
@@ -27,41 +63,70 @@ export const Navbar = () => {
 								Storages
 							</Link>
 						</li>
+
+					{/* ==== Solo Admin ==== */}
+
+					{role === "admin" && (
+						<>
+							<li className="nav-item ms-2">
+								<Link to="/clients-info" className="btn btn-outline-warning" >
+									Clients
+								</Link>
+							</li>
+							<li className="nav-item ms-2">
+								<Link to="/companies" className="btn btn-outline-warning">
+									Companies
+								</Link>
+							</li>
+							<li className="nav-item ms-2">
+								<Link to="/admin-users" className="btn btn-outline-warning" >
+									Admins
+								</Link>
+							</li>
+							<li className="nav-item ms-2">
+								<Link to="/admin/private" className="btn btn-outline-danger" >
+									  My Profile
+								</Link>
+							</li>
+						</>
+					)}
+					
+					{/* ==== Solo Company ==== */}
+					
+					{role === "company" && (
 						<li className="nav-item ms-2">
-							<Link to="/admin-users" className="btn btn-outline-secondary" >
-								Admins
-							</Link>
-						</li><li className="nav-item ms-2">
-							<Link to="/admin/login" className="btn btn-outline-secondary" >
-								Admin Login
-							</Link>
-						</li>
-						<li className="nav-item ms-2">
-							<Link to="/companies" className="btn btn-outline-secondary">
-								Companies
-							</Link>
-						</li>
-						<li className="nav-item ms-2">
-							<Link to="/companies/login" className="btn btn-outline-secondary">
-								Company Login
-							</Link>
-						</li>
-						<li className="nav-item ms-2">
-							<Link to="/companies/private" className="btn btn-outline-secondary">
+							<Link to="/companies/private" className="btn btn-outline-warning">
 								Company Private
 							</Link>
 						</li>
-						<li className="nav-item ms-2">
-							<Link to="/location" className="btn btn-outline-secondary">
-								Locations
+					)}
+
+					{/* ==== Solo CLient ==== */}
+					
+					{role === "client" && (
+						<>
+							<li className="nav-item ms-2">
+								<Link to="/leases" className="btn btn-outline-warning">
+								My leases
 							</Link>
-						</li>
+							</li>
+							<li className="nav-item ms-2">
+								<Link to="/client/private" className="btn btn-outline-warning">
+									My Profile
+								</Link>
+							</li>
+						</>
+					)}
+
+					{/* ==== Logout si hay alguien logueado ==== */}
+					{role && (
 						<li className="nav-item ms-2">
-							<Link to="/leases">
-								<button className="btn btn-outline-secondary">Leases</button>
-							</Link>
-						</li>
-					</ul>
+									<button className="btn btn-danger"
+									onClick={handleLogout}>Logout</button>
+							</li>
+
+					)}
+				  </ul>
 				</div>
 			</div>
 		</nav>

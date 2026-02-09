@@ -181,7 +181,7 @@ def get_one_company(company_id):
         return jsonify({"message": "Company not found"}), 404
     return jsonify(company.serialize()), 200
 
-# crear una comàñia
+# crear una compañia
 
 
 @api.route('/companies', methods=["POST", "GET"])
@@ -403,35 +403,36 @@ def update_lease(lease_id):
     return jsonify(lease.serialize()), 200
 # All Storages
 
-@api.route("/storage", methods=["GET", "POST"])
-def storage():
-    print("Acabas de entrar a esta funcion")
-    if request.method == "POST":
-        data = request.get_json()
-
-        size = data.get("size")
-        price = data.get("price")
-        location_id = data.get("location_id")
-        status= data.get("status", True)    
-
-        if not all([size, price, location_id]):
-            return jsonify({"message": "Missing data"}), 400
+@api.route("/company/storage", methods=["GET"])
+@jwt_required()
+def get_company_storage():
+    
+    try:
+        identity = get_jwt_identity()
+        company_id = int(identity)
         
-        new_storage = Storage(
-            size=size,
-            price=price,
-            status=status,
-            location_id=location_id
-        )
-
-        db.session.add(new_storage)
-        db.session.commit()
-
-        return jsonify(new_storage.serialize()), 201
-    else:
-        print("Vas a hacer un GET de todos los Storage")
-        result = db.session.execute(select(Storage)).scalars().all()
-        return jsonify([storage.serialize() for storage in result]), 200
+        # Obtener storages cuya location pertenezca a esta company
+        storages = db.session.query(Storage).join(Location).filter(
+            Location.company_id == company_id
+        ).all()
+        
+        detailed_list = []
+        for storage in storages:
+            storage_data = storage.serialize()
+            
+            # Enriquecer con city 
+            location = db.session.get(Location, storage.location_id)
+            if location:
+                storage_data["city"] = location.city
+            else:
+                storage_data["city"] = "No asignada"
+            
+            detailed_list.append(storage_data)
+        
+        return jsonify(detailed_list), 200
+        
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
     
 # Get Storage
 @api.route("/storage/<int:storage_id>", methods=["GET"])

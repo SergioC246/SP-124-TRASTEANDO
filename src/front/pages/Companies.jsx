@@ -4,8 +4,12 @@ import { deleteCompany } from "../utilsCompanies"
 import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { editCompany } from "../utilsCompanies"
+import { getUserRole } from "../store"
+import useGlobalReducer from "../hooks/useGlobalReducer"
 
 export const Companies = () => {
+    const { store } = useGlobalReducer();
+    const role = getUserRole(store);
 
     const navigate = useNavigate()
     const [companies, setCompanies] = useState([])
@@ -84,8 +88,14 @@ export const Companies = () => {
                                                 <span className="fw-medium text-dark">{company.name}</span>
                                                 <div className="btn-group">
                                                     <button className="btn btn-sm btn-outline-warning rounded-pill me-2 px-3" onClick={() => navigate(`/companies/${company.id}`)} >Details</button>
-                                                    <button className="btn btn-sm btn-outline-warning rounded-pill me-2 px-3" onClick={() => handleEditCompany(company.id)}>Edit</button>
-                                                    <button className="btn btn-sm btn-outline-danger rounded-pill px-3" onClick={() => handleDeleteCompany(company.id)}> Delete </button>
+                                                    
+                                                    {/* SOLO ADMIN puede Editar y Borrar Companies */}
+                                                    {role === "admin" && (
+                                                      <>
+                                                        <button className="btn btn-sm btn-outline-warning rounded-pill me-2 px-3" onClick={() => handleEditCompany(company.id)}>Edit</button>
+                                                        <button className="btn btn-sm btn-outline-danger rounded-pill px-3" onClick={() => handleDeleteCompany(company.id)}> Delete </button>
+                                                      </>
+                                                    )}
                                                 </div>
                                             </li>
                                         ))}
@@ -101,10 +111,11 @@ export const Companies = () => {
                     </div>
                 </div>
 
-                {/* crear una compañia */}
+                {/* Solo Admin puede crear una compañia */}
 
-                <button type="button" className="btn btn-success ms-3 mt-4" onClick={() => navigate("/CreateCompanies")} >Create a company</button>
-
+                { role === "admin" && (
+                    <button type="button" className="btn btn-success ms-3 mt-4" onClick={() => navigate("/CreateCompanies")} >Create a company</button>
+                )}
                 {/* edit company */}
 
                 <div className="modal fade" id="editModal" tabIndex="-1">

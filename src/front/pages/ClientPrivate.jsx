@@ -14,15 +14,16 @@ export const ClientPrivate = () => {
 
     const handleLogout = () => {
         localStorage.removeItem("tokenClient");
+        localStorage.removeItem("client_id")
         dispatch({type: "logout_client"});
-        navigate("/client/login")
-    }
+        navigate("/client-login/login")
+    };
 
     useEffect(() => {
-        const token = store.tokenClient;
+        const token = localStorage.getItem("tokenClient");
 
         if (!token){
-            navigate("/client/login");
+            navigate("/client-login/login");
             return
         }
 
@@ -39,8 +40,9 @@ export const ClientPrivate = () => {
 
                 if (!resp.ok) {
                     localStorage.removeItem("tokenClient");
+                    localStorage.removeItem("client_id")
                     dispatch({ type: "logout_client" });
-                    navigate("/client/login");
+                    navigate("/client-login/login");
                     return;
                 }
                 setClient(data);
