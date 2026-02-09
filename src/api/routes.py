@@ -3,11 +3,11 @@ This module takes care of starting the API Server, Loading the DB and Adding the
 """
 from flask import Flask, request, jsonify, url_for, Blueprint
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
-from api.models import db, User, AdminUser, Client, Company, Leases, Storage, Location, Storage
+from api.models import db, User, AdminUser, Client, Company, Leases, Storage, Location
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from sqlalchemy import select
-from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
+
 
 
 api = Blueprint('api', __name__)
@@ -628,6 +628,26 @@ def private_admin():
     
     return jsonify(admin.serialize()), 200
 
+# # private storages view
+@api.route('/private/client/storages', methods=['GET'])
+@jwt_required()
+def get_client_storages_by_location():
+    location_id= request.args.get("location_id", None)
+
+    if location_id is None:
+        return jsonify({"message": "location_id query param is required"}), 400
+    
+    try:
+        location_id = int(location_id)
+    except ValueError:
+        return jsonify({"message": "location_id must be an integer"}), 400
+    
+    result = db.session.execute(select(Storage).where(Storage.location_id == location_id)).scalars().all()
+    storages = []
+    for storage in result:
+        storages.append(storage.serialize())
+
+    return jsonify(storages), 200
 
 
 # Company private locations

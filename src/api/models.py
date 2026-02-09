@@ -47,7 +47,7 @@ class Client(db.Model):
     password: Mapped[str] = mapped_column(String(200), nullable=False)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
 
-    leases: Mapped[list["Leases"]] = relationship(back_populates="client")
+    leases: Mapped[list["Leases"]] = relationship(back_populates="client", cascade="all, delete-orphan")
 
     def serialize(self):
         return {
@@ -118,7 +118,7 @@ class Storage(db.Model):
      location_id: Mapped[int] = mapped_column(ForeignKey("location.id"), nullable=False)
 
      location: Mapped["Location"] = relationship(back_populates="storages")
-     leases: Mapped[list["Leases"]] = relationship(back_populates="storage")
+     leases: Mapped[list["Leases"]] = relationship(back_populates="storage", cascade= "all, delete-orphan")
 
      def serialize(self):
          return {
@@ -143,7 +143,7 @@ class Location(db.Model):
     company_id: Mapped[int] = mapped_column(ForeignKey("companies.id"), nullable=False)
     
     company: Mapped["Company"] = relationship(back_populates="locations")
-    storages: Mapped[list["Storage"]] = relationship(back_populates="location")
+    storages: Mapped[list["Storage"]] = relationship(back_populates="location", cascade="all, delete-orphan")
 
     def serialize(self):
         return {

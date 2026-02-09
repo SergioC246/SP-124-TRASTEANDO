@@ -12,14 +12,18 @@ export const Navbar = () => {
 				</Link>
 				<div className="collapse navbar-collapse show">
 					<ul className="navbar-nav ms-auto mb-2 mb-lg-0">
-
 						<li className="nav-item ms-2">
 							<Link to="/clients" className="btn btn-outline-secondary" >
 								Clients
 							</Link>
 						</li>
 						<li className="nav-item ms-2">
-							<Link to="/storages" className="btn btn-outline-secondary" >
+							<Link to="/client/login">
+								<button className="btn btn-outline-secondary">Login as client</button>
+							</Link>
+						</li>
+						<li className="nav-item ms-2">
+							<Link to="/storages" className="btn btn-outline-success" >
 								Storages
 							</Link>
 						</li>
@@ -55,11 +59,6 @@ export const Navbar = () => {
 						<li className="nav-item ms-2">
 							<Link to="/leases">
 								<button className="btn btn-outline-secondary">Leases</button>
-							</Link>
-						</li>
-						<li className="nav-item ms-2">
-							<Link to="/client/login">
-								<button className="btn btn-outline-secondary">Login as client</button>
 							</Link>
 						</li>
 					</ul>
