@@ -58,7 +58,7 @@ export const AdminLogin = () => {
     return (
         <div className="container mt-5">
             <div className="row justify-content-center">
-                <div className="col-md-6">
+                <div className="col-md-6">                    
                     <h2 className="text-center mb 4">Admin Login</h2>
 
                     <form onSubmit={handleSubmit}>
@@ -92,7 +92,7 @@ export const AdminLogin = () => {
 
                         <button
                             type="submit"
-                            className="btn btn-primary w-100"
+                            className="btn btn-primary w-100 mt-2"
                             disabled={loading}
                         >
                             {loading ? "Loging in..." : "Login"}

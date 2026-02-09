@@ -627,3 +627,67 @@ def private_admin():
         return jsonify({"message": "Admin not found"}), 404
     
     return jsonify(admin.serialize()), 200
+
+
+
+# Company private locations
+@api.route('/private/company/locations', methods=["GET", "POST"])
+@jwt_required()
+def company_locations():
+    company_id = int(get_jwt_identity())
+    
+    if request.method == "GET":
+        locations = db.session.execute(
+            select(Location).where(Location.company_id == company_id)
+        ).scalars().all()
+
+        return jsonify([location.serialize() for location in locations]), 200
+    
+    if request.method == "POST":
+        data = request.get_json()
+
+        address = data.get("address")
+        city = data.get("city")
+        latitude = data.get("latitude")
+        longitude = data.get("longitude")
+
+        if not all([address, city, latitude, longitude]):
+            return jsonify({"message": "Missing data"}), 400
+
+        new_location = Location(
+            address=address,
+            city=city,
+            latitude=latitude,
+            longitude=longitude,
+            company_id=company_id
+        )
+
+        db.session.add(new_location)
+        db.session.commit()
+
+        return jsonify(new_location.serialize()), 201
+
+
+# Company private storages
+@api.route('/private/company/storages', methods=["GET"])
+@jwt_required()
+def get_company_storages():
+    company_id = get_jwt_identity()
+    storages = db.session.execute(select(Storage).join(Storage.location).where(Location.company_id == company_id)).scalars().all()
+
+    return jsonify([storage.serialize() for storage in storages]), 200
+
+
+# Company private storages ID
+@api.route('/private/company/storages/<int:storage_id>', methods=["GET"])
+@jwt_required()
+def get_company_storage(storage_id):
+    company_id = get_jwt_identity()
+
+    storage = db.session.execute(select(Storage).join(Storage.location).where(Storage.id == storage_id, Location.company_id == company_id)).scalar_one_or_none()
+
+    if not storage:
+        return jsonify({"message": "Storage not found or not yours"}), 404
+    
+    return jsonify(storage.serialize()), 200
+
