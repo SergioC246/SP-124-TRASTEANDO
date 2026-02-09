@@ -27,6 +27,7 @@ export const AdminPrivate = () => {
             } else {
                 console.log("✅ Token válido, mostrando panel");
                 setLoading(false);
+            }
             })
             .catch(err => {
                 console.error(err);
