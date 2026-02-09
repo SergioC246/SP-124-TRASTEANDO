@@ -49,12 +49,35 @@ export default function storeReducer(store, action = {}) {
 
     case 'set_auth_admin': {
       const { token } = action.payload;
-      return {
+       return {
         ...store,
         admin_token: token
       };
-    } 
+      } 
+ 
+    case 'set_admin_login':
+        localStorage.setItem("admin_token", (action.payload.token));
+        localStorage.removeItem("admin_info", JSON.stringify(action.payload.admin));
+        return {
+          ...store,
+          admin_token: action.payload.token,
+          admin_info: action.payload.admin,
+          auth_admin: true
+        };
 
+    case 'logout_admin':
+        localStorage.removeItem("admin_token");
+        localStorage.removeItem("admin_info");
+        return {
+          ...store,
+          admin_token: null,
+          admin_info: null,
+          auth_admin: false
+        };
+
+    case 'set_admin_info':
+      return {...store, admin_info: action.payload, auth_admin: true };
+      
     case 'set_auth_company': {
       const tokenCompany = localStorage.getItem("token_company")
       return {

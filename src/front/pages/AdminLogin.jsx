@@ -22,10 +22,12 @@ export const AdminLogin = () => {
     
     const handleSubmit = async (a) => {
         a.preventDefault();
+        console.log("1 - Botón pulsado..")
         setLoading(true);
         setError(null);
 
         try {
+            console.log("2 - Enviando a back..")
             const resp = await fetch(
                 `${import.meta.env.VITE_BACKEND_URL}/api/login/admin`,
                 {
@@ -41,6 +43,7 @@ export const AdminLogin = () => {
             );
 
             const data = await resp.json();
+            console.log("3 - Respuesta recibida", data)
 
             if (!resp.ok) {
                 throw new Error(data.message || "Login failed");
@@ -61,7 +64,7 @@ export const AdminLogin = () => {
             setError(err.message);
         } finally {
             setLoading(false);
-        }  
+        }
     };
 
     return (
@@ -109,7 +112,7 @@ export const AdminLogin = () => {
 
                         </div>
 
-                        {error &&(
+                        {error && (
                             <div className="alert alert-danger">
                                 {error}
                             </div>
@@ -117,7 +120,7 @@ export const AdminLogin = () => {
 
                         <button
                             type="submit"
-                            className="btn btn-primary w-100"
+                            className="btn btn-primary w-100 mt-2"
                             disabled={loading}
                         >
                             {loading ? "Loging in..." : "Login"}

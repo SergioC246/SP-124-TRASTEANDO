@@ -3,11 +3,11 @@ This module takes care of starting the API Server, Loading the DB and Adding the
 """
 from flask import Flask, request, jsonify, url_for, Blueprint
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
-from api.models import db, User, AdminUser, Client, Company, Leases, Storage, Location, Storage
+from api.models import db, User, AdminUser, Client, Company, Leases, Storage, Location
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from sqlalchemy import select
-from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
+
 
 
 api = Blueprint('api', __name__)
@@ -596,6 +596,9 @@ def login_admin():
     email = body.get("email")
     password = body.get("password")
 
+    if not email or not password:
+        return jsonify({"message": "Email and password are required"}), 400
+
     admin = db.session.execute(
         select(AdminUser).where(AdminUser.email == email)
     ).scalar_one_or_none()
@@ -603,11 +606,11 @@ def login_admin():
     if admin is None or admin.password != password:
         return jsonify({"message": "Wrong email or password"}), 401
     
-    access_token = create_access_token(identity=str(admin.id))
+    admin_token = create_access_token(identity=str(admin.id))
 
     return jsonify({
-        "token": access_token,
-        "admin_id": admin.id
+        "admin_token": admin_token,
+        "admin": admin.serialize()
     }), 200
 
 # Private admin   
@@ -625,3 +628,87 @@ def private_admin():
         return jsonify({"message": "Admin not found"}), 404
     
     return jsonify(admin.serialize()), 200
+
+# # private storages view
+@api.route('/private/client/storages', methods=['GET'])
+@jwt_required()
+def get_client_storages_by_location():
+    location_id= request.args.get("location_id", None)
+
+    if location_id is None:
+        return jsonify({"message": "location_id query param is required"}), 400
+    
+    try:
+        location_id = int(location_id)
+    except ValueError:
+        return jsonify({"message": "location_id must be an integer"}), 400
+    
+    result = db.session.execute(select(Storage).where(Storage.location_id == location_id)).scalars().all()
+    storages = []
+    for storage in result:
+        storages.append(storage.serialize())
+
+    return jsonify(storages), 200
+
+
+# Company private locations
+@api.route('/private/company/locations', methods=["GET", "POST"])
+@jwt_required()
+def company_locations():
+    company_id = int(get_jwt_identity())
+    
+    if request.method == "GET":
+        locations = db.session.execute(
+            select(Location).where(Location.company_id == company_id)
+        ).scalars().all()
+
+        return jsonify([location.serialize() for location in locations]), 200
+    
+    if request.method == "POST":
+        data = request.get_json()
+
+        address = data.get("address")
+        city = data.get("city")
+        latitude = data.get("latitude")
+        longitude = data.get("longitude")
+
+        if not all([address, city, latitude, longitude]):
+            return jsonify({"message": "Missing data"}), 400
+
+        new_location = Location(
+            address=address,
+            city=city,
+            latitude=latitude,
+            longitude=longitude,
+            company_id=company_id
+        )
+
+        db.session.add(new_location)
+        db.session.commit()
+
+        return jsonify(new_location.serialize()), 201
+
+
+# Company private storages
+@api.route('/private/company/storages', methods=["GET"])
+@jwt_required()
+def get_company_storages():
+    company_id = get_jwt_identity()
+    storages = db.session.execute(select(Storage).join(Storage.location).where(Location.company_id == company_id)).scalars().all()
+
+    return jsonify([storage.serialize() for storage in storages]), 200
+
+
+# Company private storages ID
+@api.route('/private/company/storages/<int:storage_id>', methods=["GET"])
+@jwt_required()
+def get_company_storage(storage_id):
+    company_id = get_jwt_identity()
+
+    storage = db.session.execute(select(Storage).join(Storage.location).where(Storage.id == storage_id, Location.company_id == company_id)).scalar_one_or_none()
+
+    if not storage:
+        return jsonify({"message": "Storage not found or not yours"}), 404
+    
+    return jsonify(storage.serialize()), 200
+

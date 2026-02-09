@@ -54,6 +54,11 @@ export const Navbar = () => {
 							</Link>
 						</li>
 						<li className="nav-item ms-2">
+							<Link to="/client/login">
+								<button className="btn btn-outline-secondary">Login as client</button>
+							</Link>
+						</li>
+						<li className="nav-item ms-2">
 							<Link to="/storages" className="btn btn-outline-success" >
 								Storages
 							</Link>

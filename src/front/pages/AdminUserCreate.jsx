@@ -1,10 +1,10 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
-import { createAdminUsers } from "./utilsAdministrators"
+import { createAdminUsers } from "./utilsAdministrator"
 
 
 export const AdminUserCreate = () => {
-    
+
     const [name, setName] = useState("")
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")

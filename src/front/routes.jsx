@@ -37,6 +37,15 @@ import { CompanyLogin } from "./pages/CompanyLogin";
 import { CompanyPrivate } from "./pages/CompanyPrivate";
 import { AdminLogin } from "./pages/AdminLogin";
 import { AdminPrivate } from "./pages/AdminPrivate";
+import { ClientSignup } from "./pages/ClientSignup";
+import { ClientLocations } from "./pages/ClientLocations";
+import { StoragesPrivateDetails } from "./pages/StoragesPrivateDetails";
+import { StoragesPrivateList } from "./pages/StoragesPrivateList";
+import { StoragePrivateCheckout } from "./pages/StoragePrivateCheckout";
+import { CompanyLocations } from "./pages/CompanyLocations";
+import { CompanyStorages } from "./pages/CompanyStorages";
+import { CompanyStoragesDetails } from "./pages/CompanyStoragesDetails";
+import { CompanyLocationsCreate } from "./pages/CompanyLocationsCreate";
 
 import { AdminProtectedRoute } from "./pages/AdminProtectedRoute";
 import { CompanyProtectedRoute } from "./pages/CompanyProtectedRoute";
@@ -62,12 +71,30 @@ export const router = createBrowserRouter(
       <Route path="/client-login/login" element={<ClientLogin />} />
       
 
+      <Route path="/clients" element={<ClientList />} />
+      <Route path="/clients/new" element={<ClientCreate />} />
+      <Route path="/clients/:id" element={<ClientDetails />} />
+      <Route path="/clients/:id/edit" element={<ClientEdit />} />
+      <Route path="/clients" element={<Clients />} />     
+      <Route path="/client/login" element={<ClientLogin />} />
+      <Route path="/client/private" element={<ClientPrivate />} />
+      <Route path="/client/signup" element={<ClientSignup />} />
+      <Route path="/client/private/locations" element={<ClientLocations />} />
+      <Route path="/client/private/storages/:locationId" element={<StoragesPrivateList />} />
+      <Route path="/client/private/storage/:storageId" element={<StoragesPrivateDetails />} />
+      <Route path="/client/private/checkout/:storageId" element={<StoragePrivateCheckout />} />
+      
+            
       {/* Rutas company */}
       <Route path="/companies" element={<Companies />} />
       <Route path="/createCompanies" element={<CreateCompanies />} />
       <Route path="/companies/:id" element={<CompanyDetails />} />
       <Route path="/companies/login" element={<CompanyLogin />} />
-      
+      <Route path="/companies/private" element={<CompanyPrivate />} />
+      <Route path="/companies/private/locations" element={<CompanyLocations />} />
+      <Route path="/companies/private/locations/create" element={<CompanyLocationsCreate />} />
+      <Route path="/companies/private/storages" element={<CompanyStorages />} />
+      <Route path="/companies/private/storages/:id" element={<CompanyStoragesDetails />} />
 
       {/* Rutas location */}
       <Route path="/location" element={<Location />} />

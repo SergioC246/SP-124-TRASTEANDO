@@ -95,6 +95,9 @@ export const ClientLogin = () => {
                         <button type="submit" className="btn btn-primary w-100 py-2 fw-bold" disabled={loading} style={{ borderRadius: "8px" }} >
                             {loading ? <><span className="spinner-border spinner-border-sm me-2"></span>Logging in...</> : "Login"}
                         </button>
+                        <div className="text-center mt-3">
+                            <small className="text-muted">Don't have an account? <span className="text-primary fw-bold" style={{ cursor: 'pointer' }} onClick={() => navigate("/client/signup")}>Register here</span></small>
+                        </div>
                     </form>
                 </div>
             </div>
