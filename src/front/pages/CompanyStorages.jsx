@@ -44,9 +44,21 @@ export const CompanyStorages = () => {
                                         <strong>Price:</strong> {storage.price} <br />
                                         <strong>Status:</strong> {storage.status}
                                     </div>
-                                    <Link to={`/companies/private/storages/${storage.id}`} className="btn btn-sm btn-success">
-                                        Details
-                                    </Link>
+                                    <div className="d-flex gap-2">
+                                        <button className="btn btn-sm btn-outline-primary"
+                                            onClick={() => navigate(`/companies/private/storages/${storage.id}`)}>
+                                            Details
+                                        </button>
+
+                                        <button className="btn btn-sm btn-outline-success">
+                                            Edit
+                                        </button>
+                                        
+                                        <button className="btn btn-sm btn-outline-danger">
+                                            Delete
+                                        </button>
+
+                                    </div>
                                 </li>
                             ))}
                         </ul>

@@ -89,27 +89,15 @@ export const CompanyStoragesCreate = () => {
                             <form onSubmit={handleSubmit}>
                                 <div className="mb-3">
                                     <label className="form-label">Size</label>
-                                    <input type="text" className="form-control"
-                                        value={size}
-                                        onChange={(e) => setSize(e.target.value)}
-                                    />
+                                    <input type="text" className="form-control" value={size} onChange={(e) => setSize(e.target.value)} />
                                 </div>
                                 <div className="mb-3">
                                     <label className="form-label">Price</label>
-                                    <input
-                                        type="number"
-                                        className="form-control"
-                                        value={price}
-                                        onChange={(e) => setPrice(e.target.value)}
-                                    />
+                                    <input type="number" className="form-control" value={price} onChange={(e) => setPrice(e.target.value)} />
                                 </div>
                                 <div className="mb-3">
                                     <label className="form-label">Location</label>
-                                    <select
-                                        className="form-select"
-                                        value={locationId}
-                                        onChange={(e) => setLocationId(e.target.value)}
-                                    >
+                                    <select className="form-select" value={locationId} onChange={(e) => setLocationId(e.target.value)}>
                                         <option value="">Select location</option>
                                         {locations.map(loc => (
                                             <option key={loc.id} value={loc.id}>
@@ -122,10 +110,7 @@ export const CompanyStoragesCreate = () => {
                                     <button type="submit" className="btn btn-success btn-sm">
                                         Create Storage
                                     </button>
-                                    <button
-                                        type="button"
-                                        className="btn btn-secondary btn-sm"
-                                        onClick={() => navigate("/companies/private/storages")}
+                                    <button type="button" className="btn btn-secondary btn-sm" onClick={() => navigate("/companies/private/storages")}
                                     >
                                         Back
                                     </button>

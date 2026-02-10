@@ -45,10 +45,12 @@ export const CompanyStoragesDetails = () => {
                                 <p><strong>Price:</strong> {storage.price}</p>
                                 <p><strong>Status:</strong> {storage.status}</p>
                                 <p><strong>Location ID:</strong> {storage.location_id}</p>
-                                <p className="mb-0"><strong>City:</strong> {storage.city}</p>
-                                <button className="btn btn-secondary mt-4" onClick={() => navigate("/companies/private/storages")}>
-                                    Back
-                                </button>
+                                <p><strong>City:</strong> {storage.city}</p>
+                                <div className="card-footer d-flex justify-content-end">
+                                    <button className="btn btn-secondary" onClick={() => navigate("/companies/private/storages")}>
+                                        Back
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>

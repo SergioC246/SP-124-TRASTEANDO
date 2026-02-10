@@ -810,3 +810,34 @@ def create_company_storage():
     return jsonify(new_storage.serialize()), 201
 
 
+
+# Company private Storages Edit
+
+@api.route('/private/company/storages/<int:storage_id>', methods=["GET", "PUT"])
+@jwt_required()
+def company_storage_by_id(storage_id):
+    company_id = int(get_jwt_identity())
+
+    storage = db.session.execute(select(Storage).join(Location).where(Storage.id == storage_id, Location.company_id == company_id)).scalar_one_or_none()
+
+    if not storage:
+        return jsonify({"message": "Storage not found or not yours"}), 404
+
+    if request.method == "GET":
+        return jsonify(storage.serialize()), 200
+
+    if request.method == "PUT":
+        data = request.get_json()
+
+        storage.size = data.get("size", storage.size)
+        storage.price = data.get("price", storage.price)
+        storage.location_id = data.get("location_id", storage.location_id)
+
+        if "status" in data:
+            storage.status = data.get("status")
+
+        db.session.commit()
+
+        return jsonify(storage.serialize()), 200
+
+
