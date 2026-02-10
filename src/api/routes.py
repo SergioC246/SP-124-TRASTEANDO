@@ -787,16 +787,16 @@ def create_company_storage():
     price = data.get("price")
     location_id = data.get("location_id")
 
-    # Validar que no falte ningún dato
+    
     if not all([size, price, location_id]):
         return jsonify({"message": "Missing data"}), 400
 
-    # Validar que la location pertenece a esta company
+    
     location = db.session.get(Location, location_id)
     if not location or location.company_id != int(company_id):
         return jsonify({"message": "Invalid location or does not belong to your company"}), 400
 
-    # Crear el Storage
+    
     new_storage = Storage(
         size=size,
         price=price,
@@ -839,5 +839,24 @@ def company_storage_by_id(storage_id):
         db.session.commit()
 
         return jsonify(storage.serialize()), 200
+
+
+
+# Company Storages Delete
+
+@api.route('/private/company/storages/<int:storage_id>', methods=["DELETE"])
+@jwt_required()
+def delete_company_storage(storage_id):
+    company_id = int(get_jwt_identity())
+
+    storage = db.session.execute(select(Storage).where(Storage.id == storage_id, Storage.company_id == company_id)).scalar_one_or_none()
+
+    if not storage:
+        return jsonify({"message": "Storage not found or not yours"}), 404
+
+    db.session.delete(storage)
+    db.session.commit()
+
+    return jsonify({"message": "Storage deleted"}), 200     
 
 
