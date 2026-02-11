@@ -2,10 +2,8 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useGlobalReducer from "../hooks/useGlobalReducer.jsx";
 
-
 export const ClientPrivate = () => {
-    const { store, dispatch} = useGlobalReducer();
-
+    const { store, dispatch } = useGlobalReducer();
     const [client, setClient] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -14,23 +12,22 @@ export const ClientPrivate = () => {
 
     const handleLogout = () => {
         localStorage.removeItem("tokenClient");
-        localStorage.removeItem("client_id")
-        dispatch({type: "logout_client"});
-        navigate("/client-login/login")
+        localStorage.removeItem("client_id");
+        dispatch({ type: "logout_client" });
+        navigate("/client-login/login");
     };
 
     useEffect(() => {
         const token = localStorage.getItem("tokenClient");
 
-        if (!token){
+        if (!token) {
             navigate("/client-login/login");
-            return
+            return;
         }
 
-        const loadClient = async () => {        
+        const loadClient = async () => {
             try {
                 const backendUrl = import.meta.env.VITE_BACKEND_URL;
-
                 const resp = await fetch(`${backendUrl}/api/private/client`, {
                     method: "GET",
                     headers: { Authorization: `Bearer ${token}` },
@@ -40,14 +37,14 @@ export const ClientPrivate = () => {
 
                 if (!resp.ok) {
                     localStorage.removeItem("tokenClient");
-                    localStorage.removeItem("client_id")
+                    localStorage.removeItem("client_id");
                     dispatch({ type: "logout_client" });
                     navigate("/client-login/login");
                     return;
                 }
                 setClient(data);
             } catch (err) {
-                setError("Network error");
+                setError("Error de conexión con el servidor");
             } finally {
                 setLoading(false);
             }
@@ -55,56 +52,70 @@ export const ClientPrivate = () => {
         loadClient();
     }, [store.tokenClient, dispatch, navigate]);
 
-    if (loading) return <div className="text-center p-5">Cargando...</div>;
-    if (error) return <div className="text-center p-5 alert alert-danger">{error}</div>;
+    if (loading) {
+        return (
+            <div className="d-flex justify-content-center align-items-center vh-100">
+                <div className="spinner-border text-primary" role="status">
+                    <span className="visually-hidden">Cargando...</span>
+                </div>
+            </div>
+        );
+    }
+
+    if (error) return <div className="container mt-5 alert alert-danger">{error}</div>;
     if (!client) return null;
-    
+
     return (
-
-        <div className="container d-flex justify-content-center align-items-center" style={{ minHeight: "70vh" }}>
-            <div className="card shadow-lg border-0" style={{ maxWidth: "500px", width: "100%", borderRadius: "20px", overflow: "hidden" }}>
-                <div className="bg-primary p-4 text-center text-white">
-                    <div className="rounded-circle bg-white d-inline-flex align-items-center justify-content-center mb-3" style={{ width: "80px", height: "80px" }}>
-                        <i className="bi bi-shield-lock-fill text-primary" style={{ fontSize: "2.5rem" }}></i>
-                    </div>
-                    <h3 className="fw-bold mb-0">Private Area</h3>
-                    <p className="opacity-75 small">This information is only visible to you</p>
-                </div>
-
-                <div className="card-body p-4">
-                    <div className="d-flex align-items-center justify-content-between mb-4">
-                        <h5 className="text-secondary fw-bold mb-0">Client Details</h5>
-                        <span className="badge bg-success-subtle text-success px-3 py-2 rounded-pill">Verified Token</span>
-                    </div>
-                    <ul className="list-group list-group-flush">
-                        <li className="list-group-item d-flex justify-content-between align-items-center border-0 px-0 py-3">
-                            <span className="text-muted"><i className="bi bi-person me-2"></i>Client ID</span>
-                            <span className="fw-bold text-dark">#{client.id}</span>
-                        </li>
-                        <li className="list-group-item d-flex justify-content-between align-items-center border-0 px-0 py-3">
-                            <span className="text-muted"><i className="bi bi-envelope me-2"></i>Email Address</span>
-                            <span className="fw-bold text-dark">{client.email}</span>
-                        </li>
-                        <li className="list-group-item d-flex justify-content-between align-items-center border-0 px-0 py-3">
-                            <span className="text-muted"><i className="bi bi-check-circle me-2"></i>Account Status</span>
-                            <span className={`fw-bold ${client.is_active ? 'text-success' : 'text-danger'}`}>
-                                {client.is_active ? 'Active' : 'Inactive'}
-                            </span>
-                        </li>
-                    </ul>
-
-                    <div className="mt-4 p-3 bg-light rounded-3">
-                        <small className="text-muted d-block mb-1 text-uppercase fw-bold" style={{ fontSize: "0.65rem" }}>Raw Data (Secret)</small>
-                        <code className="text-primary" style={{ fontSize: "0.8rem" }}>{JSON.stringify(client)}</code>
+        <div className="container py-5">
+            <div className="row">
+                <div className="col-lg-4">
+                    <div className="card shadow-sm border-0 mb-4 rounded-4">
+                        <div className="card-body text-center p-4">
+                            <div className="position-relative d-inline-block mb-3">
+                                <div className="rounded-circle bg-light d-flex align-items-center justify-content-center shadow-sm" 
+                                     style={{ width: "120px", height: "120px", border: "4px solid white" }}>
+                                    <span className="fs-1 fw-bold text-primary">
+                                        {client.email.charAt(0).toUpperCase()}
+                                    </span>
+                                </div>
+                            </div>
+                            <h4 className="fw-bold mb-1">Mi Perfil</h4>
+                            <p className="text-muted small mb-3">{client.email}</p>
+                            <button className="btn btn-primary btn-sm px-4 rounded-pill mb-2 w-100" onClick={()=> navigate(`/clients/${client.id}/edit`)} >Editar Perfil</button>
+                            <button className="btn btn-outline-danger btn-sm px-4 rounded-pill w-100" onClick={handleLogout}>
+                                Cerrar Sesión
+                            </button>
+                        </div>
                     </div>
                 </div>
-
-                <div className="card-footer bg-white border-0 p-4 pt-0">
-                    <button className="btn btn-outline-danger w-100 fw-bold py-2" onClick={handleLogout}>
-                        <i className="bi bi-box-arrow-left me-2"></i>Logout from Secret Area
-                    </button>
+                <div className="col-lg-8">
+                    <div className="card shadow-sm border-0 rounded-4">
+                        <div className="card-header bg-white border-0 py-3">
+                            <h5 className="mb-0 fw-bold">Información de la Cuenta</h5>
+                        </div>
+                        <div className="card-body p-4 pt-0">
+                            <div className="row mb-4">
+                                <div className="col-sm-4 text-muted">ID de Cliente</div>
+                                <div className="col-sm-8 fw-medium">#{client.id}</div>
+                            </div>
+                            <hr className="text-light" />
+                            <div className="row mb-4">
+                                <div className="col-sm-4 text-muted">Correo Electrónico</div>
+                                <div className="col-sm-8 fw-medium">{client.email}</div>
+                            </div>
+                            <hr className="text-light" />
+                            <div className="row mb-4">
+                                <div className="col-sm-4 text-muted">Estado de la Cuenta</div>
+                                <div className="col-sm-8">
+                                    <span className={`badge ${client.is_active ? 'bg-success-subtle text-success' : 'bg-danger-subtle text-danger'} px-3`}>
+                                        {client.is_active ? 'Activa' : 'Inactiva'}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-    )
-}
+    );
+};

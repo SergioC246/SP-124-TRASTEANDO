@@ -28,7 +28,6 @@ export const initialStore = () => {
 };
 
 export const getUserRole = (store) => {
-
   if (store.admin_token) return "admin";
   if (store.company_token) return "company";
   if (store.tokenClient) return "client";
@@ -43,7 +42,6 @@ export default function storeReducer(store, action = {}) {
         ...store,
         message: action.payload,
       };
-      
     case "set_auth_admin":
       localStorage.setItem("admin_token", action.payload.token);
       localStorage.removeItem(
