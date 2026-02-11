@@ -46,7 +46,7 @@ export const CompanyStoragesDetails = () => {
                                 <p><strong>Status:</strong> {storage.status ? "Available" : "Occupied"}</p>
                                 <p><strong>Location ID:</strong> {storage.location_id}</p>
                                 <div className="card-footer d-flex justify-content-end">
-                                    <button className="btn btn-secondary" onClick={() => navigate("/companies/private/storages")}>
+                                    <button className="btn btn-secondary" onClick={() => navigate(-1)}>
                                         Back
                                     </button>
                                 </div>

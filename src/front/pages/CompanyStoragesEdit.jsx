@@ -60,7 +60,7 @@ export const CompanyStoragesEdit = () => {
         })
             .then(response => response.json())
             .then(() => {
-                navigate("/companies/private/storages")
+                navigate(-1)
             })
             .catch(err => {
                 console.error(err)
@@ -110,7 +110,7 @@ export const CompanyStoragesEdit = () => {
                                     Edit
                                 </button>
                                 <button className="btn btn-outline-secondary"
-                                    onClick={() => navigate("/companies/private/storages")}>
+                                    onClick={() => navigate(-1)}>
                                     Cancel
                                 </button>
                             </div>

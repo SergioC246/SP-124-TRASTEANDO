@@ -99,8 +99,8 @@ export const CompanyLocations = () => {
             </ul>
             <div className="card-footer">
               <div className="d-flex justify-content-end gap-2">
-                <button className="btn btn-success btn-sm" onClick={() => navigate("/companies/private/locations/create")}>Create Location</button>
-                <button className="btn btn-sm btn-secondary" onClick={() => navigate("/companies/private")}>
+                <button className="btn btn-outline-success btn-sm" onClick={() => navigate("/companies/private/locations/create")}>Create Location</button>
+                <button className="btn btn-sm btn-outline-secondary" onClick={() => navigate("/companies/private")}>
                   Back
                 </button>
               </div>

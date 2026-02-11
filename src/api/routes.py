@@ -857,6 +857,20 @@ def delete_company_storage(storage_id):
     db.session.delete(storage)
     db.session.commit()
 
-    return jsonify({"message": "Storage deleted"}), 200     
+    return jsonify({"message": "Storage deleted"}), 200   
+
+
+
+#  Company Storages by Location
+
+@api.route('/private/company/locations/<int:location_id>/storages', methods=["GET"])
+@jwt_required()
+def get_storages_by_location(location_id):
+
+    company_id = int(get_jwt_identity())
+
+    storages = db.session.execute(select(Storage).join(Location).where(Location.id == location_id, Location.company_id == company_id)).scalars().all()
+
+    return jsonify([storage.serialize() for storage in storages]), 200
 
 

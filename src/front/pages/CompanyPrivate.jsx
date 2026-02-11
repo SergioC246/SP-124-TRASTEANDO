@@ -67,14 +67,11 @@ export const CompanyPrivate = () => {
                             <p><strong>CIF:</strong> {company.cif}</p>
                             <p><strong>Address:</strong> {company.address}</p>
 
-                            <div className="d-flex flex-row gap-2">
-                                <Link to="/companies/private/locations" className="btn btn-primary btn-sm">
+                            <div className="card-footer d-flex justify-content-end gap-2">
+                                <Link to="/companies/private/locations" className="btn btn-outline-primary btn-sm">
                                     My Locations
                                 </Link>
-                                <Link to="/companies/private/storages" className="btn btn-primary btn-sm">
-                                    My Storages
-                                </Link>
-                                <button className="btn btn-danger btn-sm" onClick={handleLogout}>Logout</button>
+                                <button className="btn btn-outline-danger btn-sm" onClick={handleLogout}>Logout</button>
                             </div>
                         </div>
                     </div>
