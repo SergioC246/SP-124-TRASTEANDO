@@ -48,6 +48,11 @@ export const Navbar = () => {
 
 						{/* ==== Siempre visibles ==== */}
 
+						<li className="nav-item ms-2">
+							<Link to="/location" className="btn btn-outline-success">
+								Locations
+							</Link>
+						</li>
 						{/* <li className="nav-item ms-2">
 							<Link to="/client/login">
 								<button className="btn btn-outline-secondary">Login as client</button>
@@ -89,18 +94,11 @@ export const Navbar = () => {
 						{/* ==== Solo Company ==== */}
 
 						{role === "company" && (
-							<>
-								<li className="nav-item ms-2">
-									<Link to="/companies/private" className="btn btn-outline-warning">
-										Company Private
-									</Link>
-								</li>
-								<li className="nav-item ms-2">
-									<Link to="/location" className="btn btn-outline-success">
-										Locations
-									</Link>
-								</li>
-							</>
+							<li className="nav-item ms-2">
+								<Link to="/companies/private" className="btn btn-outline-primary">
+									Company Private
+								</Link>
+							</li>
 						)}
 
 						{/* ==== Solo CLient ==== */}

@@ -1,37 +1,42 @@
 import { useEffect, useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 
-export const CompanyStorages = () => {
 
+export const CompanyLocationStorages = () => {
+
+    const { id } = useParams()
+    const navigate = useNavigate()
     const [storages, setStorages] = useState([])
     const [loading, setLoading] = useState(true)
-    const navigate = useNavigate()
 
     useEffect(() => {
-        const token = localStorage.getItem("token_company");
+        const token = localStorage.getItem("token_company")
 
         if (!token) {
             navigate("/companies/login")
             return
         }
 
-        const url = `${import.meta.env.VITE_BACKEND_URL}/api/private/company/storages`
+        const url = `${import.meta.env.VITE_BACKEND_URL}/api/location/${id}/storages`
 
         fetch(url, {
             headers: {
                 "Authorization": "Bearer " + token,
             },
         })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) throw new Error("Error fetching storages")
+                return response.json()
+            })
             .then(data => {
-                setStorages(data);
-                setLoading(false);
+                setStorages(data)
+                setLoading(false)
             })
             .catch(error => {
                 console.error(error)
                 setLoading(false)
             })
-    }, [])
+    }, [id])
 
     const handleDelete = (storageId) => {
         const token = localStorage.getItem("token_company")
@@ -47,12 +52,15 @@ export const CompanyStorages = () => {
         })
             .then(response => {
                 if (!response.ok) throw new Error("Delete failed")
-                setStorages(prevStorages => prevStorages.filter(storage => storage.id !== storageId))
+                setStorages(prev =>
+                    prev.filter(storage => storage.id !== storageId)
+                )
             })
     }
 
     if (loading) return <h2>Loading storages...</h2>
-    if (storages.length === 0) return <h2>No storages found</h2>
+    if (storages.length === 0) return <h2>No storages found for this location</h2>
+
 
     return (
         <div className="container py-4">
@@ -60,8 +68,9 @@ export const CompanyStorages = () => {
                 <div className="col-md-6">
                     <div className="card show">
                         <div className="card-header bg-primary text-white">
-                            <h4 className="mb-0">My Storages</h4>
+                            <h4 className="mb-0">Storages in this Location</h4>
                         </div>
+
                         <ul className="list-group">
                             {storages.map(storage => (
                                 <li key={storage.id} className="list-group-item d-flex justify-content-between align-items-center">
@@ -70,38 +79,53 @@ export const CompanyStorages = () => {
                                         <strong>Price:</strong> {storage.price} <br />
                                         <strong>Status:</strong> {storage.status ? "Available" : "Occupied"}
                                     </div>
+
                                     <div className="d-flex gap-2">
-                                        <button className="btn btn-sm btn-outline-primary"
-                                            onClick={() => navigate(`/companies/private/storages/${storage.id}`)}>
+                                        <button  className="btn btn-sm btn-outline-primary"
+                                            onClick={() => navigate(`/companies/private/storages/${storage.id}`)}
+                                        >
                                             Details
                                         </button>
 
-                                        <button className="btn btn-sm btn-outline-success"
-                                            onClick={() => navigate(`/companies/private/storages/edit/${storage.id}`)}>
+                                        <button
+                                            className="btn btn-sm btn-outline-success"
+                                            onClick={() => navigate(`/companies/private/storages/edit/${storage.id}`)}
+                                        >
                                             Edit
                                         </button>
 
-                                        <button className="btn btn-sm btn-outline-danger"
-                                            onClick={() => handleDelete(storage.id)}>
+                                        <button
+                                            className="btn btn-sm btn-outline-danger"
+                                            onClick={() => handleDelete(storage.id)}
+                                        >
                                             Delete
                                         </button>
                                     </div>
                                 </li>
                             ))}
                         </ul>
+
                         <div className="card-footer">
                             <div className="d-flex justify-content-end gap-2">
-                                <button className="btn btn-success btn-sm" onClick={() => navigate("/companies/private/storages/create")}>
-                                    Create Storages
+                                <button
+                                    className="btn btn-outline-success btn-sm"
+                                    onClick={() => navigate("/companies/private/storages/create")}
+                                >
+                                    Create Storage
                                 </button>
-                                <button className="btn btn-sm btn-secondary" onClick={() => navigate("/companies/private")}>
-                                    Back
+
+                                <button
+                                    className="btn btn-outline-secondary btn-sm"
+                                    onClick={() => navigate("/companies/private/locations")}
+                                >
+                                    Back to Locations
                                 </button>
                             </div>
                         </div>
+
                     </div>
                 </div>
             </div>
-        </div >
+        </div>
     )
 }

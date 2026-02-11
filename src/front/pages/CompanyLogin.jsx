@@ -42,29 +42,35 @@ export const CompanyLogin = () => {
     }
 
     return (
-        <div className="container py-4">
-            <h2 className="text-center">Login</h2>
-            <form className="w-50 mx-auto" onSubmit={sendData}>
-                <div className="mb-3">
-                    <label className="form-label">Email</label>
-                    <input type="email" className="form-control" value={email} onChange={(e) => setEmail(e.target.value)} required></input>
-                </div>
+        <div className="container d-flex justify-content-center align-items-center" style={{ minHeight: "80vh" }}>
+            <div className="card shadow-lg p-4" style={{ maxWidth: "400px", width: "100%", borderRadius: "15px" }}>
 
-                <div className="mb-3">
-                    <label className="form-label">Password</label>
-                    <input type="password" className="form-control" value={password} onChange={(e) => setPassword(e.target.value)} required></input>
-                </div>
 
-                <div className="d-flex gap-2">
-                    <button className="btn btn-success">
-                        Login
-                    </button>
-                    <button type="button" className="btn btn-secondary">
-                        Cancel
-                    </button>
-                </div>
-                <p className="mt-2">You dont have an account? <Link to="/companies">Companies</Link></p>
-            </form>
+                <h2 className="fw-bold text-primary text-center mb-4">Welcome Back</h2>
+
+                <form onSubmit={sendData}>
+
+                    <div className="form-floating mb-3 text-start">
+                        <input type="email" className="form-control" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="name@example.com" required></input>
+                        <label htmlFor="email">Email address</label>
+                        <div className="form-text ps-1" style={{ fontSize: '0.7rem' }}>We'll never share your email with anyone else.</div>
+                    </div>
+
+                    <div className="form-floating mb-3 text-start">
+                        <input type="password" className="form-control" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" required></input>
+                        <label htmlFor="password">Password</label>
+                    </div>
+
+                    <div>
+                        <button className="btn btn-primary w-100">
+                            Login
+                        </button>                       
+                    </div>
+                    <div className="text-center mt-3">
+                        <small className="text-muted">Don't have an account? <span className="text-primary fw-bold" style={{ cursor: 'pointer' }} onClick={() => navigate("/companies")}>Register here</span></small>
+                    </div>
+                </form>
+            </div>
         </div>
     )
 }

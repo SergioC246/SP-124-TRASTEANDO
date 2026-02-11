@@ -1,18 +1,18 @@
 import { useEffect, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 
-export const CompanyStoragesDetails = () => {
+export const CompanyLocationsDetails = () => {
 
     const { id } = useParams()
-    const [storage, setStorage] = useState(null)
-    const [loading, setLoading] = useState(true)
     const navigate = useNavigate()
+    const [location, setLocation] = useState(null)
+    const [loading, setLoading] = useState(true)
 
     useEffect(() => {
         const token = localStorage.getItem("token_company")
         if (!token) return
 
-        fetch(import.meta.env.VITE_BACKEND_URL + `api/private/company/storages/${id}`, {
+        fetch(import.meta.env.VITE_BACKEND_URL + `api/private/company/locations/${id}`, {
             headers: {
                 "Authorization": "Bearer " + token,
                 "Content-Type": "application/json",
@@ -21,14 +21,13 @@ export const CompanyStoragesDetails = () => {
 
             .then(response => response.json())
             .then(data => {
-                setStorage(data)
+                setLocation(data)
                 setLoading(false)
             })
     }, [id])
 
-    if (loading) return <h2>Loading storages details</h2>
-    if (!storage) return <h2>No storage found</h2>
-
+    if (loading) return <h2>Loading location...</h2>
+    if (!location) return <h2>Location not found</h2>
 
     return (
         <div className="container py-4">
@@ -36,17 +35,18 @@ export const CompanyStoragesDetails = () => {
                 <div className="col-md-6">
                     <div className="card show">
                         <div className="card-header bg-primary text-white">
-                            <h4 className="mb-0">Detalles del Storage</h4>
+                            <h4 className="mb-0">Location Details</h4>
                         </div>
+
                         <div className="card">
                             <div className="card-body">
-                                <p><strong>ID:</strong> {storage.id}</p>
-                                <p><strong>Size:</strong> {storage.size}</p>
-                                <p><strong>Price:</strong> {storage.price}</p>
-                                <p><strong>Status:</strong> {storage.status ? "Available" : "Occupied"}</p>
-                                <p><strong>Location ID:</strong> {storage.location_id}</p>
+                                <p><strong>ID:</strong> {location.id}</p>
+                                <p><strong>Address:</strong> {location.address}</p>
+                                <p><strong>City:</strong> {location.city}</p>
+                                <p><strong>Latitude:</strong> {location.latitude}</p>
+                                <p><strong>Longitude:</strong> {location.longitude}</p>
                                 <div className="card-footer d-flex justify-content-end">
-                                    <button className="btn btn-secondary" onClick={() => navigate(-1)}>
+                                    <button className="btn btn-secondary mb-0" onClick={() => navigate("/companies/private/locations")}>
                                         Back
                                     </button>
                                 </div>
@@ -56,5 +56,5 @@ export const CompanyStoragesDetails = () => {
                 </div>
             </div>
         </div>
-    );
-};
+    )
+}

@@ -125,7 +125,7 @@ class Storage(db.Model):
              "id": self.id,
              "size": self.size,
              "price": self.price,
-             "status": "Available" if self.status else "Occupied",
+             "status": self.status,
              "location_id": self.location_id
          }
 
