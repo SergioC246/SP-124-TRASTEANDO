@@ -1,56 +1,21 @@
-import { Navigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { Navigate, Outlet, useNavigate } from "react-router-dom";
 import useGlobalReducer from "../hooks/useGlobalReducer";
-import { verifyAdminToken } from "./utilsAdministrator";
+import { useEffect } from "react";
 
-export const AdminProtectedRoute = ({ children }) => {
-    const { store, dispatch } = useGlobalReducer();
-    const [isVerifying, setIsVerifying] = useState(true);
-    const [isValid, setIsValid] = useState(false);
+export const AdminProtectedRoute = () => {
+    
+    const { store } = useGlobalReducer();
+    const navigate = useNavigate();
 
-    // Busca el token
+    // Buscamos el token en el store O en el localStorage
+
+    const token = store.admin_token || localStorage.getItem("admin_token");
 
     useEffect(() => {
-        const checkToken = async () => {
-            const token = store.admin_token || localStorage.getItem("admin_token");
+         if (!token){
+            navigate("/admin/login");
+         }
+    }, []);
 
-            if (!token) {
-                setIsVerifying(false);
-                setIsValid(false);
-                return;
-            }
-
-            const result = await verifyAdminToken(token, dispatch);
-
-            if (result.success) {
-                setIsValid(true); //Token válido
-            } else {
-                setIsValid(false); //Token inválido
-                localStorage.removeItem("admin_token"); // Limpiar
-            }
-
-            setIsVerifying(false);
-        };
-
-        checkToken();
-    }, [store.admin_token, dispatch]);
-
-    if (isVerifying) {
-        return (
-            <div className="d-flex justify-content-center align-items-center"
-            style={{ minHeight: "80vh"}}>
-                <div className="spinner-border text-primary" role="status">
-                    <span className="visually-hidden">Verificando...</span>                
-                </div>
-            </div>
-        );
-    }
-    if (!isValid) {
-  
-       return <Navigate to="/admin/login" replace />
-    }
-
-    // Si hay token, mostrar contenido protegido
- 
-    return children;
+    return <Outlet />;
 };
