@@ -1,17 +1,52 @@
 import { Navigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 import useGlobalReducer from "../hooks/useGlobalReducer";
+import { verifyAdminToken } from "./utilsAdministrator";
 
 export const AdminProtectedRoute = ({ children }) => {
-    const { store } = useGlobalReducer();
+    const { store, dispatch } = useGlobalReducer();
+    const [isVerifying, setIsVerifying] = useState(true);
+    const [isValid, setIsValid] = useState(false);
 
     // Busca el token
 
-    const tokenStore = store.admin_token;
-    const tokenLocal = localStorage.getItem("admin_token");
+    useEffect(() => {
+        const checkToken = async () => {
+            const token = store.admin_token || localStorage.getItem("admin_token");
 
-    // Si no hay token de admin, enviar al login
+            if (!token) {
+                setIsVerifying(false);
+                setIsValid(false);
+                return;
+            }
 
-    if (!tokenStore && !tokenLocal) {
+            const result = await verifyAdminToken(token, dispatch);
+
+            if (result.success) {
+                setIsValid(true); //Token válido
+            } else {
+                setIsValid(false); //Token inválido
+                localStorage.removeItem("admin_token"); // Limpiar
+            }
+
+            setIsVerifying(false);
+        };
+
+        checkToken();
+    }, [store.admin_token, dispatch]);
+
+    if (isVerifying) {
+        return (
+            <div className="d-flex justify-content-center align-items-center"
+            style={{ minHeight: "80vh"}}>
+                <div className="spinner-border text-primary" role="status">
+                    <span className="visually-hidden">Verificando...</span>                
+                </div>
+            </div>
+        );
+    }
+    if (!isValid) {
+  
        return <Navigate to="/admin/login" replace />
     }
 
