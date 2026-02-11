@@ -66,7 +66,7 @@ export const CompanyLocations = () => {
               </div>
             </div>
             <ul className="list-group">
-              {locations.map(location => (
+              {locations?.map(location => (
                 <li key={location.id} className="list-group-item d-flex justify-content-between align-items-center">
                   <div>
                     <strong>Address:</strong> {location.address} <br />
@@ -74,6 +74,11 @@ export const CompanyLocations = () => {
                   </div>
 
                   <div className="d-flex gap-2">
+                    <button className="btn btn-sm btn-outline-primary"
+                    onClick={() => navigate(`/companies/private/locations/storages/${location.id}`)}>
+                      Location Storages
+                    </button>
+
                     <button className="btn btn-sm btn-outline-primary"
                       onClick={() => navigate(`/companies/private/locations/${location.id}`)}>
                       Details
