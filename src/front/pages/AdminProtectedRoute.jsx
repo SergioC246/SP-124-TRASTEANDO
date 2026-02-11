@@ -1,21 +1,21 @@
-import { Navigate } from "react-router-dom";
+import { Navigate, Outlet, useNavigate } from "react-router-dom";
 import useGlobalReducer from "../hooks/useGlobalReducer";
+import { useEffect } from "react";
 
-export const AdminProtectedRoute = ({ children }) => {
+export const AdminProtectedRoute = () => {
+    
     const { store } = useGlobalReducer();
+    const navigate = useNavigate();
 
-    // Busca el token
+    // Buscamos el token en el store O en el localStorage
 
-    const tokenStore = store.admin_token;
-    const tokenLocal = localStorage.getItem("admin_token");
+    const token = store.admin_token || localStorage.getItem("admin_token");
 
-    // Si no hay token de admin, enviar al login
+    useEffect(() => {
+         if (!token){
+            navigate("/admin/login");
+         }
+    }, []);
 
-    if (!tokenStore && !tokenLocal) {
-       return <Navigate to="/admin/login" replace />
-    }
-
-    // Si hay token, mostrar contenido protegido
- 
-    return children;
+    return <Outlet />;
 };
