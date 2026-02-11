@@ -56,53 +56,72 @@ export const CompanyLocations = () => {
   if (locations.length === 0) return <h2>No locations found</h2>
 
   return (
-    <div className="container py-4">
-      <div className="row justify-content-center">
-        <div className="col-md-6">
-          <div className="card show">
-            <div className="card-header justify-content-between d-flex bg-primary text-white">
-              <div>
-                <h4 className="mb-0">My Locations</h4>
-              </div>
+    <div className="container-fluid py-5 px-5">
+      <div className="row">
+        <div className="col-12 col-xl-10 mx-auto">
+          <div className="card shadow-lg border-0">
+
+            <div className="card-header bg-info-subtle text-info-emphasis text-center py-4">
+              <h4 className="mb-0">
+                Locations of {locations[0]?.company_name}
+              </h4>
             </div>
-            <ul className="list-group">
-              {locations?.map(location => (
-                <li key={location.id} className="list-group-item d-flex justify-content-between align-items-center">
-                  <div>
-                    <strong>Address:</strong> {location.address} <br />
-                    <strong>City:</strong> {location.city}
+
+            <div className="card-body bg-light">
+              <div className="row g-3">
+
+                {locations?.map(location => (
+                  <div key={location.id} className="col-12 col-md-6 col-lg-4">
+                    <div className="card shadow-sm border-0 h-100">
+
+                      <img src="https://www.esmadrid.com/sites/default/files/styles/content_type_full/public/recursosturisticos/compras/mercado_de_chamberi.jpg?itok=OFLp6NRV"
+                        className="card-img-top"
+                        alt="Location"
+                        style={{ height: "180px", objectFit: "cover" }} />
+
+                      <div className="card-body">
+
+                        <h5 className="fw-bold">{location.city}</h5>
+                        <p className="mb-1"><strong>Address:</strong> {location.address}</p>
+
+                        <div className="mt-3 d-flex justify-content-center">
+                          <button className="btn btn-md btn-outline-primary px-5 shadow"
+                            onClick={() => navigate(`/companies/private/locations/storages/${location.id}`)}>
+                            View Storages
+                          </button>
+                        </div>
+
+                        <div className="d-flex justify-content-end gap-1 mt-2">
+                          <button className="btn btn-sm btn-outline-secondary shadow"
+                            onClick={() => navigate(`/companies/private/locations/${location.id}`)}>
+                            <i className="fa-regular fa-eye"></i>
+                          </button>
+
+                          <button className="btn btn-sm btn-outline-success shadow"
+                            onClick={() => navigate(`/companies/private/locations/edit/${location.id}`)}>
+                            <i className="fa-solid fa-pencil"></i>
+                          </button>
+
+                          <button className="btn btn-sm btn-outline-danger shadow"
+                            onClick={() => handleDelete(location.id)}>
+                            <i className="fa-solid fa-trash"></i>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
                   </div>
+                ))}
 
-                  <div className="d-flex gap-2">
-                    <button className="btn btn-sm btn-outline-primary"
-                    onClick={() => navigate(`/companies/private/locations/storages/${location.id}`)}>
-                      Location Storages
+                <div className="card-footer bg-white border-0 py-3">
+                  <div className="d-flex flex-column align-items-center gap-3">
+                    <button className="btn btn-outline-success shadow" onClick={() => navigate("/companies/private/locations/create")}>
+                      Create Location
                     </button>
-
-                    <button className="btn btn-sm btn-outline-primary"
-                      onClick={() => navigate(`/companies/private/locations/${location.id}`)}>
-                      Details
-                    </button>
-
-                    <button className="btn btn-sm btn-outline-success"
-                      onClick={() => navigate(`/companies/private/locations/edit/${location.id}`)}>
-                      Edit
-                    </button>
-
-                    <button className="btn btn-sm btn-outline-danger"
-                      onClick={() => handleDelete(location.id)}>
-                      Delete
+                    <button className="btn btn-outline-secondary shadow" onClick={() => navigate("/companies/private")}>
+                      Back
                     </button>
                   </div>
-                </li>
-              ))}
-            </ul>
-            <div className="card-footer">
-              <div className="d-flex justify-content-end gap-2">
-                <button className="btn btn-outline-success btn-sm" onClick={() => navigate("/companies/private/locations/create")}>Create Location</button>
-                <button className="btn btn-sm btn-outline-secondary" onClick={() => navigate("/companies/private")}>
-                  Back
-                </button>
+                </div>
               </div>
             </div>
           </div>
