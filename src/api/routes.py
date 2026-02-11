@@ -702,7 +702,7 @@ def get_company_storages():
 # Company private storages ID
 @api.route('/private/company/storages/<int:storage_id>', methods=["GET"])
 @jwt_required()
-def get_company_storage(storage_id):
+def get_company_storage_by_id(storage_id):
     company_id = get_jwt_identity()
 
     storage = db.session.execute(select(Storage).join(Storage.location).where(Storage.id == storage_id, Location.company_id == company_id)).scalar_one_or_none()
@@ -712,3 +712,63 @@ def get_company_storage(storage_id):
     
     return jsonify(storage.serialize()), 200
 
+# conseguir todos los storages para los clientes
+@api.route('/location/<int:location_id>/storages', methods=['GET']) 
+@jwt_required()
+def get_storages_by_location(location_id):
+    try:
+        storages = db.session.execute(
+            select(Storage).where(Storage.location_id == location_id)).scalars().all()
+        if not storages:
+            return jsonify([]), 200
+            
+        return jsonify([storage.serialize() for storage in storages]), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+# private leases de cliente
+
+@api.route('/client/my-leases', methods=['GET'])
+@jwt_required()
+def get_my_leases():
+    try:
+        client_id = get_jwt_identity()
+        
+        leases = db.session.execute(
+            select(Leases).where(Leases.client_id == client_id)
+        ).scalars().all()
+        
+        return jsonify([lease.serialize() for lease in leases]), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+# crear un lease private para cliente
+
+@api.route('/client/leases', methods=['POST'])
+@jwt_required()
+def create_client_lease():
+    data = request.get_json()
+
+    current_client_id = get_jwt_identity() 
+
+    start_date = data.get("start_date")
+    end_date = data.get("end_date")
+    status = data.get("status", True)
+    storage_id = data.get("storage_id")
+
+    if not all([start_date, end_date, storage_id]):
+        return jsonify({"message": "Faltan datos obligatorios (fechas o storage_id)"}), 400
+    
+    new_lease = Leases(
+        start_date = start_date,
+        end_date = end_date,
+        status = status,
+        client_id = current_client_id,
+        storage_id = storage_id
+    )
+
+    db.session.add(new_lease)
+    db.session.commit()
+    
+    return jsonify(new_lease.serialize()), 201

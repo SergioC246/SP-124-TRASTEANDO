@@ -49,12 +49,14 @@ export const AdminLogin = () => {
                 throw new Error(data.message || "Login failed");
             }
 
-            localStorage.setItem("admin_token", data.token);
+            localStorage.setItem("admin_token", data.admin_token);
             localStorage.setItem("admin_id", data.admin_id);
 
             dispatch({
                 type: "set_auth_admin",
-                payload: { token: data.token }
+                payload: { token: data.admin_token,
+                    admin: data.admin
+                }
             });
 
             setTimeout(() => {

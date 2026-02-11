@@ -50,6 +50,7 @@ import { CompanyLocationsCreate } from "./pages/CompanyLocationsCreate";
 import { AdminProtectedRoute } from "./pages/AdminProtectedRoute";
 import { CompanyProtectedRoute } from "./pages/CompanyProtectedRoute";
 import { ClientProtectedRoute } from "./pages/ClientProtectedRoute";
+import { ClientPrivateLeases } from "./pages/ClientePrivateLeases";
 
 
 
@@ -79,10 +80,8 @@ export const router = createBrowserRouter(
       <Route path="/client/login" element={<ClientLogin />} />
       <Route path="/client/private" element={<ClientPrivate />} />
       <Route path="/client/signup" element={<ClientSignup />} />
-      <Route path="/client/private/locations" element={<ClientLocations />} />
-      <Route path="/client/private/storages/:locationId" element={<StoragesPrivateList />} />
-      <Route path="/client/private/storage/:storageId" element={<StoragesPrivateDetails />} />
-      <Route path="/client/private/checkout/:storageId" element={<StoragePrivateCheckout />} />
+      
+
       
             
       {/* Rutas company */}
@@ -137,14 +136,20 @@ export const router = createBrowserRouter(
             {/* ==== Rutas Protegidas Solo Client ==== */} 
 
       <Route path="/client/private" element={<ClientProtectedRoute><ClientPrivate /></ClientProtectedRoute>} />
+      <Route path="/client/private/locations" element={<ClientProtectedRoute><ClientLocations /></ClientProtectedRoute>} />
+      <Route path="/client/private/storages/:locationId" element={<ClientProtectedRoute><StoragesPrivateList /></ClientProtectedRoute>} />
+      <Route path="/client/private/storage/:storageId" element={<ClientProtectedRoute><StoragesPrivateDetails /></ClientProtectedRoute>} />
+      <Route path="/client/private/checkout/:storageId" element={<ClientProtectedRoute><StoragePrivateCheckout /></ClientProtectedRoute>} />
+      
 
       {/* Leases del cliente - Solo el cliente logueado puede ver sus alquileres */}
 
-      <Route path="/leases" element={<ClientProtectedRoute><Leases/></ClientProtectedRoute>} />
+      <Route path="/client/private/leases" element={<ClientProtectedRoute><ClientPrivateLeases /></ClientProtectedRoute>} />
+
+      {/* <Route path="/leases" element={<ClientProtectedRoute><Leases/></ClientProtectedRoute>} />
       <Route path="/leasesCreate" element={<ClientProtectedRoute><LeasesCreate/></ClientProtectedRoute>} />
       <Route path="/leasesEdit/:id" element={<ClientProtectedRoute><LeasesEdit/></ClientProtectedRoute>} />
-      <Route path="/leasesDetails/:id" element={<ClientProtectedRoute><LeasesDetails/></ClientProtectedRoute>} />
-
+      <Route path="/leasesDetails/:id" element={<ClientProtectedRoute><LeasesDetails/></ClientProtectedRoute>} /> */}
     </Route>
   )
 );

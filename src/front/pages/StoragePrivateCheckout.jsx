@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import useGlobalReducer from "../hooks/useGlobalReducer";
 import { getStorageOverview } from "../utilsStorages";
+import { createLease } from "../utilsLeases";
+import { createClientLease } from "../utilsLeases";
 
 
 export const StoragePrivateCheckout = () => {
@@ -31,23 +33,22 @@ export const StoragePrivateCheckout = () => {
         }
 
         try {
-            const formattedStart = startDate.split("-").reverse().join("-");
-            const formattedEnd = endDate.split("-").reverse().join("-");
-
             const leaseData = {
                 storage_id: parseInt(storageId),
-                start_date: formattedStart,
-                end_date: formattedEnd,
+                start_date: startDate, // Enviamos YYYY-MM-DD
+                end_date: endDate,     // Enviamos YYYY-MM-DD
                 status: true
             };
-            await createLease(leaseData);
-            alert("¡Contrato creado con éxito!");
-            navigate("/client/private/locations");
+
+            await createClientLease(leaseData, store.tokenClient);
+
+            alert("¡Reserva confirmada con éxito!");
+            navigate("/client/private/leases"); 
         } catch (error) {
-            alert("Error al procesar el arrendamiento.")
+            console.error("Error detallado:", error);
+            alert("Error al procesar el arrendamiento. Revisa la consola.");
         }
     }
-
 
     useEffect(() => {
         const loadInfo = async () => {

@@ -11,7 +11,7 @@ export const Navbar = () => {
 
 	const handleLogout = () => {
 		localStorage.clear();
-		dispatch({ type: "LOGOUT"});
+		dispatch({ type: "LOGOUT" });
 		navigate("/");
 	};
 
@@ -24,12 +24,12 @@ export const Navbar = () => {
 				<div className="collapse navbar-collapse show">
 					<ul className="navbar-nav ms-auto mb-2 mb-lg-0">
 
-					{/* ==== Si no hay nadie logueado ==== */}
+						{/* ==== Si no hay nadie logueado ==== */}
 
 						{!role && (
 							<>
 								<li className="nav-item ms-2">
-									<Link to="/client-login/login" className="btn btn-outline-primary">
+									<Link to="/client/login" className="btn btn-outline-primary">
 										Login as client
 									</Link>
 								</li>
@@ -46,87 +46,98 @@ export const Navbar = () => {
 							</>
 						)}
 
-					{/* ==== Siempre visibles ==== */}
+						{/* ==== Siempre visibles ==== */}
 
-						<li className="nav-item ms-2">
-							<Link to="/location" className="btn btn-outline-success">
-								Locations
-							</Link>
-						</li>
-						<li className="nav-item ms-2">
+						{/* <li className="nav-item ms-2">
 							<Link to="/client/login">
 								<button className="btn btn-outline-secondary">Login as client</button>
 							</Link>
-						</li>
+						</li> */}
 						<li className="nav-item ms-2">
 							<Link to="/storages" className="btn btn-outline-success" >
 								Storages
 							</Link>
 						</li>
 
-					{/* ==== Solo Admin ==== */}
+						{/* ==== Solo Admin ==== */}
 
-					{role === "admin" && (
-						<>
-							<li className="nav-item ms-2">
-								<Link to="/clients-info" className="btn btn-outline-warning" >
-									Clients
-								</Link>
-							</li>
-							<li className="nav-item ms-2">
-								<Link to="/companies" className="btn btn-outline-warning">
-									Companies
-								</Link>
-							</li>
-							<li className="nav-item ms-2">
-								<Link to="/admin-users" className="btn btn-outline-warning" >
-									Admins
-								</Link>
-							</li>
-							<li className="nav-item ms-2">
-								<Link to="/admin/private" className="btn btn-outline-danger" >
-									  My Profile
-								</Link>
-							</li>
-						</>
-					)}
-					
-					{/* ==== Solo Company ==== */}
-					
-					{role === "company" && (
-						<li className="nav-item ms-2">
-							<Link to="/companies/private" className="btn btn-outline-warning">
-								Company Private
-							</Link>
-						</li>
-					)}
+						{role === "admin" && (
+							<>
+								<li className="nav-item ms-2">
+									<Link to="/clients-info" className="btn btn-outline-warning" >
+										Clients
+									</Link>
+								</li>
+								<li className="nav-item ms-2">
+									<Link to="/companies" className="btn btn-outline-warning">
+										Companies
+									</Link>
+								</li>
+								<li className="nav-item ms-2">
+									<Link to="/admin-users" className="btn btn-outline-warning" >
+										Admins
+									</Link>
+								</li>
+								<li className="nav-item ms-2">
+									<Link to="/admin/private" className="btn btn-outline-danger" >
+										My Profile
+									</Link>
+								</li>
+							</>
+						)}
 
-					{/* ==== Solo CLient ==== */}
-					
-					{role === "client" && (
-						<>
-							<li className="nav-item ms-2">
-								<Link to="/leases" className="btn btn-outline-warning">
-								My leases
-							</Link>
-							</li>
-							<li className="nav-item ms-2">
-								<Link to="/client/private" className="btn btn-outline-warning">
-									My Profile
-								</Link>
-							</li>
-						</>
-					)}
+						{/* ==== Solo Company ==== */}
 
-					{/* ==== Logout si hay alguien logueado ==== */}
-					{role && (
-						<li className="nav-item ms-2">
-									<button className="btn btn-danger"
+						{role === "company" && (
+							<>
+								<li className="nav-item ms-2">
+									<Link to="/companies/private" className="btn btn-outline-warning">
+										Company Private
+									</Link>
+								</li>
+								<li className="nav-item ms-2">
+									<Link to="/location" className="btn btn-outline-success">
+										Locations
+									</Link>
+								</li>
+							</>
+						)}
+
+						{/* ==== Solo CLient ==== */}
+
+						{role === "client" && (
+							<>
+								<li className="nav-item ms-2">
+									<Link to="/client/private/leases" className="btn btn-outline-warning">
+										My leases
+									</Link>
+								</li>
+								<li className="nav-item ms-2">
+									<Link to="/client/private" className="btn btn-outline-warning">
+										Storages available
+									</Link>
+								</li>
+								<li className="nav-item ms-2">
+									<Link to="/client/private/locations" className="btn btn-outline-warning">
+										Locations available
+									</Link>
+								</li><li className="nav-item ms-2">
+									<Link to="/client/private" className="btn btn-outline-warning">
+										My Profile
+									</Link>
+								</li>
+							</>
+						)}
+
+						{/* ==== Logout si hay alguien logueado ==== */}
+						{role && (
+							<li className="nav-item ms-2">
+								<button className="btn btn-danger"
 									onClick={handleLogout}>Logout</button>
 							</li>
 
-					)}
-				  </ul>
+						)}
+					</ul>
 				</div>
 			</div>
 		</nav>
