@@ -42,7 +42,6 @@ export default function storeReducer(store, action = {}) {
         ...store,
         message: action.payload,
       };
-
     case "set_auth_admin":
       localStorage.setItem("admin_token", action.payload.token);
       localStorage.removeItem(
