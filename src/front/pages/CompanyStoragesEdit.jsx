@@ -10,7 +10,7 @@ export const CompanyStoragesEdit = () => {
     const [size, setSize] = useState("")
     const [price, setPrice] = useState("")
     const [locationId, setLocationId] = useState("")
-    const [status, setStatus] = useState(true)
+    const [status, setStatus] = useState("true")
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
@@ -71,7 +71,7 @@ export const CompanyStoragesEdit = () => {
     if (loading) return <h2>Loading storage...</h2>
 
     return (
-        <div className="containet py-4">
+        <div className="container py-4">
             <div className="row justify-content-center">
                 <div className="col-md-6">
                     <div className="card show-sm">
@@ -99,7 +99,7 @@ export const CompanyStoragesEdit = () => {
 
                             <div className="mb-3">
                                 <label className="form-label fw-semibold">Status</label>
-                                <select className="form-select" value={status ? "available" : "occupied"} onChange={e => setStatus(e.target.value === "available")}>
+                                <select className="form-select" value={status ? "true" : "false"} onChange={e => setStatus(e.target.value === "true")}>
                                     <option value={true}>Available</option>
                                     <option value={false}>Occupied</option>
                                 </select>

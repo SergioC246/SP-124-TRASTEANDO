@@ -849,7 +849,7 @@ def company_storage_by_id(storage_id):
 def delete_company_storage(storage_id):
     company_id = int(get_jwt_identity())
 
-    storage = db.session.execute(select(Storage).where(Storage.id == storage_id, Storage.company_id == company_id)).scalar_one_or_none()
+    storage = db.session.execute(select(Storage).join(Location).where(Storage.id == storage_id, Location.company_id == company_id)).scalar_one_or_none()
 
     if not storage:
         return jsonify({"message": "Storage not found or not yours"}), 404

@@ -68,7 +68,7 @@ export const CompanyStorages = () => {
                                     <div>
                                         <strong>Size:</strong> {storage.size} <br />
                                         <strong>Price:</strong> {storage.price} <br />
-                                        <strong>Status:</strong> {storage.status}
+                                        <strong>Status:</strong> {storage.status ? "Available" : "Occupied"}
                                     </div>
                                     <div className="d-flex gap-2">
                                         <button className="btn btn-sm btn-outline-primary"
