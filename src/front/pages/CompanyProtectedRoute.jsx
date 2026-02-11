@@ -1,15 +1,21 @@
-import { Navigate } from "react-router-dom";
+import { Navigate, Outlet, useNavigate } from "react-router-dom";
 import useGlobalReducer from "../hooks/useGlobalReducer";
+import { useEffect } from "react";
 
-export const CompanyProtectedRoute = ({ children }) => {
+export const CompanyProtectedRoute = () => {
+    
     const { store } = useGlobalReducer();
+    const navigate = useNavigate();
+    
+    // Buscamos el token en el store O en el localStorage
 
-    // Si no hay token de company, enviar al login
-    if (!store.company_token) {
-        console.log("CompanyProtectedRoute: No hay token de company, redirigiendo a /companies/login");
-        return <Navigate to="/companies/login" replace />
-    }
+    const token = store.company_token || localStorage.getItem("token_company");
 
-    // Si hay token, mostrar contenido protegido
-    return children;
+    useEffect(() => {
+         if (!token){
+            navigate("/companies/login")
+         }
+    },[])
+
+    return <Outlet />
 };

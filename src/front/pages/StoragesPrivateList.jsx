@@ -16,7 +16,7 @@ export const StoragesPrivateList = () => {
                 const backendUrl = import.meta.env.VITE_BACKEND_URL;
                 const token = store.tokenClient;
 
-                const resp = await fetch(`${backendUrl}/api/storage`, {
+                const resp = await fetch(`${backendUrl}/api/location/${locationId}/storages`, {
                     headers: {
                         "Authorization": `Bearer ${token}`,
                         "Content-Type": "application/json"
@@ -25,9 +25,8 @@ export const StoragesPrivateList = () => {
 
                 const data = await resp.json();
 
-                if (resp.ok) {
-                    const filtered = data.filter(s => String(s.location_id) === String(locationId));
-                    setStorages(filtered);
+                if (resp.ok) {                             
+                    setStorages(data);
                 }
             } catch (error) {
                 console.error("Error cargando trasteros:", error);

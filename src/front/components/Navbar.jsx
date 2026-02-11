@@ -29,7 +29,7 @@ export const Navbar = () => {
 						{!role && (
 							<>
 								<li className="nav-item ms-2">
-									<Link to="/client-login/login" className="btn btn-outline-primary">
+									<Link to="/client/login" className="btn btn-outline-primary">
 										Login as client
 									</Link>
 								</li>
@@ -53,6 +53,11 @@ export const Navbar = () => {
 								Locations
 							</Link>
 						</li>
+						{/* <li className="nav-item ms-2">
+							<Link to="/client/login">
+								<button className="btn btn-outline-secondary">Login as client</button>
+							</Link>
+						</li> */}
 						<li className="nav-item ms-2">
 							<Link to="/storages" className="btn btn-outline-success" >
 								Storages
@@ -101,11 +106,20 @@ export const Navbar = () => {
 						{role === "client" && (
 							<>
 								<li className="nav-item ms-2">
-									<Link to="/leases" className="btn btn-outline-warning">
+									<Link to="/client/private/leases" className="btn btn-outline-warning">
 										My leases
 									</Link>
 								</li>
 								<li className="nav-item ms-2">
+									<Link to="/client/private" className="btn btn-outline-warning">
+										Storages available
+									</Link>
+								</li>
+								<li className="nav-item ms-2">
+									<Link to="/client/private/locations" className="btn btn-outline-warning">
+										Locations available
+									</Link>
+								</li><li className="nav-item ms-2">
 									<Link to="/client/private" className="btn btn-outline-warning">
 										My Profile
 									</Link>

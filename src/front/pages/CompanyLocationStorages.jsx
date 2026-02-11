@@ -17,7 +17,7 @@ export const CompanyLocationStorages = () => {
             return
         }
 
-        const url = `${import.meta.env.VITE_BACKEND_URL}/api/private/company/locations/${id}/storages`
+        const url = `${import.meta.env.VITE_BACKEND_URL}/api/location/${id}/storages`
 
         fetch(url, {
             headers: {

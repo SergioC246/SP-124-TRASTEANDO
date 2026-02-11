@@ -28,13 +28,12 @@ export const AdminPrivate = () => {
                 console.log("✅ Token válido, mostrando panel");
                 setLoading(false);
             }
-            })
-            .catch(err => {
-                console.error(err);
-                setError(err.message);
-                localStorage.removeItem("admin_token")
-                navigate("/admin/login");
-            });
+        }).catch(err => {
+            console.error(err);
+            setError(err.message);
+            localStorage.removeItem("admin_token")
+            navigate("/admin/login");
+        });
     }, []);
 
     if (loading) return <p>Load administrator data...</p>;
@@ -45,15 +44,7 @@ export const AdminPrivate = () => {
         <div className="container mt-4">
             <h1>Admin private panel</h1>
 
-            <button className="btn btn-danger mb-3"
-                onClick={() => {
-                    localStorage.removeItem("admin_token");
-                    localStorage.removeItem("admin_id");
-                    navigate("/admin/login");
-                }}
-            >
-                Logout
-            </button>
+
 
             <div className="card mt-3">
                 <div className="card-body">
