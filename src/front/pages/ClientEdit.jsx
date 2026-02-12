@@ -11,9 +11,11 @@ export const ClientEdit = () => {
   const [form, setForm] = useState({
     email: "",
     is_active: true,
+    photo_url: "", // 1. Añadimos foto
   });
 
   const [loading, setLoading] = useState(true);
+  const [uploading, setUploading] = useState(false); // 2. Añadimos spinner de carga
 
   // Load client data
 
@@ -23,6 +25,7 @@ export const ClientEdit = () => {
         setForm({
           email: data.email,
           is_active: data.is_active,
+          photo_url: data.photo_url || "", // 3. Cargamos URL si existe
         });
         setLoading(false);
       })
@@ -31,6 +34,37 @@ export const ClientEdit = () => {
         setLoading(false);
       });
   }, [id]);
+
+  //4. Función para subir fotos a Cloudinary
+
+  const handleUploadPhoto = async (f) => {
+    const file = f.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", "topydai"); // 5. Preset de Cloudinary
+
+    setUploading(true);
+
+    try {
+      const result = await fetch("https://api.cloudinary.com/v1_1/dofzpindm/image/upload", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await result.json();
+
+      if (data.secure_url) {
+        setForm({ ...form, photo_url: data.secure_url });
+      } else {
+        
+      }
+    } catch (error) {
+     
+    } finally {
+      setUploading(false);
+    }
+  };
 
   if (loading) return <p>Loading client...</p>;
 
@@ -61,6 +95,44 @@ export const ClientEdit = () => {
           onChange={handleChange}
         />
       </div>
+
+    {/*Selección de archivos*/}
+
+    <div className="mb-3">
+      <label htmlFor="form-label">Cambiar foto de Perfil</label>
+      <input type="file"
+             className="form-control"
+             onChange={handleUploadPhoto}
+             disabled={uploading}
+      />
+      {uploading && <span 
+                      className="spinner-border spinner-border-sm text-primary ms-2">
+                    </span>}
+    </div>
+    
+    {/*URL de la foto enviada pro Cloudinary*/}
+
+    <div className="mb-3">
+        {/* <label>URL de la foto</label> */}
+        <input className="form-control bg-light"
+              //  type="hidden"
+               name="photo_url"
+               value={form.photo_url}
+               onChange={handleChange}
+               placeholder="La URL de la foto"
+        />
+    </div>
+    {/*Preview*/}
+
+    {form.photo_url&& (
+      <div className="mb-3">
+        <img src={form.photo_url}
+             alt="Preview" 
+             className="img-thumbnail" 
+             style={{width: "150px"}} 
+        />
+      </div>
+    )}
 
       <div className="form-check mb-3">
         <input

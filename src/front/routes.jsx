@@ -120,7 +120,7 @@ export const router = createBrowserRouter(
       {/* Clients - Solo Admin puede ver la lista completa */}
 
       <Route element={<AdminProtectedRoute />}>
-        <Route path="/clients/:id/edit" element={<ClientEdit />} />
+        
         <Route path="/clients" element={<ClientList />} />
         <Route path="/clients/new" element={<ClientCreate />} />
         <Route path="/clients/:id" element={<ClientDetails />} />
@@ -135,6 +135,7 @@ export const router = createBrowserRouter(
       {/* ==== Rutas Protegidas Solo Client ==== */}
 
       <Route element={<ClientProtectedRoute />}>
+        <Route path="/clients/:id/edit" element={<ClientEdit />} />
         <Route path="/client/private" element={<ClientPrivate />} />
         <Route path="/client/private/leases" element={<ClientPrivateLeases />} />
         <Route path="/client/private/checkout/:storageId" element={<StoragePrivateCheckout />} />
