@@ -70,43 +70,40 @@ export const CompanyLocationsEdit = () => {
     if (loading) return <h2>Loading location...</h2>
 
     return (
-        <div className="container py-4">
+        <div className="container py-5">
             <div className="row justify-content-center">
-                <div className="col-md-6">
-                    <div className="card show-sm">
+                <div className="col-12 col-md-8 col-lg-5">
 
-                        <div className="card-header bg-primary text-white">
-                            <h4 className="mb-0"> Edit Location</h4>
+                    <div className="card shadow-lg border-0">
+
+                        {/* Header */}
+                        <div className="card-header bg-info-subtle text-info-emphasis text-center py-4">
+                            <h3 className="mb-0">Edit Location</h3>
                         </div>
 
-                        <div className="card-body">
+                        <div className="card-body py-4">
+                            
+                            <div className="row">
+                                <div className="col-md-6 mb-3">
+                                    <label className="form-label fw-semibold">Address</label>
+                                    <input type="text" className="form-control" value={address} onChange={e => setAddress(e.target.value)} />
+                                    <label className="form-label fw-semibold mt-3">Latitude</label>
+                                    <input type="text" className="form-control" value={latitude} onChange={e => setLatitude(e.target.value)} />
+                                </div>
 
-                            <div className="mb-3">
-                                <label className="form-label fw-semibold">Address</label>
-                                <input type="text" className="form-control" value={address} onChange={e => setAddress(e.target.value)} />
+                                <div className="col-md-6 mb-3">
+                                    <label className="form-label fw-semibold">City</label>
+                                    <input type="text" className="form-control" value={city} onChange={e => setCity(e.target.value)} />
+                                    <label className="form-label fw-semibold mt-3">Longitude</label>
+                                    <input type="text" className="form-control" value={longitude} onChange={e => setLongitude(e.target.value)} />
+                                </div>
                             </div>
 
-                            <div className="mb-3">
-                                <label className="form-label fw-semibold">City</label>
-                                <input type="text" className="form-control" value={city} onChange={e => setCity(e.target.value)} />
-                            </div>
-
-                            <div className="mb-3">
-                                <label className="form-label fw-semibold">Latitude</label>
-                                <input type="text" className="form-control" value={latitude} onChange={e => setLatitude(e.target.value)} />
-                            </div>
-
-                            <div className="mb-3">
-                                <label className="form-label fw-semibold">Longitude</label>
-                                <input type="text" className="form-control" value={longitude} onChange={e => setLongitude(e.target.value)} />
-                            </div>
-
-                            <div className="d-flex justify-content-end gap-2">
-                                <button className="btn btn-outline-success" onClick={handleUpdate}>
-                                    Edit
+                            <div className="card-footer bg-white border-0 py-3 d-flex justify-content-center gap-3">
+                                <button className="btn btn-outline-success shadow px-4" onClick={handleUpdate}>
+                                    Save
                                 </button>
-
-                                <button className="btn btn-outline-secondary" onClick={() => navigate("/companies/private/locations")}>
+                                <button className="btn btn-outline-secondary shadow px-4" onClick={() => navigate("/companies/private/locations")}>
                                     Cancel
                                 </button>
                             </div>

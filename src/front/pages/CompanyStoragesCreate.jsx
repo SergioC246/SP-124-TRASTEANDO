@@ -64,7 +64,7 @@ export const CompanyStoragesCreate = () => {
                 if (data.message) {
                     setError(data.message)
                 } else {
-                    navigate("/companies/private/storages")
+                    navigate(-1)
                 }
             })
             .catch(error => {
@@ -78,25 +78,30 @@ export const CompanyStoragesCreate = () => {
 
 
     return (
-        <div className="container py-4">
+        <div className="container py-5">
             <div className="row justify-content-center">
-                <div className="col-md-6">
-                    <div className="card">
-                        <div className="card-header bg-primary text-white">
-                            <h4 className="mb-0">Create Storage</h4>
+                <div className="col-12 col-md-8 col-lg-5">
+                    <div className="card shadow-lg border-0">
+
+                        <div className="card-header bg-info-subtle text-info-emphasis text-center py-4">
+                            <h3 className="mb-0">Create New Storage</h3>
                         </div>
-                        <div className="card-body">
+
+                        <div className="card-body py-4">
+
                             <form onSubmit={handleSubmit}>
                                 <div className="mb-3">
-                                    <label className="form-label">Size</label>
+                                    <label className="form-label fw-semibold">Size</label>
                                     <input type="text" className="form-control" value={size} onChange={(e) => setSize(e.target.value)} />
                                 </div>
+
                                 <div className="mb-3">
-                                    <label className="form-label">Price</label>
+                                    <label className="form-label fw-semibold">Price</label>
                                     <input type="number" className="form-control" value={price} onChange={(e) => setPrice(e.target.value)} />
                                 </div>
+
                                 <div className="mb-3">
-                                    <label className="form-label">Location</label>
+                                    <label className="form-label fw-semibold">Location</label>
                                     <select className="form-select" value={locationId} onChange={(e) => setLocationId(e.target.value)}>
                                         <option value="">Select location</option>
                                         {locations.map(loc => (
@@ -106,14 +111,16 @@ export const CompanyStoragesCreate = () => {
                                         ))}
                                     </select>
                                 </div>
-                                <div className="d-flex justify-content-end gap-2">
-                                    <button type="submit" className="btn btn-success btn-sm">
-                                        Create Storage
-                                    </button>
-                                    <button type="button" className="btn btn-secondary btn-sm" onClick={() => navigate("/companies/private/storages")}
-                                    >
-                                        Back
-                                    </button>
+
+                                <div className="card-footer bg-white border-0 py-2">
+                                    <div className="d-flex flex-column align-items-center gap-3">
+                                        <button type="submit" className="btn btn-outline-success shadow">
+                                            Create Storage
+                                        </button>
+                                        <button type="button" className="btn btn-outline-secondary shadow" onClick={() => navigate(-1)}>
+                                            Back
+                                        </button>
+                                    </div>
                                 </div>
                             </form>
                         </div>

@@ -8,6 +8,7 @@ export const CompanyLocationStorages = () => {
     const navigate = useNavigate()
     const [storages, setStorages] = useState([])
     const [loading, setLoading] = useState(true)
+    const [location, setLocation] = useState("")
 
     useEffect(() => {
         const token = localStorage.getItem("token_company")
@@ -34,6 +35,24 @@ export const CompanyLocationStorages = () => {
             })
             .catch(error => {
                 console.error(error)
+                setLoading(false)
+            })
+
+        fetch(`${import.meta.env.VITE_BACKEND_URL}/api/location/${id}`, {
+            headers: {
+                Authorization: "Bearer " + token,
+            },
+        })
+            .then(res => {
+                if (!response.ok) throw new Error("Error fetching location")
+                return response.json()
+            })
+            .then(data => {
+                setLocation(data)
+                setLoading(false)
+            })
+            .catch(error => {
+                console.error("Location error:", error)
                 setLoading(false)
             })
     }, [id])
@@ -70,7 +89,7 @@ export const CompanyLocationStorages = () => {
 
                         <div className="card-header bg-info-subtle text-info-emphasis text-center py-4">
                             <h4 className="mb-0">
-                                Storages in
+                                Storages in {location?.name}
                             </h4>
                         </div>
 

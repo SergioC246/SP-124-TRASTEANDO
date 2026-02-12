@@ -84,28 +84,29 @@ export const CompanyLocations = () => {
                         <h5 className="fw-bold">{location.city}</h5>
                         <p className="mb-1"><strong>Address:</strong> {location.address}</p>
 
-                        <div className="mt-3 d-flex justify-content-center">
-                          <button className="btn btn-md btn-outline-primary px-5 shadow"
+                        <div className="mt-3 d-flex justify-content-between align-items-center">
+                          <button className="btn btn-outline-primary px-4 shadow"
                             onClick={() => navigate(`/companies/private/locations/storages/${location.id}`)}>
                             View Storages
                           </button>
-                        </div>
 
-                        <div className="d-flex justify-content-end gap-1 mt-2">
-                          <button className="btn btn-sm btn-outline-secondary shadow"
-                            onClick={() => navigate(`/companies/private/locations/${location.id}`)}>
-                            <i className="fa-regular fa-eye"></i>
-                          </button>
 
-                          <button className="btn btn-sm btn-outline-success shadow"
-                            onClick={() => navigate(`/companies/private/locations/edit/${location.id}`)}>
-                            <i className="fa-solid fa-pencil"></i>
-                          </button>
+                          <div className="d-flex justify-content-end gap-1 mt-2">
+                            <button className="btn btn-outline-secondary shadow"
+                              onClick={() => navigate(`/companies/private/locations/${location.id}`)}>
+                              <i className="fa-regular fa-eye"></i>
+                            </button>
 
-                          <button className="btn btn-sm btn-outline-danger shadow"
-                            onClick={() => handleDelete(location.id)}>
-                            <i className="fa-solid fa-trash"></i>
-                          </button>
+                            <button className="btn btn-outline-success shadow"
+                              onClick={() => navigate(`/companies/private/locations/edit/${location.id}`)}>
+                              <i className="fa-solid fa-pencil"></i>
+                            </button>
+
+                            <button className="btn btn-outline-danger shadow"
+                              onClick={() => handleDelete(location.id)}>
+                              <i className="fa-solid fa-trash"></i>
+                            </button>
+                          </div>
                         </div>
                       </div>
                     </div>
