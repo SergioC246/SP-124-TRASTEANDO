@@ -74,6 +74,9 @@ export const CompanyPrivate = () => {
                                 <Link to="/companies/private/storages" className="btn btn-primary btn-sm">
                                     My Storages
                                 </Link>
+                                <Link to={`/companies/${company.id}/edit`} className="btn btn-primary btn-sm">
+                                    Edit
+                                </Link>
                                 <button className="btn btn-danger btn-sm" onClick={handleLogout}>Logout</button>
                             </div>
                         </div>
