@@ -57,7 +57,42 @@ export const CompanyPrivate = () => {
             <div className="row justify-content-center">
                 <div className="col-md-6">
                     <div className="card show">
-                        <div className="card-header bg-primary text-white">
+                        <div className="card-header bg-primary text-white d-flex align-items-center gap-3">
+
+
+                            <div
+                                className="rounded-circle bg-light d-flex align-items-center justify-content-center shadow-sm"
+                                style={{
+                                    width: "60px",
+                                    height: "60px",
+                                    border: "3px solid white",
+                                    overflow: "hidden"
+                                }}
+                            >
+                                {company.photo_url ? (
+                                    <img
+                                        src={company.photo_url}
+                                        alt="Company logo"
+                                        style={{
+                                            width: "100%",
+                                            height: "100%",
+                                            objectFit: "cover"
+                                        }}
+                                    />
+                                ) : (
+                                    <span className="fs-4 fw-bold text-primary">
+                                        {company.name?.charAt(0).toUpperCase()}
+                                    </span>
+                                )}
+                            </div>
+
+
+
+
+
+
+
+
                             <h4 className="mb-0">Company Private Area</h4>
                         </div>
 

@@ -73,10 +73,27 @@ export const ClientPrivate = () => {
                         <div className="card-body text-center p-4">
                             <div className="position-relative d-inline-block mb-3">
                                 <div className="rounded-circle bg-light d-flex align-items-center justify-content-center shadow-sm" 
-                                     style={{ width: "120px", height: "120px", border: "4px solid white" }}>
+                                     style={{ width: "120px", height: "120px", border: "4px solid white", overflow: "hidden" }}>
+
+
+
+                                        {client.photo_url ? (  
+                                        <img
+                                            src={client.photo_url}
+                                            alt="Profile"
+                                            style={{ width: "100%", height: "100%", objectFit: "cover" }} 
+                                        />
+                                    ) : (
+
+
                                     <span className="fs-1 fw-bold text-primary">
                                         {client.email.charAt(0).toUpperCase()}
                                     </span>
+
+                                    )}
+
+
+
                                 </div>
                             </div>
                             <h4 className="fw-bold mb-1">Mi Perfil</h4>

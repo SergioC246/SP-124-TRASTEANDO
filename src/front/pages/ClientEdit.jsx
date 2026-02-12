@@ -78,7 +78,7 @@ export const ClientEdit = () => {
 
   const handleSave = () => {
     editClient(id, form)
-      .then(() => navigate("/clients"))
+      .then(() => navigate("/client/private"))
       .catch(console.error);
   };
 
@@ -151,7 +151,7 @@ export const ClientEdit = () => {
 
       <button
         className="btn btn-secondary"
-        onClick={() => navigate("/clients")}
+        onClick={() => navigate("/client/private")}
       >
         Cancel
       </button>
