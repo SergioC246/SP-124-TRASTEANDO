@@ -51,6 +51,7 @@ import { CompanyProtectedRoute } from "./pages/CompanyProtectedRoute";
 import { ClientProtectedRoute } from "./pages/ClientProtectedRoute";
 import { ClientPrivateLeases } from "./pages/ClientePrivateLeases";
 import { CompanyEdit } from "./pages/CompanyEdit";
+import { LocationPublic } from "./pages/LocationPublic";
 
 
 
@@ -94,6 +95,7 @@ export const router = createBrowserRouter(
       <Route path="/location-create" element={<LocationCreate />} />
       <Route path="/location-details/:id" element={<LocationDetails />} />
       <Route path="/location-edit/:id" element={<LocationEdit />} />
+      <Route path="/locations-public" element={<LocationPublic />} />
 
       {/* Rutas storage */}
       <Route path="/storages" element={<StorageList />} />

@@ -58,6 +58,11 @@ export const Navbar = () => {
 								Storages
 							</Link>
 						</li>
+						<li className="nav-item ms-2">
+							<Link to="/locations-public" className="btn btn-outline-success" >
+								Locations
+							</Link>
+						</li>
 
 						{/* ==== Solo Admin ==== */}
 
