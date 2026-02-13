@@ -74,7 +74,6 @@ class Company(db.Model):
     def serialize(self):
         
         return {
-
             "id": self.id,
             "name": self.name,
             "cif": self.cif,

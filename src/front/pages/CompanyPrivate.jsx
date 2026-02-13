@@ -87,6 +87,10 @@ export const CompanyPrivate = () => {
                                     <span className="text-muted">{company.address}</span>
                                 </p>
 
+                                <button className="btn btn-outline-success shadow"
+                                onClick={() => navigate("/companies/private/edit")}>
+                                    <i className="fa-solid fa-pencil"></i>
+                                </button>
                             </div>
                         </div>
 
