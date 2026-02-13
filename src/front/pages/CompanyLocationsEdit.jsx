@@ -12,6 +12,8 @@ export const CompanyLocationsEdit = () => {
     const [latitude, setLatitude] = useState("")
     const [longitude, setLongitude] = useState("")
     const [loading, setLoading] = useState(true)
+    const [photo, setPhoto] = useState("")
+    const [uploading, setUploading] = useState(false)
 
     useEffect(() => {
         const token = localStorage.getItem("token_company")
@@ -33,6 +35,7 @@ export const CompanyLocationsEdit = () => {
                 setLatitude(data.latitude)
                 setLongitude(data.longitude)
                 setLoading(false)
+                setPhoto(data.photo)
             })
             .catch(err => {
                 console.error(err)
@@ -40,6 +43,39 @@ export const CompanyLocationsEdit = () => {
             })
     }, [])
 
+    const handleUploadPhoto = async (e) => {
+        const file = e.target.files[0]
+        if (!file) return
+
+        const formData = new FormData()
+        formData.append("file", file)
+        formData.append("upload_preset", "topydai") // tu preset
+
+        setUploading(true)
+
+        try {
+            const result = await fetch(
+                "https://api.cloudinary.com/v1_1/dofzpindm/image/upload",
+                {
+                    method: "POST",
+                    body: formData,
+                }
+            )
+
+            const data = await result.json()
+
+            if (data.secure_url) {
+                setPhoto(data.secure_url)
+            } else {
+                console.error("Error en Cloudinary:", data)
+            }
+
+        } catch (error) {
+            console.error("Error subiendo foto:", error)
+        } finally {
+            setUploading(false)
+        }
+    }
 
     const handleUpdate = () => {
         const token = localStorage.getItem("token_company")
@@ -54,7 +90,8 @@ export const CompanyLocationsEdit = () => {
                 address,
                 city,
                 latitude,
-                longitude
+                longitude,
+                photo
             })
         })
             .then(response => response.json())
@@ -76,13 +113,12 @@ export const CompanyLocationsEdit = () => {
 
                     <div className="card shadow-lg border-0">
 
-                        {/* Header */}
                         <div className="card-header bg-info-subtle text-info-emphasis text-center py-4">
                             <h3 className="mb-0">Edit Location</h3>
                         </div>
 
                         <div className="card-body py-4">
-                            
+
                             <div className="row">
                                 <div className="col-md-6 mb-3">
                                     <label className="form-label fw-semibold">Address</label>
@@ -97,6 +133,18 @@ export const CompanyLocationsEdit = () => {
                                     <label className="form-label fw-semibold mt-3">Longitude</label>
                                     <input type="text" className="form-control" value={longitude} onChange={e => setLongitude(e.target.value)} />
                                 </div>
+
+                                <div>
+                                    <label className="form-label fw-semibold">Photo</label>
+                                    <input type="file" className="form-control" onChange={handleUploadPhoto} />
+                                </div>
+
+                                {uploading && <p className="mt-2">Uploading image...</p>}
+
+                                {photo && (<div className="mt-3 text-center">
+                                    <img src={photo} alt="Location" className="img-fluid rounded shadow" />
+                                </div>
+                                )}
                             </div>
 
                             <div className="card-footer bg-white border-0 py-3 d-flex justify-content-center gap-3">

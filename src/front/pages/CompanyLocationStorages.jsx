@@ -109,7 +109,6 @@ export const CompanyLocationStorages = () => {
                                                 <p className="mb-1"><strong>Price:</strong> {storage.price}</p>
                                                 <p className="mb-0"><strong>Status:</strong> {storage.status ? "Available" : "Occupied"}</p>
 
-
                                                 <div className="d-flex justify-content-end gap-1 mt-2">
                                                     <button className="btn btn-md btn-outline-primary shadow"
                                                         onClick={() => navigate(`/companies/private/storages/${storage.id}`)}>

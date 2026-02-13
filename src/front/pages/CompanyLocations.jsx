@@ -15,7 +15,7 @@ export const CompanyLocations = () => {
       return
     }
 
-    const url = `${import.meta.env.VITE_BACKEND_URL}/api/private/company/locations`
+    const url = `${import.meta.env.VITE_BACKEND_URL}api/private/company/locations`
 
     fetch(url, {
       headers: {
@@ -74,7 +74,7 @@ export const CompanyLocations = () => {
                   <div key={location.id} className="col-12 col-md-6 col-lg-4">
                     <div className="card shadow-sm border-0 h-100">
 
-                      <img src="https://www.esmadrid.com/sites/default/files/styles/content_type_full/public/recursosturisticos/compras/mercado_de_chamberi.jpg?itok=OFLp6NRV"
+                      <img src={location.photo ||"https://www.esmadrid.com/sites/default/files/styles/content_type_full/public/recursosturisticos/compras/mercado_de_chamberi.jpg?itok=OFLp6NRV"}
                         className="card-img-top"
                         alt="Location"
                         style={{ height: "180px", objectFit: "cover" }} />
@@ -85,7 +85,7 @@ export const CompanyLocations = () => {
                         <p className="mb-1"><strong>Address:</strong> {location.address}</p>
 
                         <div className="mt-3 d-flex justify-content-between align-items-center">
-                          <button className="btn btn-outline-primary px-4 shadow"
+                          <button className="btn btn-outline-primary shadow"
                             onClick={() => navigate(`/companies/private/locations/storages/${location.id}`)}>
                             View Storages
                           </button>
