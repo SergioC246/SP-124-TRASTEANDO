@@ -787,6 +787,7 @@ def create_company_storage():
     size = data.get("size")
     price = data.get("price")
     location_id = data.get("location_id")
+    photo = data.get("photo")
 
     
     if not all([size, price, location_id]):
@@ -802,7 +803,8 @@ def create_company_storage():
         size=size,
         price=price,
         location_id=location_id,
-        status=True
+        status=True,
+        photo=photo
     )
 
     db.session.add(new_storage)
@@ -833,6 +835,7 @@ def company_storage_by_id(storage_id):
         storage.size = data.get("size", storage.size)
         storage.price = data.get("price", storage.price)
         storage.location_id = data.get("location_id", storage.location_id)
+        storage.photo = data.get("photo", storage.photo)
 
         if "status" in data:
             storage.status = data.get("status")

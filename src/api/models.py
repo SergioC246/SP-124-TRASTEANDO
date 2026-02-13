@@ -114,6 +114,7 @@ class Storage(db.Model):
      size: Mapped[str] = mapped_column(nullable=False)
      price: Mapped[str] = mapped_column(nullable=False)
      status: Mapped[bool] = mapped_column(nullable=True, default=False)
+     photo: Mapped[str] = mapped_column(nullable=True) 
 
      location_id: Mapped[int] = mapped_column(ForeignKey("location.id"), nullable=False)
 
@@ -126,7 +127,8 @@ class Storage(db.Model):
              "size": self.size,
              "price": self.price,
              "status": self.status,
-             "location_id": self.location_id
+             "location_id": self.location_id,
+             "photo": self.photo
          }
 
 

@@ -18,7 +18,7 @@ export const CompanyLocationStorages = () => {
             return
         }
 
-        const url = `${import.meta.env.VITE_BACKEND_URL}/api/location/${id}/storages`
+        const url = `${import.meta.env.VITE_BACKEND_URL}api/location/${id}/storages`
 
         fetch(url, {
             headers: {
@@ -43,7 +43,7 @@ export const CompanyLocationStorages = () => {
                 Authorization: "Bearer " + token,
             },
         })
-            .then(res => {
+            .then(response => {
                 if (!response.ok) throw new Error("Error fetching location")
                 return response.json()
             })
@@ -89,21 +89,22 @@ export const CompanyLocationStorages = () => {
 
                         <div className="card-header bg-info-subtle text-info-emphasis text-center py-4">
                             <h4 className="mb-0">
-                                Storages in {location?.name}
+                                Storages in {location?.address}
                             </h4>
                         </div>
 
                         <div className="card-body bg-light">
                             <div className="row g-4">
+
                                 {storages.map(storage => (
                                     <div key={storage.id} className="col-12 col-md-6 col-lg-3">
                                         <div className="card shadow-sm border-0 h-100">
 
-                                            <img src="https://media.istockphoto.com/id/2161730367/fr/photo/unit%C3%A9s-dentreposage-de-location-10-par-30-pieds-location-dunit%C3%A9s-dentreposage-pour-les.jpg?s=2048x2048&w=is&k=20&c=W1mSZ3KgOXGI22pN0T3_--5Df7iTs8SpSGBZZJn4tiw="
+                                            <img src={storage.photo || "https://www.esmadrid.com/sites/default/files/styles/content_type_full/public/recursosturisticos/compras/mercado_de_chamberi.jpg?itok=OFLp6NRV"}
                                                 className="card-img-top"
                                                 alt="Storage"
-                                                style={{ height: "180px", objectFit: "cover" }}
-                                            />
+                                                style={{ height: "180px", objectFit: "cover" }} />
+
                                             <div className="card-body">
                                                 <h5 className="fw-bold">Size: {storage.size}</h5>
                                                 <p className="mb-1"><strong>Price:</strong> {storage.price}</p>
