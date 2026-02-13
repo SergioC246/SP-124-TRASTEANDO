@@ -41,39 +41,56 @@ export const CompanyLocationsCreate = () => {
     }
 
     return (
-        <div className="container py-4">
-            <div className="col-md-6 mx-auto">
-                <h2>Create Location</h2>
+        <div className="container py-5">
+            <div className="row justify-content-center">
+                <div className="col-12 col-md-8 col-lg-5">
+                    <div className="card shadow-lg border-0">
 
-                <div className="mb-3">
-                    <label className="form-label">Address</label>
-                    <input className="form-control" value={address} onChange={e => setAddress(e.target.value)} />
-                </div>
+                        <div className="card-header bg-info-subtle text-info-emphasis text-center py-4">
+                            <h3 className="mb-0">
+                                Create New Location
+                            </h3>
+                        </div>
 
-                <div className="mb-3">
-                    <label className="form-label">City</label>
-                    <input className="form-control" value={city} onChange={e => setCity(e.target.value)} />
-                </div>
+                        <div className="card-body py-4">
 
-                <div className="mb-3">
-                    <label className="form-label">Latitude</label>
-                    <input className="form-control" value={latitude} onChange={e => setLatitude(e.target.value)} />
-                </div>
+                            <div className="mb-3">
+                                <label className="form-label fw-semibold">Address</label>
+                                <input type="text" className="form-control" placeholder="Avenida de America 123" value={address} onChange={e => setAddress(e.target.value)} />
+                            </div>
 
-                <div className="mb-3">
-                    <label className="form-label">Longitude</label>
-                    <input className="form-control" value={longitude} onChange={e => setLongitude(e.target.value)} />
-                </div>
+                            <div className="mb-3">
+                                <label className="form-label fw-semibold">City</label>
+                                <input type="text" className="form-control" placeholder="Madrid" value={city} onChange={e => setCity(e.target.value)} />
+                            </div>
 
-                <div className="d-flex gap-2">
-                    <button className="btn btn-success" onClick={handleCreate}>
-                        Create
-                    </button>
-                    <button className="btn btn-secondary" onClick={() => navigate("/companies/private/locations")}>
-                        Cancel
-                    </button>
+                            <div className="row">
+                                <div className="col-md-6 mb-3">
+                                    <label className="form-label fw-semibold">Latitude</label>
+                                    <input type="text" className="form-control" placeholder="40.7128" value={latitude} onChange={e => setLatitude(e.target.value)} />
+                                </div>
+
+                                <div className="col-md-6 mb-3">
+                                    <label className="form-label fw-semibold">Longitude</label>
+                                    <input type="text" className="form-control" placeholder="-74.0060" value={longitude} onChange={e => setLongitude(e.target.value)} />
+                                </div>
+                            </div>
+
+                            <div className="card-footer bg-white border-0 py-2">
+                                <div className="d-flex flex-column align-items-center gap-3">
+                                    <button className="btn btn-outline-success shadow" onClick={handleCreate}>
+                                        Create Location
+                                    </button>
+                                    <button className="btn btn-outline-secondary shadow" onClick={() => navigate("/companies/private/locations")}>
+                                        Cancel
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     )
+
 }

@@ -8,6 +8,7 @@ export const CompanyLocationStorages = () => {
     const navigate = useNavigate()
     const [storages, setStorages] = useState([])
     const [loading, setLoading] = useState(true)
+    const [location, setLocation] = useState("")
 
     useEffect(() => {
         const token = localStorage.getItem("token_company")
@@ -34,6 +35,24 @@ export const CompanyLocationStorages = () => {
             })
             .catch(error => {
                 console.error(error)
+                setLoading(false)
+            })
+
+        fetch(`${import.meta.env.VITE_BACKEND_URL}/api/location/${id}`, {
+            headers: {
+                Authorization: "Bearer " + token,
+            },
+        })
+            .then(res => {
+                if (!response.ok) throw new Error("Error fetching location")
+                return response.json()
+            })
+            .then(data => {
+                setLocation(data)
+                setLoading(false)
+            })
+            .catch(error => {
+                console.error("Location error:", error)
                 setLoading(false)
             })
     }, [id])
@@ -63,66 +82,66 @@ export const CompanyLocationStorages = () => {
 
 
     return (
-        <div className="container py-4">
-            <div className="row justify-content-center">
-                <div className="col-md-6">
-                    <div className="card show">
-                        <div className="card-header bg-primary text-white">
-                            <h4 className="mb-0">Storages in this Location</h4>
+        <div className="container-fluid py-5 px-4">
+            <div className="row">
+                <div className="col-12 col-xl-12 mx-auto">
+                    <div className="card shadow-lg border-0">
+
+                        <div className="card-header bg-info-subtle text-info-emphasis text-center py-4">
+                            <h4 className="mb-0">
+                                Storages in {location?.name}
+                            </h4>
                         </div>
 
-                        <ul className="list-group">
-                            {storages.map(storage => (
-                                <li key={storage.id} className="list-group-item d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <strong>Size:</strong> {storage.size} <br />
-                                        <strong>Price:</strong> {storage.price} <br />
-                                        <strong>Status:</strong> {storage.status ? "Available" : "Occupied"}
+                        <div className="card-body bg-light">
+                            <div className="row g-4">
+                                {storages.map(storage => (
+                                    <div key={storage.id} className="col-12 col-md-6 col-lg-3">
+                                        <div className="card shadow-sm border-0 h-100">
+
+                                            <img src="https://media.istockphoto.com/id/2161730367/fr/photo/unit%C3%A9s-dentreposage-de-location-10-par-30-pieds-location-dunit%C3%A9s-dentreposage-pour-les.jpg?s=2048x2048&w=is&k=20&c=W1mSZ3KgOXGI22pN0T3_--5Df7iTs8SpSGBZZJn4tiw="
+                                                className="card-img-top"
+                                                alt="Storage"
+                                                style={{ height: "180px", objectFit: "cover" }}
+                                            />
+                                            <div className="card-body">
+                                                <h5 className="fw-bold">Size: {storage.size}</h5>
+                                                <p className="mb-1"><strong>Price:</strong> {storage.price}</p>
+                                                <p className="mb-0"><strong>Status:</strong> {storage.status ? "Available" : "Occupied"}</p>
+
+                                                <div className="d-flex justify-content-end gap-1 mt-2">
+                                                    <button className="btn btn-md btn-outline-primary shadow"
+                                                        onClick={() => navigate(`/companies/private/storages/${storage.id}`)}>
+                                                        <i className="fa-regular fa-eye"></i>
+                                                    </button>
+
+                                                    <button className="btn btn-md btn-outline-success shadow"
+                                                        onClick={() => navigate(`/companies/private/storages/edit/${storage.id}`)}>
+                                                        <i className="fa-solid fa-pencil"></i>
+                                                    </button>
+
+                                                    <button className="btn btn-md btn-outline-danger"
+                                                        onClick={() => handleDelete(storage.id)}>
+                                                        <i className="fa-solid fa-trash"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
+                                ))}
 
-                                    <div className="d-flex gap-2">
-                                        <button  className="btn btn-sm btn-outline-primary"
-                                            onClick={() => navigate(`/companies/private/storages/${storage.id}`)}
-                                        >
-                                            Details
+                                <div className="card-footer bg-white border-0 py-3">
+                                    <div className="d-flex flex-column align-items-center gap-3">
+                                        <button className="btn btn-outline-success shadow" onClick={() => navigate("/companies/private/storages/create")}>
+                                            Create Storage
                                         </button>
-
-                                        <button
-                                            className="btn btn-sm btn-outline-success"
-                                            onClick={() => navigate(`/companies/private/storages/edit/${storage.id}`)}
-                                        >
-                                            Edit
-                                        </button>
-
-                                        <button
-                                            className="btn btn-sm btn-outline-danger"
-                                            onClick={() => handleDelete(storage.id)}
-                                        >
-                                            Delete
+                                        <button className="btn btn-outline-secondary shadow" onClick={() => navigate("/companies/private/locations")}>
+                                            Back
                                         </button>
                                     </div>
-                                </li>
-                            ))}
-                        </ul>
-
-                        <div className="card-footer">
-                            <div className="d-flex justify-content-end gap-2">
-                                <button
-                                    className="btn btn-outline-success btn-sm"
-                                    onClick={() => navigate("/companies/private/storages/create")}
-                                >
-                                    Create Storage
-                                </button>
-
-                                <button
-                                    className="btn btn-outline-secondary btn-sm"
-                                    onClick={() => navigate("/companies/private/locations")}
-                                >
-                                    Back to Locations
-                                </button>
+                                </div>
                             </div>
                         </div>
-
                     </div>
                 </div>
             </div>

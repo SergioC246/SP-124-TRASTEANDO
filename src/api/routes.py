@@ -751,6 +751,7 @@ def company_location_by_id(location_id):
         location.city = data.get("city", location.city)
         location.latitude = data.get("latitude", location.latitude)
         location.longitude = data.get("longitude", location.longitude)
+        location.photo = data.get("photo", location.photo)
 
         db.session.commit()
 
