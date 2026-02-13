@@ -94,7 +94,7 @@ export const CompanyStoragesEdit = () => {
     const handleUpdate = () => {
         const token = localStorage.getItem("token_company")
 
-        fetch(import.meta.env.VITE_BACKEND_URL + `api/storage/${storage_id}`, {
+        fetch(import.meta.env.VITE_BACKEND_URL + `api/private/company/storages/${storage_id}`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
@@ -104,7 +104,8 @@ export const CompanyStoragesEdit = () => {
                 size,
                 price,
                 location_id: locationId,
-                status
+                status,
+                photo
             })
         })
             .then(response => response.json())

@@ -5,9 +5,9 @@ import useGlobalReducer from "../hooks/useGlobalReducer"
 export const CompanyPrivate = () => {
 
     const [company, setCompany] = useState(null)
+    const [photo, setPhoto] = useState("")
 
     const navigate = useNavigate()
-
     const { dispatch } = useGlobalReducer()
 
     function handleLogout() {
@@ -17,7 +17,6 @@ export const CompanyPrivate = () => {
             type: 'set_auth_company',
             payload: false
         })
-
         navigate("/")
     }
 
@@ -44,6 +43,7 @@ export const CompanyPrivate = () => {
             })
             .then(data => {
                 setCompany(data)
+                setPhoto(data.photo || "")
             })
 
     }, [])
@@ -65,7 +65,7 @@ export const CompanyPrivate = () => {
                         </div>
 
                         <div className="card-body text-center">
-                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSbFBTwnuqabNGj5FCDXwiuGK_AtPM8IlQN-g&s"
+                            <img src={photo || "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSbFBTwnuqabNGj5FCDXwiuGK_AtPM8IlQN-g&s"}
                                 alt="Company"
                                 className="rounded-circle mb-4 shadow-sm"
                                 style={{ width: "150px", height: "150px", objectFit: "cover" }} />

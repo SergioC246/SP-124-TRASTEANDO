@@ -224,6 +224,7 @@ def update_company(company_id):
     company.cif = data.get("cif", company.cif)
     company.address = data.get("address", company.address)
     company.email = data.get("email", company.email)
+    company.photo = data.get("photo", company.photo)
 
     db.session.commit()
 

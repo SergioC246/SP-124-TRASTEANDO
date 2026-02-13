@@ -67,6 +67,7 @@ class Company(db.Model):
     address: Mapped[str] = mapped_column(nullable=False)
     email: Mapped[str] = mapped_column(unique=True, nullable=False)
     password: Mapped[str] = mapped_column(nullable=False)
+    photo: Mapped[str] = mapped_column(nullable=True)
 
     locations: Mapped[list["Location"]] = relationship(back_populates="company", cascade= "all, delete-orphan")
 
@@ -78,7 +79,8 @@ class Company(db.Model):
             "name": self.name,
             "cif": self.cif,
             "address": self.address,
-            "email": self.email
+            "email": self.email,
+            "photo": self.photo            
         }
 
 class Leases(db.Model):
