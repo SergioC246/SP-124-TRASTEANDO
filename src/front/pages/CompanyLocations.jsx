@@ -90,7 +90,6 @@ export const CompanyLocations = () => {
                             View Storages
                           </button>
 
-
                           <div className="d-flex justify-content-end gap-1 mt-2">
                             <button className="btn btn-outline-secondary shadow"
                               onClick={() => navigate(`/companies/private/locations/${location.id}`)}>

@@ -104,7 +104,6 @@ export const CompanyLocationStorages = () => {
                                                 alt="Storage"
                                                 style={{ height: "180px", objectFit: "cover" }}
                                             />
-
                                             <div className="card-body">
                                                 <h5 className="fw-bold">Size: {storage.size}</h5>
                                                 <p className="mb-1"><strong>Price:</strong> {storage.price}</p>

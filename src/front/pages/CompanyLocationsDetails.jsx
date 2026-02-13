@@ -71,8 +71,7 @@ export const CompanyLocationsDetails = () => {
                                     <p className="fw-semibold fs-5 mb-0">{location.longitude}</p>
                                 </div>
                             </div>
-
-
+                            
                             <div className="card-footer bg-white border-0 py-3 text-center">
                                 <button className="btn btn-outline-secondary shadow px-4" onClick={() => navigate("/companies/private/locations")}>
                                     Back
