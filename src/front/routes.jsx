@@ -55,6 +55,7 @@ import { CompanyStoragesCreate } from "./pages/CompanyStoragesCreate";
 import { CompanyStoragesEdit } from "./pages/CompanyStoragesEdit";
 import { CompanyLocationStorages } from "./pages/CompanyLocationStorages";
 import { ClientPrivateLeases } from "./pages/ClientePrivateLeases";
+import { SearchHome } from "./pages/SearchHome";
 
 
 
@@ -67,6 +68,9 @@ export const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<Layout />} errorElement={<h1>Not found!</h1>} >
       <Route path="/" element={<Home />} />
+      {/* ruta para el search de home */}
+      <Route path="/search" element={<SearchHome/>}/>
+
       {/* Rutas adminUser */}
 
       <Route path="/admin/login" element={<AdminLogin />} />

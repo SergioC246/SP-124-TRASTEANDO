@@ -13,13 +13,23 @@ export const StoragesPrivateDetails = () => {
 
     const [storage, setStorage] = useState(null)
     const [loading, setLoading] = useState(true)
+    const [isAvailable, setIsAvailable] = useState(true);
+
 
     useEffect(() => {
         const fetchDetail = async () => {
             try {
-                const token = store.tokenCLient;
-                const data = await getStorageOverview(storageId, token);
-                setStorage(data)
+                const token = store.tokenClient;
+                const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/storage/${storageId}/overview`, {
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                        "Content-Type": "application/json"
+                    }
+                });
+
+                if (!response.ok) throw new Error("Error storage");
+                const data = await response.json();
+                setStorage(data);
             } catch (error) {
                 console.error("Error al cargar los detalles del trastero.", error);
             } finally {
@@ -29,6 +39,29 @@ export const StoragesPrivateDetails = () => {
 
         if (storageId && store.tokenClient) fetchDetail();
     }, [storageId, store.tokenClient]);
+
+
+    useEffect(() => {
+        const checkAvailability = async () => {
+            if (!storageId || !store.tokenClient || !storage) return;
+
+            try {
+                const backendUrl = import.meta.env.VITE_BACKEND_URL;
+                const resp = await fetch(`${backendUrl}/api/leases?storage_id=${storageId}`, {
+                    headers: { "Authorization": `Bearer ${store.tokenClient}` }
+                });
+
+                if (resp.ok) {
+                    const leases = await resp.json();
+                    setIsAvailable(storage.status === true && leases.length === 0);
+                }
+            } catch (error) {
+                console.error("Error check:", error);
+            }
+        };
+        checkAvailability();
+    }, [storageId, store.tokenClient, storage]);
+
 
     if (loading) return (
         <div className="container py-5 text-center">
@@ -44,7 +77,7 @@ export const StoragesPrivateDetails = () => {
             <div className="row justify-content-center">
                 <div className="col-lg-8">
                     <button className="btn btn-outline-secondary mb-4 rounded-pill px-4 shadow-sm" onClick={() => navigate(-1)}> ← Volver a la lista </button>
-                    <div className="card shadow-lg border-0"style={{ borderRadius: "25px", overflow: "hidden" }}>
+                    <div className="card shadow-lg border-0" style={{ borderRadius: "25px", overflow: "hidden" }}>
                         <div className="row g-0">
                             <div className="col-md-5 bg-dark d-flex align-items-center justify-content-center text-white p-5 text-center">
                                 <div>
@@ -64,19 +97,20 @@ export const StoragesPrivateDetails = () => {
                                 <div className="card-body p-5">
                                     <div className="d-flex justify-content-between align-items-center mb-4">
                                         <h2 className="fw-bold mb-0">Especificaciones</h2>
-                                        <span className={`badge rounded-pill px-3 py-2 ${storage.status === 'Available' ? 'bg-success-subtle text-success' : 'bg-danger-subtle text-danger'}`}>
-                                            {storage.status === 'Available' ? 'Disponible' : 'No disponible'}
+                                        <span className={`badge rounded-pill px-3 py-2 ${isAvailable ? 'bg-success-subtle text-success' : 'bg-danger-subtle text-danger'}`}>
+                                            {isAvailable ? 'Disponible' : 'Ocupado'}
                                         </span>
+
                                     </div>
 
                                     <div className="row g-3 mb-4">
                                         <div>
-                                        {/* <div className="col-6 text-center border rounded-4 p-3 bg-light"> */}
+                                            {/* <div className="col-6 text-center border rounded-4 p-3 bg-light"> */}
                                             <small className="text-muted d-block mb-1">Superficie</small>
                                             <span className="fs-3 fw-bold">{storage.size}</span>
                                         </div>
                                         <div>
-                                        {/* <div className="col-6 text-center border rounded-4 p-3 bg-light"> */}
+                                            {/* <div className="col-6 text-center border rounded-4 p-3 bg-light"> */}
                                             <small className="text-muted d-block mb-1">Precio mensual</small>
                                             <span className="fs-3 fw-bold text-primary">{storage.price}€</span>
                                         </div>
@@ -85,8 +119,8 @@ export const StoragesPrivateDetails = () => {
                                         <h6 className="fw-bold mb-1 text-primary">Detalles de la ubicación:</h6>
                                         <p className="small text-muted mb-0">Este trastero en <strong>{storage.city}</strong> es gestionado por <strong>{storage.company_name}</strong>. Incluye seguridad privada y acceso optimizado.</p>
                                     </div>
-                                    <button className={`btn btn-primary btn-lg w-100 py-3 fw-bold shadow ${storage.status !== 'Available' ? 'disabled' : ''}`} style={{ borderRadius: "15px" }} onClick={() => navigate(`/client/private/checkout/${storage.id}`)}>
-                                        {storage.status === 'Available' ? 'Continuar con el Arrendamiento' : 'Trastero Reservado'}
+                                    <button className={`btn btn-primary btn-lg w-100 py-3 fw-bold shadow ${!isAvailable ? 'disabled' : ''}`} style={{ borderRadius: "15px" }} onClick={() => navigate(`/client/private/checkout/${storage.id}`)}>
+                                        {isAvailable ? 'Continuar con el Arrendamiento' : 'Trastero Ocupado'}
                                     </button>
                                 </div>
                             </div>

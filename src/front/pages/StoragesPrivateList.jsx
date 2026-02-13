@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback  } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import useGlobalReducer from "../hooks/useGlobalReducer.jsx";
 
@@ -9,6 +9,31 @@ export const StoragesPrivateList = () => {
 
     const [storages, setStorages] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [storagesAvailability, setStoragesAvailability] = useState({});
+
+    const checkAllStoragesAvailability = async (storagesList, token) => {
+        try {
+            const backendUrl = import.meta.env.VITE_BACKEND_URL;
+            const resp = await fetch(`${backendUrl}/api/leases`, {
+                headers: { "Authorization": `Bearer ${token}` }
+            });
+
+            if (resp.ok) {
+                const allLeases = await resp.json();
+                const availability = {};
+
+                storagesList.forEach(storage => {
+                    const hasLease = allLeases.some(lease => lease.storage_id === storage.id);
+                    availability[storage.id] = storage.status === true && !hasLease;
+                });
+
+                setStoragesAvailability(availability);
+            }
+        } catch (error) {
+            console.error("Error checking availability:", error);
+        }
+    };
+
 
     useEffect(() => {
         const fetchStorages = async () => {
@@ -25,8 +50,10 @@ export const StoragesPrivateList = () => {
 
                 const data = await resp.json();
 
-                if (resp.ok) {                             
+                if (resp.ok) {
                     setStorages(data);
+                    // Check availability para todos
+                    checkAllStoragesAvailability(data, token);
                 }
             } catch (error) {
                 console.error("Error cargando trasteros:", error);
@@ -34,6 +61,8 @@ export const StoragesPrivateList = () => {
                 setLoading(false);
             }
         };
+
+
 
         if (locationId && store.tokenClient) fetchStorages();
     }, [locationId, store.tokenClient]);
@@ -62,9 +91,9 @@ export const StoragesPrivateList = () => {
                                 <div>
                                     <div className="d-flex justify-content-between align-items-start mb-2">
                                         <h3 className="fw-bold mb-0">Unidad {storage.id}</h3>
-                                        <span className={`badge rounded-pill border ${storage.status === 'Available' ? 'border-success text-success' : 'border-danger text-danger'}`}
+                                        <span className={`badge rounded-pill border ${storagesAvailability[storage.id] ? 'border-success text-success' : 'border-danger text-danger'}`}
                                             style={{ backgroundColor: "transparent" }}>
-                                            {storage.status === 'Available' ? 'Disponible' : 'Ocupado'}
+                                            {storagesAvailability[storage.id] ? 'Disponible' : 'Ocupado'}
                                         </span>
                                     </div>
 
@@ -78,7 +107,7 @@ export const StoragesPrivateList = () => {
                                         </div>
                                     </div>
                                 </div>
-                                <button className={`btn w-100 fw-bold py-3 shadow-sm ${storage.status === 'Available' ? 'btn-primary' : 'btn-light disabled'}`} style={{ borderRadius: "12px" }} onClick={() => navigate(`/client/private/storage/${storage.id}`)}>
+                                <button className={`btn w-100 fw-bold py-3 shadow-sm ${storagesAvailability[storage.id] ? 'btn-primary' : 'btn-light disabled'}`} style={{ borderRadius: "12px" }} onClick={() => navigate(`/client/private/storage/${storage.id}`)}>
                                     Ver detalles
                                 </button>
                             </div>

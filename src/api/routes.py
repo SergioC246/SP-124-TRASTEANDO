@@ -888,6 +888,7 @@ def get_storages_by_location(location_id):
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
 
 # private leases de cliente
 
