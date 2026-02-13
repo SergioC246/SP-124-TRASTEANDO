@@ -1,9 +1,6 @@
-"""
-This module takes care of starting the API Server, Loading the DB and Adding the endpoints
-"""
 from flask import Flask, request, jsonify, url_for, Blueprint
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
-from api.models import db, User, AdminUser, Client, Company, Leases, Storage, Location
+from api.models import db, User, AdminUser, Client, Company, Leases, Storage, Location, Message
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from sqlalchemy import select
@@ -938,3 +935,14 @@ def create_client_lease():
     db.session.commit()
     
     return jsonify(new_lease.serialize()), 201
+
+
+# Messages
+
+@api.route('/messages', methods=["POST"])
+def send_message():
+    body = request.get_json()
+
+
+
+def get_chat_history(user_id, role)

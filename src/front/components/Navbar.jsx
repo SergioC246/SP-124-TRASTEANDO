@@ -58,11 +58,11 @@ export const Navbar = () => {
 
 						{/* ==== Siempre visibles ==== */}
 
-						<li className="nav-item ms-2">
+						{/* <li className="nav-item ms-2">
 							<Link to="/location" className="btn btn-outline-success">
 								Locations
 							</Link>
-						</li>
+						</li> */}
 						{/* <li className="nav-item ms-2">
 							<Link to="/client/login">
 								<button className="btn btn-outline-secondary">Login as client</button>
@@ -125,7 +125,7 @@ export const Navbar = () => {
 									</Link>
 								</li>
 								<li className="nav-item ms-2">
-									<Link to="/client/private" className="btn btn-outline-warning">
+									<Link to="/client/private/" className="btn btn-outline-warning">
 										Storages available
 									</Link>
 								</li>

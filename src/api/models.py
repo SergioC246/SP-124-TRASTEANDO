@@ -1,6 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import String, Boolean, ForeignKey
+from sqlalchemy import String, Boolean, ForeignKey, Integer, DateTime
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+from datetime import datetime
 
 db = SQLAlchemy()
 
@@ -151,6 +152,7 @@ class Location(db.Model):
     city: Mapped[str] = mapped_column(nullable=False)
     latitude: Mapped[str] = mapped_column(nullable=False)
     longitude: Mapped[str] = mapped_column(nullable=False)
+    photo: Mapped[str] = mapped_column(nullable=True)
 
     company_id: Mapped[int] = mapped_column(
         ForeignKey("companies.id"), nullable=False)
@@ -169,4 +171,26 @@ class Location(db.Model):
             "photo": self.photo,
             "company_id": self.company_id,
             "company_name": self.company.name
+        }
+    
+class Message(db.Model):
+    __tablename__ = "messages"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    sender_id: Mapped[int] = mapped_column(Integer, nullable=False)
+    receiver_id: Mapped[int] = mapped_column(Integer, nullable=False)
+    sender_role: Mapped[str] = mapped_column(String(50), nullable=False)
+    receiver_role: Mapped[str] = mapped_column(String(50), nullable=False)
+    content: Mapped[str] = mapped_column(String(1000), nullable=False)
+    timestamp: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "sender_id": self.sender_id,
+            "receiver_id": self. receiver_id,
+            "sender_role": self.sender_role,
+            "receiver_role": self.receiver_role,
+            "content": self.content,
+            "timestamp": self.timestamp.isoformat() 
         }
