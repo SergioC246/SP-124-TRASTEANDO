@@ -58,6 +58,11 @@ export const Navbar = () => {
 
 						{/* ==== Siempre visibles ==== */}
 
+						<li className="nav-item ms-2">
+							<Link to="/location" className="btn btn-outline-success">
+								Locations
+							</Link>
+						</li>
 						{/* <li className="nav-item ms-2">
 							<Link to="/client/login">
 								<button className="btn btn-outline-secondary">Login as client</button>

@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react"
-import { useParams } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 
 export const CompanyStoragesDetails = () => {
 
     const { id } = useParams()
     const [storage, setStorage] = useState(null)
+    const [locations, setLocations] = useState([])
     const [loading, setLoading] = useState(true)
+    const navigate = useNavigate()
 
     useEffect(() => {
         const token = localStorage.getItem("token_company")
@@ -17,39 +19,79 @@ export const CompanyStoragesDetails = () => {
                 "Content-Type": "application/json",
             },
         })
-
             .then(response => response.json())
             .then(data => {
                 setStorage(data)
                 setLoading(false)
             })
+
+        fetch(`${import.meta.env.VITE_BACKEND_URL}/api/private/company/locations`, {
+            headers: {
+                "Authorization": "Bearer " + token
+            }
+        })
+            .then(response => response.json())
+            .then(data => setLocations(data))
+            .catch(err => console.error(err))
+            .finally(() => setLoading(false))
     }, [id])
 
     if (loading) return <h2>Loading storages details</h2>
     if (!storage) return <h2>No storage found</h2>
 
+    const storageLocation = locations.find(loc => loc.id === storage.location_id)
 
     return (
-        <div className="container py-4">
+        <div className="container py-5">
             <div className="row justify-content-center">
-                <div className="col-md-6">
-                    <div className="card show">
-                        <div className="card-header bg-primary text-white">
-                        <h4 className="mb-0">Detalles del Storage</h4>
+                <div className="col-12 col-md-6 col-lg-4">
+                    <div className="card shadow-lg border-0">
+
+                        <div className="card-header bg-info-subtle text-info-emphasis text-center py-3">
+                            <h3 className="mb-0">Storage Details</h3>
                         </div>
-                        <div className="card">
-                            <div className="card-body">
-                                <p><strong>ID:</strong> {storage.id}</p>
-                                <p><strong>Size:</strong> {storage.size}</p>
-                                <p><strong>Price:</strong> {storage.price}</p>
-                                <p><strong>Status:</strong> {storage.status}</p>
-                                <p><strong>Location ID:</strong> {storage.location_id}</p>
-                                <p className="mb-0"><strong>City:</strong> {storage.city}</p>
+
+                        <div className="card-body py-4">
+                            <div className="mb-3">
+                                <p className="text-muted mb-1">ID:</p>
+                                <p className="fw-semibold fs-5 mb-0">{storage.id}</p>
+                            </div>
+
+                            <div className="row">
+                                <div className="col-md-6 mb-3">
+                                    <p className="text-muted mb-1">Size:</p>
+                                    <p className="fw-semibold fs-5 mb-0">{storage.size}</p>
+                                </div>
+
+                                <div className="col-md-6 mb-3">
+                                    <p className="text-muted mb-1">Price:</p>
+                                    <p className="fw-semibold fs-5 mb-0">{storage.price}€</p>
+                                </div>
+                            </div>
+
+                            <div className="row">
+                                <div className="col-md-6 mb-3">
+                                    <p className="text-muted mb-1">Status:</p>
+                                    <p className="fw-semibold fs-5 mb-0">{storage.status ? "Available" : "Occupied"}</p>
+                                </div>
+
+                                <div className="col-md-6 mb-3">
+                                    <p className="text-muted mb-1">Location:</p>
+                                    <p className="fw-semibold fs-5 mb-0">
+                                        {storageLocation ? `${storageLocation.address} - ${storageLocation.city}` : storage.location_id}
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div className="card-footer bg-white border-0 py-3 text-center">
+                                <button className="btn btn-outline-secondary shadow px-4" onClick={() => navigate(-1)}>
+                                    Back
+                                </button>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </div >
     );
 };

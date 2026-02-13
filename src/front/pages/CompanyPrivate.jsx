@@ -49,7 +49,7 @@ export const CompanyPrivate = () => {
     }, [])
 
     if (!company) {
-        return <h2>Cargando</h2>
+        return <h2 className="text-center mt-5">Cargando...</h2>
     }
 
     return (
@@ -96,14 +96,11 @@ export const CompanyPrivate = () => {
                             <h4 className="mb-0">Company Private Area</h4>
                         </div>
 
-                        <div className="card-body">
-                            <p><strong>Name:</strong> {company.name}</p>
-                            <p><strong>Email:</strong> {company.email}</p>
-                            <p><strong>CIF:</strong> {company.cif}</p>
-                            <p><strong>Address:</strong> {company.address}</p>
+                        <div className="card-footer bg-white border-0 py-3">
 
-                            <div className="d-flex flex-row gap-2">
-                                <Link to="/companies/private/locations" className="btn btn-primary btn-sm">
+                            <div className="d-grid gap-3 px-4">
+
+                                <Link to="/companies/private/locations" className="btn btn-outline-primary btn-lg shadow">
                                     My Locations
                                 </Link>
                                 <Link to="/companies/private/storages" className="btn btn-primary btn-sm">

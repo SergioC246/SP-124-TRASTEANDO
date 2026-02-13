@@ -166,6 +166,7 @@ class Location(db.Model):
             "city": self.city,
             "latitude": self.latitude,
             "longitude": self.longitude,
+            "photo": self.photo,
             "company_id": self.company_id,
             "company_name": self.company.name
         }

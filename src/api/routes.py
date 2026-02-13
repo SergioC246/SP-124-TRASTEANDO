@@ -660,9 +660,7 @@ def company_locations():
     company_id = int(get_jwt_identity())
     
     if request.method == "GET":
-        locations = db.session.execute(
-            select(Location).where(Location.company_id == company_id)
-        ).scalars().all()
+        locations = db.session.execute(select(Location).where(Location.company_id == company_id)).scalars().all()
 
         return jsonify([location.serialize() for location in locations]), 200
     
@@ -713,6 +711,171 @@ def get_company_storage_by_id(storage_id):
         return jsonify({"message": "Storage not found or not yours"}), 404
     
     return jsonify(storage.serialize()), 200
+
+
+
+# Company private Locations Details
+
+@api.route('/private/company/locations/<int:location_id>', methods=["GET"])
+@jwt_required()
+def get_company_location_by_id(location_id):
+    company_id = int(get_jwt_identity())
+
+    location = db.session.execute(select(Location).where(Location.id == location_id, Location.company_id == company_id)).scalar_one_or_none()
+
+    if not location:
+        return jsonify({"message": "Location not found or not yours"}), 404
+
+    return jsonify(location.serialize()), 200
+
+
+
+# Company private Locations Edit
+
+@api.route('/private/company/locations/<int:location_id>', methods=["GET", "PUT"])
+@jwt_required()
+def company_location_by_id(location_id):
+    company_id = int(get_jwt_identity())
+
+    location = db.session.execute(
+        select(Location).where(Location.id == location_id, Location.company_id == company_id)).scalar_one_or_none()
+
+    if not location:
+        return jsonify({"message": "Location not found or not yours"}), 404
+
+    if request.method == "GET":
+        return jsonify(location.serialize()), 200
+
+    if request.method == "PUT":
+        data = request.get_json()
+
+        location.address = data.get("address", location.address)
+        location.city = data.get("city", location.city)
+        location.latitude = data.get("latitude", location.latitude)
+        location.longitude = data.get("longitude", location.longitude)
+        location.photo = data.get("photo", location.photo)
+
+        db.session.commit()
+
+        return jsonify(location.serialize()), 200
+    
+
+# Company private Locations Delete
+
+@api.route('/private/company/locations/<int:location_id>', methods=["DELETE"])
+@jwt_required()
+def delete_company_location(location_id):
+    company_id = int(get_jwt_identity())
+
+    location = db.session.execute(select(Location).where(Location.id == location_id, Location.company_id == company_id)).scalar_one_or_none()
+
+    if not location:
+        return jsonify({"message": "Location not found or not yours"}), 404
+
+    db.session.delete(location)
+    db.session.commit()
+
+    return jsonify({"message": "Location deleted"}), 200
+
+
+
+# Company private create storage
+@api.route('/private/company/storages', methods=['POST'])
+@jwt_required()
+def create_company_storage():
+    company_id = get_jwt_identity() 
+    data = request.get_json()
+
+    size = data.get("size")
+    price = data.get("price")
+    location_id = data.get("location_id")
+
+    
+    if not all([size, price, location_id]):
+        return jsonify({"message": "Missing data"}), 400
+
+    
+    location = db.session.get(Location, location_id)
+    if not location or location.company_id != int(company_id):
+        return jsonify({"message": "Invalid location or does not belong to your company"}), 400
+
+    
+    new_storage = Storage(
+        size=size,
+        price=price,
+        location_id=location_id,
+        status=True
+    )
+
+    db.session.add(new_storage)
+    db.session.commit()
+
+    return jsonify(new_storage.serialize()), 201
+
+
+
+# Company private Storages Edit
+
+@api.route('/private/company/storages/<int:storage_id>', methods=["GET", "PUT"])
+@jwt_required()
+def company_storage_by_id(storage_id):
+    company_id = int(get_jwt_identity())
+
+    storage = db.session.execute(select(Storage).join(Location).where(Storage.id == storage_id, Location.company_id == company_id)).scalar_one_or_none()
+
+    if not storage:
+        return jsonify({"message": "Storage not found or not yours"}), 404
+
+    if request.method == "GET":
+        return jsonify(storage.serialize()), 200
+
+    if request.method == "PUT":
+        data = request.get_json()
+
+        storage.size = data.get("size", storage.size)
+        storage.price = data.get("price", storage.price)
+        storage.location_id = data.get("location_id", storage.location_id)
+
+        if "status" in data:
+            storage.status = data.get("status")
+
+        db.session.commit()
+
+        return jsonify(storage.serialize()), 200
+
+
+
+# Company Storages Delete
+
+@api.route('/private/company/storages/<int:storage_id>', methods=["DELETE"])
+@jwt_required()
+def delete_company_storage(storage_id):
+    company_id = int(get_jwt_identity())
+
+    storage = db.session.execute(select(Storage).join(Location).where(Storage.id == storage_id, Location.company_id == company_id)).scalar_one_or_none()
+
+    if not storage:
+        return jsonify({"message": "Storage not found or not yours"}), 404
+
+    db.session.delete(storage)
+    db.session.commit()
+
+    return jsonify({"message": "Storage deleted"}), 200   
+
+
+
+# #  Company Storages by Location
+
+# @api.route('/private/company/locations/<int:location_id>/storages', methods=["GET"])
+# @jwt_required()
+# def get_storages_by_location(location_id):
+
+#     company_id = int(get_jwt_identity())
+
+#     storages = db.session.execute(select(Storage).join(Location).where(Location.id == location_id, Location.company_id == company_id)).scalars().all()
+
+#     return jsonify([storage.serialize() for storage in storages]), 200
+
 
 # conseguir todos los storages para los clientes
 @api.route('/location/<int:location_id>/storages', methods=['GET']) 
