@@ -22,7 +22,7 @@ class User(db.Model):
 
 
 class AdminUser(db.Model):
-    
+
     __tablename__ = "admin_user"
 
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -46,14 +46,17 @@ class Client(db.Model):
         String(120), unique=True, nullable=False)
     password: Mapped[str] = mapped_column(String(200), nullable=False)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+    photo_url: Mapped[str] = mapped_column(String(500), nullable=True)
 
-    leases: Mapped[list["Leases"]] = relationship(back_populates="client", cascade="all, delete-orphan")
+    leases: Mapped[list["Leases"]] = relationship(
+        back_populates="client", cascade="all, delete-orphan")
 
     def serialize(self):
         return {
             "id": self.id,
             "email": self.email,
-            "is_active": self.is_active
+            "is_active": self.is_active,
+            "photo_url": self.photo_url
         }
 
 
@@ -67,19 +70,23 @@ class Company(db.Model):
     address: Mapped[str] = mapped_column(nullable=False)
     email: Mapped[str] = mapped_column(unique=True, nullable=False)
     password: Mapped[str] = mapped_column(nullable=False)
+    photo_url: Mapped[str] = mapped_column(String(500), nullable=True)
 
-    locations: Mapped[list["Location"]] = relationship(back_populates="company", cascade= "all, delete-orphan")
+    locations: Mapped[list["Location"]] = relationship(
+        back_populates="company", cascade="all, delete-orphan")
 
     def serialize(self):
-        
+
         return {
 
             "id": self.id,
             "name": self.name,
             "cif": self.cif,
             "address": self.address,
-            "email": self.email
+            "email": self.email,
+            "photo_url": self.photo_url
         }
+
 
 class Leases(db.Model):
 
@@ -90,8 +97,10 @@ class Leases(db.Model):
     end_date: Mapped[str] = mapped_column(nullable=False)
     status: Mapped[bool] = mapped_column(nullable=True, default=False)
 
-    client_id: Mapped[int] = mapped_column(ForeignKey("clients.id"), nullable=False)
-    storage_id: Mapped[int] = mapped_column(ForeignKey("storage.id"), nullable=False)
+    client_id: Mapped[int] = mapped_column(
+        ForeignKey("clients.id"), nullable=False)
+    storage_id: Mapped[int] = mapped_column(
+        ForeignKey("storage.id"), nullable=False)
 
     client: Mapped["Client"] = relationship(back_populates="leases")
     storage: Mapped["Storage"] = relationship(back_populates="leases")
@@ -99,35 +108,38 @@ class Leases(db.Model):
     def serialize(self):
         return {
             "id": self.id,
-            "start_date":self.start_date, 
-            "end_date":self.end_date, 
-            "status":self.status, 
-            "client_id":self.client_id, 
-            "storage_id":self.storage_id 
+            "start_date": self.start_date,
+            "end_date": self.end_date,
+            "status": self.status,
+            "client_id": self.client_id,
+            "storage_id": self.storage_id
         }
+
 
 class Storage(db.Model):
 
-     __tablename__ = "storage"
+    __tablename__ = "storage"
 
-     id: Mapped[int] = mapped_column(primary_key=True)
-     size: Mapped[str] = mapped_column(nullable=False)
-     price: Mapped[str] = mapped_column(nullable=False)
-     status: Mapped[bool] = mapped_column(nullable=True, default=False)
+    id: Mapped[int] = mapped_column(primary_key=True)
+    size: Mapped[str] = mapped_column(nullable=False)
+    price: Mapped[str] = mapped_column(nullable=False)
+    status: Mapped[bool] = mapped_column(nullable=True, default=False)
 
-     location_id: Mapped[int] = mapped_column(ForeignKey("location.id"), nullable=False)
+    location_id: Mapped[int] = mapped_column(
+        ForeignKey("location.id"), nullable=False)
 
-     location: Mapped["Location"] = relationship(back_populates="storages")
-     leases: Mapped[list["Leases"]] = relationship(back_populates="storage", cascade= "all, delete-orphan")
+    location: Mapped["Location"] = relationship(back_populates="storages")
+    leases: Mapped[list["Leases"]] = relationship(
+        back_populates="storage", cascade="all, delete-orphan")
 
-     def serialize(self):
-         return {
-             "id": self.id,
-             "size": self.size,
-             "price": self.price,
-             "status": self.status,
-             "location_id": self.location_id
-         }
+    def serialize(self):
+        return {
+            "id": self.id,
+            "size": self.size,
+            "price": self.price,
+            "status": "Available" if self.status else "Occupied",
+            "location_id": self.location_id
+        }
 
 
 class Location(db.Model):
@@ -138,19 +150,20 @@ class Location(db.Model):
     address: Mapped[str] = mapped_column(primary_key=False)
     city: Mapped[str] = mapped_column(nullable=False)
     latitude: Mapped[str] = mapped_column(nullable=False)
-    longitude: Mapped[str] = mapped_column(nullable=False)  
-    photo: Mapped[str] = mapped_column(nullable=True)  
+    longitude: Mapped[str] = mapped_column(nullable=False)
 
-    company_id: Mapped[int] = mapped_column(ForeignKey("companies.id"), nullable=False)
-    
+    company_id: Mapped[int] = mapped_column(
+        ForeignKey("companies.id"), nullable=False)
+
     company: Mapped["Company"] = relationship(back_populates="locations")
-    storages: Mapped[list["Storage"]] = relationship(back_populates="location", cascade="all, delete-orphan")
+    storages: Mapped[list["Storage"]] = relationship(
+        back_populates="location", cascade="all, delete-orphan")
 
     def serialize(self):
         return {
-            "id":self.id,
+            "id": self.id,
             "address": self.address,
-            "city": self.city,            
+            "city": self.city,
             "latitude": self.latitude,
             "longitude": self.longitude,
             "photo": self.photo,

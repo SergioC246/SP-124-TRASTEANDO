@@ -43,6 +43,16 @@ export const Navbar = () => {
 										Login as Admin
 									</Link>
 								</li>
+								<li className="nav-item ms-2">
+									<Link to="/storages" className="btn btn-outline-success" >
+										Storages
+									</Link>
+								</li>
+								<li className="nav-item ms-2">
+									<Link to="/locations-public" className="btn btn-outline-success" >
+										Locations
+									</Link>
+								</li>
 							</>
 						)}
 
@@ -58,11 +68,7 @@ export const Navbar = () => {
 								<button className="btn btn-outline-secondary">Login as client</button>
 							</Link>
 						</li> */}
-						<li className="nav-item ms-2">
-							<Link to="/storages" className="btn btn-outline-success" >
-								Storages
-							</Link>
-						</li>
+						
 
 						{/* ==== Solo Admin ==== */}
 
@@ -84,21 +90,29 @@ export const Navbar = () => {
 									</Link>
 								</li>
 								<li className="nav-item ms-2">
+									<Link to="/location" className="btn btn-outline-warning" >
+										Locations
+									</Link>
+								</li>
+								<li className="nav-item ms-2">
 									<Link to="/admin/private" className="btn btn-outline-danger" >
 										My Profile
 									</Link>
 								</li>
+								
 							</>
 						)}
 
 						{/* ==== Solo Company ==== */}
 
 						{role === "company" && (
-							<li className="nav-item ms-2">
-								<Link to="/companies/private" className="btn btn-outline-primary">
-									Company Private
-								</Link>
-							</li>
+							<>
+								<li className="nav-item ms-2">
+									<Link to="/companies/private" className="btn btn-outline-warning">
+										Company Private
+									</Link>
+								</li>
+							</>
 						)}
 
 						{/* ==== Solo CLient ==== */}
