@@ -722,6 +722,7 @@ def company_locations():
         city = data.get("city")
         latitude = data.get("latitude")
         longitude = data.get("longitude")
+        photo = data.get("photo")
 
         if not all([address, city, latitude, longitude]):
             return jsonify({"message": "Missing data"}), 400
@@ -731,7 +732,8 @@ def company_locations():
             city=city,
             latitude=latitude,
             longitude=longitude,
-            company_id=company_id
+            company_id=company_id,
+            photo=photo
         )
 
         db.session.add(new_location)

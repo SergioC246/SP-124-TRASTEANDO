@@ -78,8 +78,35 @@ export const CompanyLocationStorages = () => {
     }
 
     if (loading) return <h2>Loading storages...</h2>
-    if (storages.length === 0) return <h2>No storages found for this location</h2>
-
+    if (storages.length === 0) {
+        return (
+            <div className="container py-5">
+                <div className="row justify-content-center">
+                    <div className="col-12 col-md-8 col-lg-5">
+                        <div className="card shadow-lg border-0">
+                            <div className="card-header bg-info-subtle text-info-emphasis text-center py-4">
+                                <h3 className="mb-0">
+                                    No Storages Found
+                                </h3>
+                            </div>
+                            <div className="card-body py-4">
+                                <div className="d-flex flex-column align-items-center gap-3">
+                                    <div className="d-flex flex-column align-items-center gap-3">
+                                        <button className="btn btn-outline-success shadow" onClick={() => navigate("/companies/private/storages/create")}>
+                                            Create Storage
+                                        </button>
+                                        <button className="btn btn-outline-secondary shadow" onClick={() => navigate("/companies/private/locations")}>
+                                            Back
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        )
+    }
 
     return (
         <div className="container-fluid py-5 px-4">

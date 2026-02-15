@@ -7,37 +7,69 @@ export const CompanyLocationsCreate = () => {
     const [city, setCity] = useState("")
     const [latitude, setLatitude] = useState("")
     const [longitude, setLongitude] = useState("")
+    const [photo, setPhoto] = useState(null)
     const navigate = useNavigate()
 
-    const handleCreate = () => {
+    const uploadImage = async () => {
+        if (!photo) return null
+
+        const formData = new FormData()
+        formData.append("file", photo)
+        formData.append("upload_preset", "topydai")
+
+        const response = await fetch(
+            "https://api.cloudinary.com/v1_1/dofzpindm/image/upload",
+            {
+                method: "POST",
+                body: formData
+            }
+        )
+        const data = await response.json()
+        return data.secure_url
+    }
+
+    const handleCreate = async () => {
         const token = localStorage.getItem("token_company")
         if (!token) {
             navigate("/companies/login")
             return
         }
 
-        fetch(`${import.meta.env.VITE_BACKEND_URL}/api/private/company/locations`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: "Bearer " + token
-            },
-            body: JSON.stringify({
-                address,
-                city,
-                latitude,
-                longitude
-            })
-        })
+        try {
+            let imageUrl = null
+            
+            if (photo) {
+                imageUrl = await uploadImage()
+            }
+            
+            const response = await fetch(
+                `${import.meta.env.VITE_BACKEND_URL}/api/private/company/locations`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: "Bearer " + token
+                    },
+                    body: JSON.stringify({
+                        address,
+                        city,
+                        latitude,
+                        longitude,
+                        photo: imageUrl
+                    })
+                }
+            )
 
-            .then(response => response.json())
-            .then(() => {
-                navigate("/companies/private/locations")
-            })
-            .catch(error => {
-                console.error(error)
-                alert("Error creating location")
-            })
+            if (!response.ok) {
+                throw new Error("Create failed")
+            }
+
+            navigate("/companies/private/locations")
+
+        } catch (error) {
+            console.error(error)
+            alert("Error creating location")
+        }
     }
 
     return (
@@ -78,6 +110,16 @@ export const CompanyLocationsCreate = () => {
                                 </div>
                             </div>
 
+                            <div className="mb-3">
+                                <label className="form-label fw-semibold">Photo</label>
+                                <input
+                                    type="file"
+                                    className="form-control"
+                                    accept="image/*"
+                                    onChange={e => setPhoto(e.target.files[0])}
+                                />
+                            </div>
+
                             <div className="card-footer bg-white border-0 py-2">
                                 <div className="d-flex flex-column align-items-center gap-3">
                                     <button className="btn btn-outline-success shadow" onClick={handleCreate}>
@@ -94,5 +136,4 @@ export const CompanyLocationsCreate = () => {
             </div>
         </div>
     )
-
 }
