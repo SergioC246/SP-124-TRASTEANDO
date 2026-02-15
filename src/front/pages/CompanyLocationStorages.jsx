@@ -103,7 +103,7 @@ export const CompanyLocationStorages = () => {
                                             <img src={storage.photo || "https://www.esmadrid.com/sites/default/files/styles/content_type_full/public/recursosturisticos/compras/mercado_de_chamberi.jpg?itok=OFLp6NRV"}
                                                 className="card-img-top"
                                                 alt="Storage"
-                                                style={{ height: "180px", objectFit: "cover" }} />
+                                                style={{ aspectRatio: "16/9", width: "100%", objectFit: "cover" }} />
 
                                             <div className="card-body">
                                                 <h5 className="fw-bold">Size: {storage.size}</h5>

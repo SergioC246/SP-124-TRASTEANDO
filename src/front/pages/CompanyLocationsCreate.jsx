@@ -54,14 +54,16 @@ export const CompanyLocationsCreate = () => {
 
                         <div className="card-body py-4">
 
-                            <div className="mb-3">
-                                <label className="form-label fw-semibold">Address</label>
-                                <input type="text" className="form-control" placeholder="Avenida de America 123" value={address} onChange={e => setAddress(e.target.value)} />
-                            </div>
+                            <div className="row">
+                                <div className="col-md-6 mb-3">
+                                    <label className="form-label fw-semibold">Address</label>
+                                    <input type="text" className="form-control" placeholder="Avenida de America 123" value={address} onChange={e => setAddress(e.target.value)} />
+                                </div>
 
-                            <div className="mb-3">
-                                <label className="form-label fw-semibold">City</label>
-                                <input type="text" className="form-control" placeholder="Madrid" value={city} onChange={e => setCity(e.target.value)} />
+                                <div className="col-md-6 mb-3">
+                                    <label className="form-label fw-semibold">City</label>
+                                    <input type="text" className="form-control" placeholder="Madrid" value={city} onChange={e => setCity(e.target.value)} />
+                                </div>
                             </div>
 
                             <div className="row">
