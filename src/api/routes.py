@@ -567,8 +567,9 @@ def company_private_by_id(company_id):
 
     if company_id != current_company_id:
         return jsonify({"message": "No tienes permisos para editar esta compañía"}), 403
-    
-    company = db.session.execute(select(Company).where(Company.id == company_id)).scalar_one_or_none()
+
+    company = db.session.execute(select(Company).where(
+        Company.id == company_id)).scalar_one_or_none()
 
     if not company:
         return jsonify({"message": "Compañía no encontrada"}), 404
@@ -580,7 +581,7 @@ def company_private_by_id(company_id):
         data = request.get_json()
         company.name = data.get("name", company.name)
         company.email = data.get("email", company.email)
-        company.cif = data.get("cif", company.cif)        
+        company.cif = data.get("cif", company.cif)
         company.address = data.get("address", company.address)
         company.photo = data.get("photo", company.photo)
 
@@ -989,3 +990,22 @@ def create_client_lease():
     db.session.commit()
 
     return jsonify(new_lease.serialize()), 201
+
+
+# Get occupancy of storages from location
+@api.route("/mycompany/locations-overview", methods=["GET"])
+@jwt_required()
+def mycompany_locations_overview():
+
+    try:
+        company_id = int(get_jwt_identity())
+
+        locations = db.session.execute(select(Location).where(
+            Location.company_id == company_id)).scalars().all()
+
+        result = [loc.serialize() for loc in locations]
+
+        return jsonify(result), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500

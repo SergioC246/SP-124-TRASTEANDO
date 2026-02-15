@@ -58,10 +58,17 @@ export const CompanyPrivate = () => {
                 <div className="col-12 col-md-8 col-lg-5">
                     <div className="card shadow-lg border-0">
 
-                        <div className="card-header bg-info-subtle text-info-emphasis text-center py-4">
-                            <h2 className="mb-0">
-                                Welcome {company.name}
-                            </h2>
+                        <div className="card-header bg-info-subtle text-info-emphasis py-4 position-relative">
+                            
+                                <h2 className="mb-0 text-center">
+                                    Welcome {company.name}
+                                </h2>
+
+                                <button className="btn btn-outline-success btn-sm shadow position-absolute top-50 end-0 translate-middle-y me-3"
+                                    onClick={() => navigate("/companies/private/edit")}>
+                                    <i className="fa-solid fa-pencil"></i>
+                                </button>
+                            
                         </div>
 
                         <div className="card-body text-center">
@@ -86,16 +93,10 @@ export const CompanyPrivate = () => {
                                     <strong>Address:</strong><br />
                                     <span className="text-muted">{company.address}</span>
                                 </p>
-
-                                <button className="btn btn-outline-success shadow"
-                                onClick={() => navigate("/companies/private/edit")}>
-                                    <i className="fa-solid fa-pencil"></i>
-                                </button>
                             </div>
                         </div>
 
                         <div className="card-footer bg-white border-0 py-3">
-
                             <div className="d-grid gap-3 px-4">
 
                                 <Link to="/companies/private/locations" className="btn btn-outline-primary btn-lg shadow">

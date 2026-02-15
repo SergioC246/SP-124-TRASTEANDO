@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom"
 export const CompanyPrivateEdit = () => {
 
     const [companyId, setCompanyId] = useState("")
+    const [name, setName] = useState("")
     const [photo, setPhoto] = useState("")
     const [email, setEmail] = useState("")
     const [cif, setCif] = useState("")
@@ -28,6 +29,7 @@ export const CompanyPrivateEdit = () => {
             .then(res => res.json())
             .then(data => {
                 setCompanyId(data.id)
+                setName(data.name || "")
                 setPhoto(data.photo || "")
                 setEmail(data.email || "")
                 setCif(data.cif || "")
@@ -50,34 +52,47 @@ export const CompanyPrivateEdit = () => {
         setUploading(true)
 
         try {
-            const res = await fetch("https://api.cloudinary.com/v1_1/dofzpindm/image/upload", {
-                method: "POST",
-                body: formData
-            })
+            const result = await fetch("https://api.cloudinary.com/v1_1/dofzpindm/image/upload",
+                {
+                    method: "POST",
+                    body: formData
+                }
+            )
+
             const data = await result.json()
-            if (data.secure_url) setPhoto(data.secure_url)
-            else console.error("Error en Cloudinary:", data)
-        } catch (err) {
-            console.error(err)
+
+            if (data.secure_url) {
+                setPhoto(data.secure_url)
+            } else {
+                console.error("Error en Cloudinary:", data)
+            }
+
+        } catch (error) {
+            console.error(error)
         } finally {
             setUploading(false)
         }
     }
 
     const handleUpdate = () => {
+        const token = localStorage.getItem("token_company")
+
         fetch(import.meta.env.VITE_BACKEND_URL + `api/private/company/${companyId}`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
                 Authorization: "Bearer " + token
             },
-            body: JSON.stringify({ photo, email, cif, address })
+            body: JSON.stringify({ name, photo, email, cif, address })
         })
-            .then(res => {
-                if (res.ok) navigate("/companies/private")
-                else console.error("Error al guardar cambios:", res.statusText)
+            .then(response => response.json())
+            .then(() => {
+                navigate("/companies/private")
             })
-            .catch(err => console.error(err))
+            .catch(err => {
+                console.error(err)
+                alert("Error updating company")
+            })
     }
 
     if (loading) return <h2 className="text-center mt-5">Cargando...</h2>
@@ -92,39 +107,51 @@ export const CompanyPrivateEdit = () => {
                             <h2 className="mb-0">Editar Company</h2>
                         </div>
 
-                        <div className="card-body text-center">
+                        <div className="card-body py-4">
 
-                            <img
-                                src={photo || "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSbFBTwnuqabNGj5FCDXwiuGK_AtPM8IlQN-g&s"}
-                                alt="Company"
-                                className="rounded-circle mb-3 shadow-sm"
-                                style={{ width: "150px", height: "150px", objectFit: "cover" }}
-                            />
+                            <div className="row">
+                                <div className="col-md-6 mb-3">
+                                    <label className="form-label fw-semibold">Company Name</label>
+                                    <input type="text" className="form-control" value={name} onChange={e => setName(e.target.value)} />
+                                </div>
+                                <div className="col-md-6 mb-3">
+                                    <label className="form-label fw-semibold">Email</label>
+                                    <input type="email" className="form-control" name="email" value={email} onChange={e => setEmail(e.target.value)} />
+                                </div>
 
-                            <div className="mb-3">
-                                <label className="form-label">Cambiar Foto</label>
+                                <div className="col-md-6 mb-3">
+                                    <label className="form-label fw-semibold">CIF</label>
+                                    <input type="text" className="form-control" name="cif" value={cif} onChange={e => setCif(e.target.value)} />
+                                </div>
+                                <div className="col-md-6 mb-3">
+                                    <label className="form-label fw-semibold">Address</label>
+                                    <input type="text" className="form-control" name="address" value={address} onChange={e => setAddress(e.target.value)} />
+                                </div>
+                            </div>
+
+
+
+                            <div>
+                                <label className="form-label fw-semibold">Photo</label>
                                 <input type="file" className="form-control" onChange={handleUploadPhoto} />
-                                {uploading && <p className="mt-2">Uploading image...</p>}
                             </div>
 
-                            <div className="mb-3 text-start">
-                                <label className="form-label"><strong>Email</strong></label>
-                                <input type="email" className="form-control" name="email" value={email} onChange={e => setEmail(e.target.value)} />
-                            </div>
+                            {uploading && <p className="mt-2">Uploading image...</p>}
 
-                            <div className="mb-3 text-start">
-                                <label className="form-label"><strong>CIF</strong></label>
-                                <input type="text" className="form-control" name="cif" value={cif} onChange={e => setCif(e.target.value)} />
-                            </div>
+                            {photo && (
+                                <div className="mt-3 text-center">
+                                    <img src={photo} alt="Company" className="img-fluid rounded shadow"
+                                    />
+                                </div>
+                            )}
 
-                            <div className="mb-3 text-start">
-                                <label className="form-label"><strong>Address</strong></label>
-                                <input type="text" className="form-control" name="address" value={address} onChange={e => setAddress(e.target.value)} />
-                            </div>
-
-                            <div className="d-flex gap-2">
-                                <button className="btn btn-success flex-fill" onClick={handleUpdate}>Guardar Cambios</button>
-                                <button className="btn btn-secondary flex-fill" onClick={() => navigate("/companies/private")}>Cancelar</button>
+                            <div className="card-footer bg-white border-0 py-3 d-flex justify-content-center gap-3">
+                                <button className="btn btn-outline-success shadow px-4" onClick={handleUpdate}>
+                                    Save
+                                </button>
+                                <button className="btn btn-outline-secondary shadow px-4" onClick={() => navigate("/companies/private")}>
+                                    Cancel
+                                </button>
                             </div>
 
                         </div>
