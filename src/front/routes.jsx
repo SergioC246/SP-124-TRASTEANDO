@@ -58,6 +58,7 @@ import { ClientPrivateLeases } from "./pages/ClientePrivateLeases";
 import { CompanyEdit } from "./pages/CompanyEdit";
 import { LocationPublic } from "./pages/LocationPublic";
 import { SearchHome } from "./pages/SearchHome";
+import { Chat } from "./pages/Chat";
 
 
 
@@ -86,7 +87,8 @@ export const router = createBrowserRouter(
       <Route path="/client/login" element={<ClientLogin />} />
       <Route path="/client/signup" element={<ClientSignup />} />
 
-
+      {/* Rutas messages */}
+      <Route path="/chat" element={<Chat />} />
 
 
       {/* Rutas company */}

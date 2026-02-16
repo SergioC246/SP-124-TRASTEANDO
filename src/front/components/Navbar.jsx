@@ -68,7 +68,9 @@ export const Navbar = () => {
 								<button className="btn btn-outline-secondary">Login as client</button>
 							</Link>
 						</li> */}
-						
+						<Link to="/chat" className="btn btn-outline-primary ms-2">
+    						<i className="fas fa-comments"></i> Chat
+						</Link>
 
 						{/* ==== Solo Admin ==== */}
 
