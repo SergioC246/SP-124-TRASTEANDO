@@ -1044,7 +1044,8 @@ def get_contacts(my_id, my_role):
                 result.append({
                     "id": client.id,
                     "role": "client",
-                    "email": client.email
+                    "email": client.email,
+                    "photo_url": client.photo_url
                 })
 
         elif role == "company":
@@ -1053,7 +1054,8 @@ def get_contacts(my_id, my_role):
                 result.append({
                     "id": company.id,
                     "role": "company",
-                    "name": company.name
+                    "name": company.name,
+                    "photo_url": client.photo_url
                 })
 
     return jsonify(result), 200

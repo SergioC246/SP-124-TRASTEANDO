@@ -124,7 +124,7 @@ class Storage(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     size: Mapped[str] = mapped_column(nullable=False)
     price: Mapped[str] = mapped_column(nullable=False)
-    status: Mapped[bool] = mapped_column(nullable=True, default=False)
+    status: Mapped[bool] = mapped_column(nullable=False, default=True)
 
     location_id: Mapped[int] = mapped_column(
         ForeignKey("location.id"), nullable=False)
@@ -172,7 +172,8 @@ class Location(db.Model):
             "company_id": self.company_id,
             "company_name": self.company.name
         }
-    
+
+
 class Message(db.Model):
     __tablename__ = "messages"
 
@@ -185,6 +186,22 @@ class Message(db.Model):
     timestamp: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
     def serialize(self):
+
+        sender_name = None
+        sender_photo = None
+
+        if self.sender_role == "client":
+            sender = Client.query.get(self.sender_id)
+            if sender:
+                sender_name = sender.email
+                sender_photo = sender.photo_url
+
+            elif self.sender_role == "company":
+                sender = Company.query.get(self.sender_id)
+            if sender:
+                sender_name = sender.email
+                sender_photo = sender.photo_url
+
         return {
             "id": self.id,
             "sender_id": self.sender_id,
@@ -192,5 +209,7 @@ class Message(db.Model):
             "sender_role": self.sender_role,
             "receiver_role": self.receiver_role,
             "content": self.content,
-            "timestamp": self.timestamp.isoformat() 
+            "timestamp": self.timestamp.isoformat(),
+            "sender_name": sender_name,
+            "sender_photo": sender_photo
         }

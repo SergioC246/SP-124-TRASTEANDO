@@ -3,15 +3,18 @@ import useGlobalReducer from "../hooks/useGlobalReducer";
 import { chatAPI } from "./utilsChat";
 import { jwtDecode } from "jwt-decode";
 
+const API_URL = import.meta.env.VITE_BACKEND_URL;
+
+
 export const Chat = () => {
     const { store } = useGlobalReducer();
 
     const [messages, setMessages] = useState([]);
-    const [text, setText] = useState("");
     const [contacts, setContacts] = useState([]);
     const [targetId, setTargetId] = useState(null);
+    const [text, setText] = useState("");
 
-    /* ===== IDENTIFICAR USUARIO ===== */
+    /* ===== USER ===== */
 
     const decodedClient = store.tokenClient
         ? jwtDecode(store.tokenClient)
@@ -24,36 +27,54 @@ export const Chat = () => {
     const myId = decodedClient
         ? decodedClient.sub
         : decodedCompany
-        ? decodedCompany.sub
-        : null;
+            ? decodedCompany.sub
+            : null;
 
     const myRole = decodedClient
         ? "client"
         : decodedCompany
-        ? "company"
-        : null;
+            ? "company"
+            : null;
 
     const targetRole = myRole === "client" ? "company" : "client";
 
-    /* ===== CARGAR CONTACTOS ===== */
+    /* ===== LOAD CONTACTS ===== */
 
     const loadContacts = async () => {
-        if (!myId || !myRole) return;
+    if (!myId || !myRole) return;
 
-        const data = await chatAPI.getContacts(myId, myRole);
+    console.log("LOAD CONTACTS RUNNING");
+    console.log("MY ID:", myId);
+    console.log("MY ROLE:", myRole);
 
-        console.log("CONTACTS FILTRADOS:", data);
+    if (myRole === "client") {
+
+        const resp = await fetch(`${API_URL}api/companies`);
+        const data = resp.ok ? await resp.json() : [];
+
+        console.log("CONTACTS RESPONSE:", data);
 
         setContacts(data);
 
-        if (data.length > 0) {
+        if (data.length > 0 && !targetId) {
             setTargetId(data[0].id);
-        } else {
-            setTargetId(null);
         }
-    };
 
-    /* ===== CARGAR CONVERSACIÓN ===== */
+    } else {
+
+        const data = await chatAPI.getContacts(myId, myRole);
+
+        console.log("CONTACTS RESPONSE:", data);
+
+        setContacts(data);
+
+        if (data.length > 0 && !targetId) {
+            setTargetId(data[0].id);
+        }
+    }
+};
+
+    /* ===== LOAD CONVERSATION ===== */
 
     const loadChat = async () => {
         if (!myId || !targetId) return;
@@ -68,31 +89,30 @@ export const Chat = () => {
         setMessages(history);
     };
 
-     /* ===== EFECTOS ===== */
-
     useEffect(() => {
         loadContacts();
     }, [myId]);
 
     useEffect(() => {
         loadChat();
-    }, [myId, targetId]);
+    }, [targetId]);
+
+    /* ===== POLLING V2 ===== */
 
     useEffect(() => {
-    if (!myId || !targetId) return;
+        if (!targetId) return;
 
-    const interval = setInterval(() => {
-        loadChat();
-    }, 4000); // cada 4 segundos
+        const interval = setInterval(() => {
+            loadChat();
+        }, 4000);
 
-    return () => clearInterval(interval);
+        return () => clearInterval(interval);
+    }, [targetId]);
 
-}, [myId, targetId]);
-
-    /* ===== ENVIAR MENSAJE ===== */
+    /* ===== SEND ===== */
 
     const handleSend = async () => {
-        if (!myId || !targetId || !text.trim()) return;
+        if (!text.trim() || !targetId) return;
 
         const payload = {
             sender_id: myId,
@@ -110,97 +130,97 @@ export const Chat = () => {
         }
     };
 
+    /* ===== RENDER ===== */
+
     return (
-        <div className="container mt-5">
-            <div className="card mx-auto" style={{ maxWidth: "500px" }}>
-                <div className="card-header bg-dark text-white d-flex justify-content-between">
-                    <span>Chat ({myRole || "no-role"})</span>
-                    <button
-                        className="btn btn-sm btn-outline-light"
-                        onClick={loadChat}
-                    >
-                        Refrescar
-                    </button>
-                </div>
+        <div className="container-fluid mt-3">
+            <div className="row vh-75" style={{ height: "80vh" }}>
 
-                <div className="p-2 border-bottom bg-light small">
-                    Hablar con:
-                    <select
-                        className="form-select form-select-sm mt-1"
-                        value={targetId || ""}
-                        onChange={e =>
-                            setTargetId(parseInt(e.target.value))
-                        }
-                    >
-                        {contacts.length === 0 && (
-                            <option value="">
-                                Sin conversaciones
-                            </option>
-                        )}
+                {/* LEFT PANEL - ROOMS */}
+                <div className="col-md-4 col-lg-3 border-end bg-light d-none d-md-block">
+                    <div className="p-3 border-bottom fw-bold">
+                        Conversaciones
+                    </div>
 
+                    <div className="list-group list-group-flush">
                         {contacts.map(c => (
-                            <option key={`${c.id}-${c.role}`} value={c.id}>
-                                {c.email || c.name || `ID ${c.id}`}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-
-                <div
-                    className="card-body"
-                    style={{ height: "300px", overflowY: "auto" }}
-                >
-                    {messages.length === 0 && (
-                        <p className="text-muted small">
-                            No hay mensajes todavía
-                        </p>
-                    )}
-
-                    {messages.map((m, i) => (
-                        <div
-                            key={i}
-                            className={`d-flex ${
-                                m.sender_role === myRole
-                                    ? "justify-content-end"
-                                    : "justify-content-start"
-                            } mb-2`}
-                        >
-                            <div
-                                className={`p-2 rounded ${
-                                    m.sender_role === myRole
-                                        ? "bg-primary text-white"
-                                        : "bg-light border"
-                                }`}
+                            <button
+                                key={`${c.id}-${c.role}`}
+                                onClick={() => setTargetId(c.id)}
+                                className={`list-group-item list-group-item-action ${targetId === c.id ? "active" : ""
+                                    }`}
                             >
-                                <small
-                                    className="d-block fw-bold"
-                                    style={{ fontSize: "0.7rem" }}
-                                >
-                                    {m.sender_role === myRole
-                                        ? "Tú"
-                                        : `${m.sender_role} ${m.sender_id}`}
-                                </small>
-                                {m.content}
-                            </div>
-                        </div>
-                    ))}
+
+                                <div className="d-flex align-items-center gap-2">
+
+                                    <img
+                                        src={c.photo_url || "https://via.placeholder.com/32"}
+                                        alt="avatar"
+                                        width="32"
+                                        height="32"
+                                        className="rounded-circle"
+                                        style={{ objectFit: "cover" }}
+                                    />
+
+                                    <div className="text-truncate">
+                                        {c.email || c.name}                                
+                                    </div>
+                                </div>
+                            </button>
+                        ))}
+                    </div>
                 </div>
 
-                <div className="card-footer">
-                    <div className="input-group">
-                        <input
-                            type="text"
-                            className="form-control"
-                            value={text}
-                            onChange={e => setText(e.target.value)}
-                            placeholder="Escribe..."
-                        />
-                        <button
-                            className="btn btn-primary"
-                            onClick={handleSend}
-                        >
-                            Enviar
-                        </button>
+                {/* RIGHT PANEL - CHAT */}
+                <div className="col-md-8 col-lg-9 d-flex flex-column">
+
+                    {/* HEADER */}
+                    <div className="border-bottom p-3 fw-bold">
+                        {contacts.find(c => c.id === targetId)?.email ||
+                            contacts.find(c => c.id === targetId)?.name ||
+                            "Selecciona conversación"}
+                    </div>
+
+                    {/* MESSAGES */}
+                    <div className="flex-grow-1 overflow-auto p-3 bg-white">
+                        {messages.map((m, i) => (
+                            <div
+                                key={i}
+                                className={`d-flex mb-2 ${m.sender_role === myRole
+                                        ? "justify-content-end"
+                                        : "justify-content-start"
+                                    }`}
+                            >
+                                <div
+                                    className={`p-2 rounded ${m.sender_role === myRole
+                                            ? "bg-primary text-white"
+                                            : "bg-light border"
+                                        }`}
+                                    style={{ maxWidth: "70%" }}
+                                >
+                                    {m.content}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* INPUT */}
+                    <div className="border-top p-2">
+                        <div className="input-group">
+                            <input
+                                type="text"
+                                className="form-control"
+                                value={text}
+                                onChange={e => setText(e.target.value)}
+                                placeholder="Escribe mensaje..."
+                            />
+                            <button
+                                className="btn btn-primary"
+                                onClick={handleSend}
+                            >
+                                Enviar
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
