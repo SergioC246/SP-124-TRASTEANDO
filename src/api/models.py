@@ -1,6 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import String, Boolean, ForeignKey
+from sqlalchemy import String, Boolean, ForeignKey, Date
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+from datetime import date
 
 db = SQLAlchemy()
 
@@ -92,9 +93,11 @@ class Leases(db.Model):
     __tablename__ = "leases"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    start_date: Mapped[str] = mapped_column(nullable=False)
-    end_date: Mapped[str] = mapped_column(nullable=False)
-    status: Mapped[bool] = mapped_column(nullable=True, default=False)
+
+    start_date: Mapped[date] = mapped_column(Date, nullable=False)
+    end_date: Mapped[date] = mapped_column(Date, nullable=False)
+
+    status: Mapped[str] = mapped_column(String(20), default="active")
 
     client_id: Mapped[int] = mapped_column(
         ForeignKey("clients.id"), nullable=False)
@@ -107,8 +110,8 @@ class Leases(db.Model):
     def serialize(self):
         return {
             "id": self.id,
-            "start_date": self.start_date,
-            "end_date": self.end_date,
+            "start_date": self.start_date.isoformat(),
+            "end_date": self.end_date.isoformat(),
             "status": self.status,
             "client_id": self.client_id,
             "storage_id": self.storage_id
@@ -179,3 +182,4 @@ class Location(db.Model):
             "occupied_storages": occupied_storages,
             "available_storages": available_storages
         }
+

@@ -47,14 +47,34 @@ export const CompanyLocationStorages = () => {
                 if (!response.ok) throw new Error("Error fetching location")
                 return response.json()
             })
-            .then(data => {
-                setLocation(data)
+            .then(async data => {
+                const storagesWithLeases = await Promise.all(
+                    data.map(async storage => {
+                        const leasesRes = await fetch(
+                            `${import.meta.env.VITE_BACKEND_URL}api/private/company/storage/${storage.id}/leases`,
+                            { headers: { Authorization: "Bearer " + token } }
+                        )
+                        const leasesData = await leasesRes.json()
+                        return { ...storage, leases: leasesData }
+                    })
+                )
+                setStorages(storagesWithLeases)
                 setLoading(false)
             })
             .catch(error => {
                 console.error("Location error:", error)
                 setLoading(false)
             })
+
+        fetch(`${import.meta.env.VITE_BACKEND_URL}/api/location/${id}`, {
+            headers: { Authorization: "Bearer " + token }
+        })
+            .then(res => {
+                if (!res.ok) throw new Error("Error fetching location")
+                return res.json()
+            })
+            .then(data => setLocation(data))
+            .catch(err => console.error(err))
     }, [id])
 
     const handleDelete = (storageId) => {
@@ -71,13 +91,13 @@ export const CompanyLocationStorages = () => {
         })
             .then(response => {
                 if (!response.ok) throw new Error("Delete failed")
-                setStorages(prev =>
-                    prev.filter(storage => storage.id !== storageId)
+                setStorages(prev => prev.filter(storage => storage.id !== storageId)
                 )
             })
     }
 
     if (loading) return <h2>Loading storages...</h2>
+
     if (storages.length === 0) {
         return (
             <div className="container py-5">
@@ -126,7 +146,7 @@ export const CompanyLocationStorages = () => {
                                 {storages.map(storage => (
                                     <div key={storage.id} className="col-12 col-md-6 col-lg-3">
                                         <div className="card shadow-sm border-0 h-100">
-                                            
+
                                             {storage.photo ? (
                                                 <img
                                                     src={storage.photo}
@@ -147,6 +167,23 @@ export const CompanyLocationStorages = () => {
                                                 <h5 className="fw-bold">Size: {storage.size}</h5>
                                                 <p className="mb-1"><strong>Price:</strong> {storage.price}</p>
                                                 <p className="mb-0"><strong>Status:</strong> {storage.status ? "Available" : "Occupied"}</p>
+
+                                                {storage.leases && (
+                                                    <div className="mt-2">
+                                                        <h6>Leases:</h6>
+                                                        <ul className="list-unstyled mb-0">
+                                                            {storage.leases.past.map(l => (
+                                                                <li key={l.email + l.start_date}><strong>Past:</strong> {l.email} ({l.start_date} - {l.end_date})</li>
+                                                            ))}
+                                                            {storage.leases.current.map(l => (
+                                                                <li key={l.email + l.start_date}><strong>Current:</strong> {l.email} ({l.start_date} - {l.end_date})</li>
+                                                            ))}
+                                                            {storage.leases.future.map(l => (
+                                                                <li key={l.email + l.start_date}><strong>Future:</strong> {l.email} ({l.start_date} - {l.end_date})</li>
+                                                            ))}
+                                                        </ul>
+                                                    </div>
+                                                )}
 
                                                 <div className="d-flex justify-content-end gap-1 mt-2">
                                                     <button className="btn btn-md btn-outline-primary shadow"

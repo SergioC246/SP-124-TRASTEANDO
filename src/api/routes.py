@@ -7,6 +7,7 @@ from api.models import db, User, AdminUser, Client, Company, Leases, Storage, Lo
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from sqlalchemy import select
+import sqlalchemy as sa
 
 
 api = Blueprint('api', __name__)
@@ -945,7 +946,7 @@ def get_storages_by_location(location_id):
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-    
+
 
 # private leases de cliente
 
@@ -1013,3 +1014,68 @@ def mycompany_locations_overview():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+
+# Storage status per company
+
+@api.route("/private/company/storages-occupancy", methods=["GET"])
+@jwt_required()
+def company_storages_occupancy():
+    company_id = int(get_jwt_identity())
+
+    # Obtener todos los storages de la empresa
+    storages = db.session.execute(
+        select(Storage).join(Location).where(Location.company_id == company_id)
+    ).scalars().all()
+
+    result = []
+    for storage in storages:
+        # contar leases activas
+        active_leases = db.session.execute(
+            select(Leases).where(
+                Leases.storage_id == storage.id,
+                Leases.status == "true",
+                Leases.start_date <= sa.func.current_date(),
+                Leases.end_date >= sa.func.current_date()
+            )
+        ).scalars().all()
+
+        storage_data = storage.serialize()
+        storage_data["occupied"] = len(active_leases) > 0
+        storage_data["active_leases_count"] = len(active_leases)
+
+        result.append(storage_data)
+
+    return jsonify(result), 200
+
+
+# Endpoint para leases de un storage específico
+@api.route("/private/company/storage/<int:storage_id>/leases", methods=["GET"])
+@jwt_required()
+def storage_leases(storage_id):
+    today = sa.func.current_date()
+
+    # Traer leases con join a Client para obtener email
+    leases = db.session.execute(
+        select(Leases, Client.email)
+        .join(Client, Leases.client_id == Client.id)
+        .where(Leases.storage_id == storage_id)
+    ).all()
+
+    result = {"current": [], "past": [], "future": []}
+
+    for lease, email in leases:
+        lease_info = {
+            "email": email,
+            "start_date": lease.start_date.isoformat(),
+            "end_date": lease.end_date.isoformat()
+        }
+
+        if lease.end_date < db.func.current_date():
+            result["past"].append(lease_info)
+        elif lease.start_date > db.func.current_date():
+            result["future"].append(lease_info)
+        else:
+            result["current"].append(lease_info)
+
+    return jsonify(result), 200
