@@ -47,7 +47,7 @@ export const StorageDetails = () => {
         </ul>
 
         <button className="btn btn-secondary"
-                onClick={() => navigate("/storages")}
+                onClick={() => navigate(-1)}
          >
             Back
          </button>

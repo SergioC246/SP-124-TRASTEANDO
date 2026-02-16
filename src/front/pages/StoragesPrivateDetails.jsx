@@ -13,7 +13,7 @@ export const StoragesPrivateDetails = () => {
 
     const [storage, setStorage] = useState(null)
     const [loading, setLoading] = useState(true)
-    const [isAvailable, setIsAvailable] = useState(true);
+    // const [isAvailable, setIsAvailable] = useState(true);
 
 
     useEffect(() => {
@@ -41,26 +41,26 @@ export const StoragesPrivateDetails = () => {
     }, [storageId, store.tokenClient]);
 
 
-    useEffect(() => {
-        const checkAvailability = async () => {
-            if (!storageId || !store.tokenClient || !storage) return;
+    // useEffect(() => {
+    //     const checkAvailability = async () => {
+    //         if (!storageId || !store.tokenClient || !storage) return;
 
-            try {
-                const backendUrl = import.meta.env.VITE_BACKEND_URL;
-                const resp = await fetch(`${backendUrl}/api/leases?storage_id=${storageId}`, {
-                    headers: { "Authorization": `Bearer ${store.tokenClient}` }
-                });
+    //         try {
+    //             const backendUrl = import.meta.env.VITE_BACKEND_URL;
+    //             const resp = await fetch(`${backendUrl}/api/leases?storage_id=${storageId}`, {
+    //                 headers: { "Authorization": `Bearer ${store.tokenClient}` }
+    //             });
 
-                if (resp.ok) {
-                    const leases = await resp.json();
-                    setIsAvailable(storage.status === true && leases.length === 0);
-                }
-            } catch (error) {
-                console.error("Error check:", error);
-            }
-        };
-        checkAvailability();
-    }, [storageId, store.tokenClient, storage]);
+    //             if (resp.ok) {
+    //                 const leases = await resp.json();
+    //                 setIsAvailable(storage.status === true && leases.length === 0);
+    //             }
+    //         } catch (error) {
+    //             console.error("Error check:", error);
+    //         }
+    //     };
+    //     checkAvailability();
+    // }, [storageId, store.tokenClient, storage]);
 
 
     if (loading) return (
@@ -97,9 +97,13 @@ export const StoragesPrivateDetails = () => {
                                 <div className="card-body p-5">
                                     <div className="d-flex justify-content-between align-items-center mb-4">
                                         <h2 className="fw-bold mb-0">Especificaciones</h2>
-                                        <span className={`badge rounded-pill px-3 py-2 ${isAvailable ? 'bg-success-subtle text-success' : 'bg-danger-subtle text-danger'}`}>
-                                            {isAvailable ? 'Disponible' : 'Ocupado'}
+                                        <span className={`badge rounded-pill px-3 py-2 ${storage.status ? 'bg-success-subtle text-success' : 'bg-danger-subtle text-danger'}`}>
+                                            {storage.status ? 'Disponible' : 'Ocupado'}
                                         </span>
+
+                                        {/* <span className={`badge rounded-pill px-3 py-2 ${isAvailable ? 'bg-success-subtle text-success' : 'bg-danger-subtle text-danger'}`}>
+                                            {isAvailable ? 'Disponible' : 'Ocupado'}
+                                        </span> */}
 
                                     </div>
 
@@ -119,9 +123,18 @@ export const StoragesPrivateDetails = () => {
                                         <h6 className="fw-bold mb-1 text-primary">Detalles de la ubicación:</h6>
                                         <p className="small text-muted mb-0">Este trastero en <strong>{storage.city}</strong> es gestionado por <strong>{storage.company_name}</strong>. Incluye seguridad privada y acceso optimizado.</p>
                                     </div>
+                                    <button
+                                        disabled={!storage.status}
+                                        className="btn btn-primary btn-lg w-100 py-3 fw-bold shadow"
+                                        style={{ borderRadius: "15px" }}
+                                        onClick={() => navigate(`/client/private/checkout/${storage.id}`)}
+                                    >
+                                        {storage.status ? 'Continuar con el Arrendamiento' : 'Trastero Ocupado'}
+                                    </button>
+{/* 
                                     <button className={`btn btn-primary btn-lg w-100 py-3 fw-bold shadow ${!isAvailable ? 'disabled' : ''}`} style={{ borderRadius: "15px" }} onClick={() => navigate(`/client/private/checkout/${storage.id}`)}>
                                         {isAvailable ? 'Continuar con el Arrendamiento' : 'Trastero Ocupado'}
-                                    </button>
+                                    </button> */}
                                 </div>
                             </div>
 

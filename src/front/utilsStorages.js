@@ -128,3 +128,14 @@ export const getCompanyStorage = async () => {
 
     return await response.json();
 };
+
+// Get sotrafes para el Mapa de google(markers)
+export const getStoragesForMap = async () => {
+    const response = await fetch(`${STORAGES_URL}/map`);
+
+    if(!response.ok){
+        throw new Error('Map storages failed');
+    }
+    const data = await response.json();
+    return data;
+};

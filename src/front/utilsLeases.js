@@ -105,3 +105,4 @@ export const deleteClientLease = async (leaseId, token) => {
   }
   return await response.json();
 };
+

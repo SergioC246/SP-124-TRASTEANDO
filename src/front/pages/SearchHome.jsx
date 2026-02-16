@@ -1,129 +1,133 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 
 export const SearchHome = () => {
-    const mapRef = useRef(null);
-    const markerRef = useRef(null);
-    const mapContainerRef = useRef(null);
-    const [isLeafletReady, setIsLeafletReady] = useState(false);
+    const inputRef = useRef(null);
+    const navigate = useNavigate();
+    const autocompleteRef = useRef(null);
+    const [storages, setStorages] = useState([])
 
     const [searchData, setSearchData] = useState({
-        location: '',
-        lat: 40.416775,
-        lng: -3.703790,
-        checkin: '',
-        checkout: ''
+        location: "",
+        lat: null,
+        lng: null,
+        checkin: "",
+        checkout: ""
     });
 
-    // 1. Carga de Leaflet 
     useEffect(() => {
-        //esto para si esta ya cargado no ahcer nada
-        if (window.L) {
-            setIsLeafletReady(true);
-            return;
+        // Función para inicializar el Autocomplete
+        const initAutocomplete = () => {
+            if (!inputRef.current || autocompleteRef.current) return;
+
+            autocompleteRef.current = new window.google.maps.places.Autocomplete(inputRef.current);
+            autocompleteRef.current.addListener("place_changed", () => {
+                const place = autocompleteRef.current.getPlace();
+                if (!place.geometry) return;
+
+                setSearchData(prev => ({
+                    ...prev,
+                    location: place.formatted_address,
+                    lat: place.geometry.location.lat(),
+                    lng: place.geometry.location.lng()
+                }));
+            });
+        };
+        //  carga única
+        if (window.google && window.google.maps && window.google.maps.places) {
+            initAutocomplete();
+
+        } else {
+            const existingScript = document.getElementById("google-maps-script");
+            if (!existingScript) {
+                const script = document.createElement("script");
+                script.id = "google-maps-script";
+                script.src = `https://maps.googleapis.com/maps/api/js?key=${import.meta.env.VITE_GOOGLE_MAPS_KEY}&libraries=places`;
+                script.async = true;
+                script.defer = true;
+                script.onload = () => {
+                    initAutocomplete();
+                };
+                document.head.appendChild(script);
+            } else {
+                // Si el script ya existe pero Google aún no está listo esperamos al onload del script existente
+                existingScript.addEventListener("load", initAutocomplete);
+            }
         }
-//funciona sin nodemodules osea no hace falta npm install
-        //estilos del mapa de leaflet para que cargue bien
-        const link = document.createElement('link');
-        link.rel = 'stylesheet';
-        link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
-        document.head.appendChild(link);
-        // js ed leaflet las funciones del mapa de la web
-        const script = document.createElement('script');
-        script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js'; //para descargar Leaflet donde hacerlo
-        script.async = true; //no bloqeua la pagina para que cargue y espere al mapa
-        script.onload = () => setIsLeafletReady(true); //inserta en head del documento el script y otros links
-        document.head.appendChild(script);
     }, []);
 
-    // 2. Inicialización del Mapa
     useEffect(() => {
-        if (isLeafletReady && mapContainerRef.current && !mapRef.current) {
-            const L = window.L;
-            mapRef.current = L.map(mapContainerRef.current, { zoomControl: false }).setView([searchData.lat, searchData.lng], 13);
+        fetchStorages();
+    }, [])
 
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; OpenStreetMap'
-            }).addTo(mapRef.current);
-// marcador principal el dragable
-            markerRef.current = L.marker([searchData.lat, searchData.lng], { draggable: true }).addTo(mapRef.current);
-// evento del draggable para actualizar latitud y longitud
-            markerRef.current.on('dragend', function () {
-                const position = markerRef.current.getLatLng(); //coordenadas
-                console.log('Draggable:', position.lat, position.lng);
-                setSearchData(prev => ({ ...prev, lat: position.lat, lng: position.lng }));
-                // para qeu el draggable funcione
-                mapRef.current.setView([position.lat, position.lng], 14); //para mover el ampa
-                mapRef.current.invalidateSize();
-            });
-
-            setTimeout(() => mapRef.current.invalidateSize(), 500);
+    const handleSearch = () => {
+        if (!searchData.lat || !searchData.lng) {
+            alert("Selecciona una ciudad del desplegable.");
+            return;
         }
-    }, [isLeafletReady]); //para qeu se ejecute solo caundo leaf cargue
+        const params = new URLSearchParams({
+            loc: searchData.location,
+            lat: searchData.lat,
+            lng: searchData.lng,
+            start: searchData.checkin,
+            end: searchData.checkout
+        }).toString();
 
-    // 3. Función de Búsqueda
-    const handleSearch = async () => {
-        if (!searchData.location) return;
-
-        try {
-            const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchData.location)}`);              
-            const data = await response.json();
-
-            if (data && data.length > 0) {
-                const { lat, lon } = data[0];
-                const newLat = parseFloat(lat);
-                const newLng = parseFloat(lon);
-
-                console.log("latitud y longitud:", newLat, newLng)
-
-                mapRef.current.setView([newLat, newLng], 14);
-                markerRef.current.setLatLng([newLat, newLng]);
-
-                setSearchData(prev => ({ ...prev, lat: newLat, lng: newLng }));
-            } else {
-                alert("No se encontró la ubicación");
-            }
-        } catch (error) {
-            console.error("Error en la búsqueda:", error);
-        }
+        navigate(`/search/map?${params}`);
     };
 
+    // para traerme los storages
+    const fetchStorages = async () => {
+        try {
+            const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}api/storage/map`);
+            const data = await response.json();
+            setStorages(data);
+        } catch (error) {
+            console.error("Error cargando storages:", error);
+        }
+    }
+
+
     return (
-        <div style={{ height: '100vh', width: '100%', display: 'flex', flexDirection: 'column', backgroundColor: '#f8f9fa' }}>
-            <div className="container pt-4" style={{ zIndex: 1000 }}>
-                <div className="mx-auto" style={{ maxWidth: '900px' }}>
-                    <div className="container mt-3">
-                        <div className="row g-2 align-items-end border p-3 bg-white">
-                            <div className="col-md-4">
-                                <label className="d-block fw-bold mb-0 text-dark">Donde</label>
-                                <input type="text" className="form-control border-0 p-0 shadow-none bg-transparent" placeholder="Madrid, Barcelona..." value={searchData.location} onChange={(e) => setSearchData({ ...searchData, location: e.target.value })} onKeyDown={(e) => e.key === 'Enter' && handleSearch()} />
-                            </div>
-                            <div className="col-md-3">
-                                <label className="d-block fw-bold mb-0 text-dark">Desde</label>
-                                <input type="date" className="form-control border-0 p-0 shadow-none bg-transparent" value={searchData.checkin} onChange={(e) => setSearchData({ ...searchData, checkin: e.target.value })} />
-                            </div>
-                            <div className="col-md-3">
-                                <label className="d-block fw-bold mb-0 text-dark">Hasta</label>
-                                <input type="date" className="form-control border-0 p-0 shadow-none bg-transparent" value={searchData.checkout} onChange={(e) => setSearchData({ ...searchData, checkout: e.target.value })} />
-                            </div>
-                            <div className="col-md-2">
-                                <button onClick={handleSearch} className="btn btn-danger rounded-circle d-flex align-items-center justify-content-center shadow-sm float-end" style={{ width: '48px', height: '48px' }}>
-                                    <i className="fas fa-search text-white"></i>
-                                    {/* Si la librería Leaflet (L) aún no ha cargado en el navegador, muestra tres puntitos en el botón */}
-                                    {!window.L && <span style={{ fontSize: '10px' }}>...</span>}
-                                </button>
-                            </div>
+        <div style={{ minHeight: "100vh", backgroundColor: "#f8f9fa" }}>
+            <div className="container pt-4">
+                <div className="mx-auto" style={{ maxWidth: "900px" }}>
+                    <div className="row g-2 align-items-end border p-3 bg-white shadow-sm rounded">
+                        <div className="col-md-4">
+                            <label className="fw-bold">Dónde</label>
+                            <input ref={inputRef} type="text" className="form-control" placeholder="Madrid, Barcelona..." value={searchData.location} onChange={(e) => setSearchData({ ...searchData, location: e.target.value, lat: null, lng: null })} />
+                        </div>
+                        <div className="col-md-3">
+                            <label className="fw-bold">Desde</label>
+                            <input type="date" className="form-control" value={searchData.checkin} onChange={(e) => setSearchData({ ...searchData, checkin: e.target.value })} />
+                        </div>
+                        <div className="col-md-3">
+                            <label className="fw-bold">Hasta</label>
+                            <input type="date" className="form-control" value={searchData.checkout} onChange={(e) => setSearchData({ ...searchData, checkout: e.target.value })} />
+                        </div>
+                        <div className="col-md-2">
+                            <button onClick={handleSearch} className="btn btn-danger w-100"> <i className="fa fa-search" aria-hidden="true"></i> </button>
                         </div>
                     </div>
                 </div>
             </div>
-            <div className="flex-grow-1 mt-4 map" style={{ position: 'relative' }}>
-                {!isLeafletReady ? (
-                    <div className="d-flex justify-content-center align-items-center h-100">
-                        <div className="spinner-border text-danger" role="status"></div>
-                    </div>
-                ) : (
-                    <div ref={mapContainerRef} style={{ height: '100%', width: '100%', zIndex: 1 }}></div>
-                )}
+
+            {/* SECCIÓN DE TRASTEROS */}
+            <div className="container py-5">
+                <h3 className="fw-bold mb-4">Trasteros cerca de ti</h3>
+                <div className="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+                    {storages.map(storage => (
+                        <div key={storage.storage_id} className="col">
+                            <div className="card h-100 border-0 shadow-sm rounded-3 p-3">
+                                <div className="bg-light rounded mb-3" style={{ height: "150px" }}></div>
+                                <h5 className="fw-bold mb-1">{storage.address}, {storage.city}</h5>
+                                <p className="text-muted small mb-1">{storage.size} m²</p>
+                                <p className="fw-bold mt-auto mb-0">{storage.price}€ / mes</p>
+                                <button className="btn btn-primary mt-2" onClick={() => navigate(`/storages/${storage.storage_id}`)} >Ver detalles</button>
+                            </div>
+                        </div>
+                    ))}
+                </div>
             </div>
         </div>
     );

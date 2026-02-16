@@ -35,8 +35,8 @@ export const StoragePrivateCheckout = () => {
         try {
             const leaseData = {
                 storage_id: parseInt(storageId),
-                start_date: startDate, // Enviamos YYYY-MM-DD
-                end_date: endDate,     // Enviamos YYYY-MM-DD
+                start_date: startDate, 
+                end_date: endDate,     
                 status: true
             };
 

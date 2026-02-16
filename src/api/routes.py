@@ -909,30 +909,97 @@ def get_my_leases():
 
 # crear un lease private para cliente
 
+
 @api.route('/client/leases', methods=['POST'])
 @jwt_required()
 def create_client_lease():
-    data = request.get_json()
+    try:
+        data = request.get_json()
+        current_client_id = get_jwt_identity()
 
-    current_client_id = get_jwt_identity() 
+        start_date = data.get("start_date")
+        end_date = data.get("end_date")
+        storage_id = data.get("storage_id")
 
-    start_date = data.get("start_date")
-    end_date = data.get("end_date")
-    status = data.get("status", True)
-    storage_id = data.get("storage_id")
+        if not all([start_date, end_date, storage_id]):
+            return jsonify({"message": "Faltan datos obligatorios"}), 400
 
-    if not all([start_date, end_date, storage_id]):
-        return jsonify({"message": "Faltan datos obligatorios (fechas o storage_id)"}), 400
-    
-    new_lease = Leases(
-        start_date = start_date,
-        end_date = end_date,
-        status = status,
-        client_id = current_client_id,
-        storage_id = storage_id
-    )
+        storage = Storage.query.get(storage_id)
 
-    db.session.add(new_lease)
-    db.session.commit()
-    
-    return jsonify(new_lease.serialize()), 201
+        if not storage:
+            return jsonify({"message": "Trastero no encontrado"}), 404
+
+        if not storage.status:
+            return jsonify({"message": "El trastero ya está ocupado"}), 400
+
+
+        new_lease = Leases(
+            start_date=start_date,
+            end_date=end_date,
+            status=True,
+            client_id=current_client_id,
+            storage_id=storage_id
+        )
+
+        storage.status = False
+
+        db.session.add(new_lease)
+        db.session.commit()
+
+        return jsonify(new_lease.serialize()), 201
+
+    except Exception as e:
+        db.session.rollback()
+        print("ERROR INTERNO:", e)
+        return jsonify({"error": str(e)}), 500
+
+# borrar un lease de cliente
+
+@api.route('/client/leases/<int:lease_id>', methods=['DELETE'])
+@jwt_required()
+def delete_client_lease(lease_id):
+    try:
+        client_id = get_jwt_identity()
+
+        lease = db.session.get(Leases, lease_id)
+        if not lease:
+            return jsonify({"message": "Lease not found"}), 404
+
+        if lease.client_id != client_id:
+            return jsonify({"message": "No autorizado"}), 403
+
+        storage = db.session.get(Storage, lease.storage_id)
+        if storage:
+            storage.status = True 
+        db.session.delete(lease)
+        db.session.commit()
+
+        return jsonify({"message": "Reserva cancelada con éxito"}), 200
+
+    except Exception as e:
+        db.session.rollback()
+        print("ERROR AL CANCELAR LEASE:", e)
+        return jsonify({"error": str(e)}), 500
+
+
+# endpoint para el mapa SOLO IRENE NO TOCAR PREGUNTAR PRIMERO
+@api.route('/storage/map', methods=["GET"])
+def get_storages_for_map():
+    # el JOIN entre Storage y Location para Haces 1 sola consulta a la base de datos en lugar de 50 o 100
+    # Solo traemos los que están disponibles (status == True)
+    query = select(Storage, Location).join(Location).where(Storage.status == True)
+    results = db.session.execute(query).all()
+    final_result = []
+
+    for storage, location in results:
+        final_result.append({
+            "storage_id": storage.id,
+            "price": storage.price,
+            "size": storage.size,
+            "latitude": float(location.latitude),
+            "longitude": float(location.longitude),
+            "city": location.city,
+            "address": location.address
+        })
+            
+    return jsonify(final_result), 200
