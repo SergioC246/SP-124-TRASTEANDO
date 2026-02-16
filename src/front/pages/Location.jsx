@@ -31,40 +31,112 @@ export const Location = () => {
     }
 
     return (
-        <div className="container py-4">
-            <div>
-                <div className="d-flex justify-content-between align-items-center mb-3">
-                    <h2 className="mb-0">Locations</h2>
+        <div className="container py-5">
+            <div className="row justify-content-center">
+                <div className="col-12 col-md-6 col-mx-auto">
 
-                    {/* Solo Admin y Company pueden crear locations */}
-                    {(role === "admin" || role === "company") && (
-                      <button className="btn btn-success" onClick={() => navigate("/location-create")}>
-                        Create Location
-                      </button>
-                    )}
-                </div>
+                    <div className="card shadow-lg border-0">
 
-                {allLocation.map((location) =>
-                    <div key={location.id} className="card mb-2">
-                        <div className="card-body d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center">
-                            <div>
-                                <h5 className="card-title">Company Name: {location.company_name}</h5>
-                                <p className="mb-0">Address: {location.address}</p>
-                                <p className="mb-0">City: {location.city}</p>
-                                <p className="mb-0">Latitude: {location.latitude}</p>
-                                <p className="mb-0">Longitude: {location.longitude}</p>
-                                <p className="mb-0">ID: {location.id}</p>
-                            </div>
-                            <div className="d-flex flex-column flex-sm-row gap-1 mt-3 mt-sm-0">
-                                <button className="btn btn-success" onClick={() => navigate(`/location-details/${location.id}`)}>Details</button>
-                                <button className="btn btn-primary" onClick={() => navigate(`/location-edit/${location.id}`)}>Edit</button>
-                                <button className="btn btn-danger" onClick={() => handleDelete(location.id)}>Delete</button>
-                            </div>
+                        <div className="card-header bg-info-subtle text-info-emphasis text-center py-4">
+                            <h3 className="mb-0">
+                                Locations
+                            </h3>
+                        </div>
+
+                        <div className="card-body py-4">
+
+                            {(role === "admin" || role === "company") && (
+                                <div className="text-center mb-4">
+                                    <button className="btn btn-outline-success shadow"
+                                        onClick={() => navigate("/companies/private/locations/create")}>
+                                        Create Location
+                                    </button>
+                                </div>
+                            )}
+
+                            {allLocation.length === 0 && (
+                                <p className="text-center">No locations found</p>
+                            )}
+
+                            {allLocation.map((location) => (
+                                <div key={location.id} className="card mb-2 shadow-sm">
+                                    <div className="card-body">
+
+                                        <div className="row">
+                                            <div className="col-md-6 mb-3">
+                                                <p className="text-muted mb-1">Company Name:</p>
+                                                <p className="fw-semibold fs-5 mb-0">{location.company_name}</p>
+                                            </div>
+
+                                            <div className="col-md-6 mb-3">
+                                                <p className="text-muted mb-1">ID:</p>
+                                                <p className="fw-semibold fs-5 mb-0">{location.id}</p>
+                                            </div>
+
+
+                                        </div>
+
+                                        <div className="row">
+                                            <div className="col-md-6 mb-3">
+                                                <p className="text-muted mb-1">City:</p>
+                                                <p className="fw-semibold fs-5 mb-0"> {location.city}</p>
+                                            </div>
+
+                                            <div className="col-md-6 mb-3">
+                                                <p className="text-muted mb-1">Address:</p>
+                                                <p className="fw-semibold fs-5 mb-0">{location.address}</p>
+                                            </div>
+                                        </div>
+
+                                        <div className="row">
+
+                                            <div className="col-md-6 mb-3">
+                                                <p className="text-muted mb-1">Longitude:</p>
+                                                <p className="fw-semibold fs-5 mb-0">{location.longitude}</p>
+                                            </div>
+
+                                            <div className="col-md-6 mb-3">
+                                                <p className="text-muted mb-1">Latitude:</p>
+                                                <p className="fw-semibold fs-5 mb-0">{location.latitude}</p>
+                                            </div>
+
+                                            <div className="mt-3 d-flex justify-content-between align-items-center">
+                                                <button
+                                                    className="btn btn-outline-primary shadow"
+                                                    onClick={() =>
+                                                        navigate(`/companies/private/locations/storages/${location.id}`)
+                                                    }
+                                                >
+                                                    View Storages
+                                                </button>
+
+                                                <div className="d-flex justify-content-end gap-1 mt-2">
+                                                    <button className="btn btn-outline-secondary shadow"
+                                                        onClick={() => navigate(`/location-details/${location.id}`)}
+                                                    >
+                                                        <i className="fa-regular fa-eye"></i>
+                                                    </button>
+
+                                                    <button className="btn btn-outline-success shadow"
+                                                        onClick={() => navigate(`/location-edit/${location.id}`)}>
+                                                        <i className="fa-solid fa-pencil"></i>
+                                                    </button>
+
+                                                    <button className="btn btn-outline-danger shadow"
+                                                        onClick={() => handleDelete(location.id)}>
+                                                        <i className="fa-solid fa-trash"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
                     </div>
-                )}
-                {allLocation.length === 0 && <p>No locations found</p>}
+                </div>
             </div>
-        </div>
+
+        </div >
     )
 }
