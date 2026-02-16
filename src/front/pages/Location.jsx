@@ -72,8 +72,6 @@ export const Location = () => {
                                                 <p className="text-muted mb-1">ID:</p>
                                                 <p className="fw-semibold fs-5 mb-0">{location.id}</p>
                                             </div>
-
-
                                         </div>
 
                                         <div className="row">
