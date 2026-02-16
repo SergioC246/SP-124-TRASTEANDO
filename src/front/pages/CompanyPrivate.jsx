@@ -75,10 +75,21 @@ export const CompanyPrivate = () => {
 
                         <div className="card-body text-center">
 
-                            <img src={photo || "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSbFBTwnuqabNGj5FCDXwiuGK_AtPM8IlQN-g&s"}
-                                alt="Company"
-                                className="rounded-circle mb-4 shadow-sm"
-                                style={{ width: "150px", height: "150px", objectFit: "cover" }} />
+                            {photo ? (
+                                <img
+                                    src={photo}
+                                    alt="Company"
+                                    className="rounded-circle mb-4 shadow-sm"
+                                    style={{ width: "150px", height: "150px", objectFit: "cover" }}
+                                />
+                            ) : (
+                                <div
+                                    className="rounded-circle mb-4 shadow-sm d-flex align-items-center justify-content-center bg-light text-muted"
+                                    style={{ width: "150px", height: "150px" }}
+                                >
+                                    No image
+                                </div>
+                            )}
 
                             <div className="text-start px-3">
 

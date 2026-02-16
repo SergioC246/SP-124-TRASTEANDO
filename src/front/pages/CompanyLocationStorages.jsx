@@ -126,11 +126,22 @@ export const CompanyLocationStorages = () => {
                                 {storages.map(storage => (
                                     <div key={storage.id} className="col-12 col-md-6 col-lg-3">
                                         <div className="card shadow-sm border-0 h-100">
-
-                                            <img src={storage.photo || "https://www.esmadrid.com/sites/default/files/styles/content_type_full/public/recursosturisticos/compras/mercado_de_chamberi.jpg?itok=OFLp6NRV"}
-                                                className="card-img-top"
-                                                alt="Storage"
-                                                style={{ aspectRatio: "16/9", width: "100%", objectFit: "cover" }} />
+                                            
+                                            {storage.photo ? (
+                                                <img
+                                                    src={storage.photo}
+                                                    className="card-img-top"
+                                                    alt="Storage"
+                                                    style={{ aspectRatio: "16/9", width: "100%", objectFit: "cover" }}
+                                                />
+                                            ) : (
+                                                <div
+                                                    className="d-flex align-items-center justify-content-center bg-light text-muted"
+                                                    style={{ aspectRatio: "16/9", width: "100%" }}
+                                                >
+                                                    No image available
+                                                </div>
+                                            )}
 
                                             <div className="card-body">
                                                 <h5 className="fw-bold">Size: {storage.size}</h5>
