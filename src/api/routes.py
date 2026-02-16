@@ -4,6 +4,8 @@ from api.models import db, User, AdminUser, Client, Company, Leases, Storage, Lo
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from sqlalchemy import select
+from api.socketio_instance import socketio
+from api.realtime_rooms import conversation_room
 
 
 
@@ -967,7 +969,20 @@ def send_message():
 
     db.session.add(new_msg)
     db.session.commit()
-    return jsonify(new_msg.serialize()), 201
+    
+    payload = new_msg.serialize()
+
+
+    room = conversation_room(
+        body["sender_id"],
+        body["sender_role"],
+        body["receiver_id"],
+        body["receiver_role"]
+    )
+
+    socketio.emit("message:new", payload, room=room)
+
+    return jsonify(payload), 201
 
 # @api.route('/messages/<int:user_id>/<string:role>', methods=["GET"])
 # def get_chat_history(user_id, role):
