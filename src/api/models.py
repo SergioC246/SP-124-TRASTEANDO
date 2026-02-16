@@ -46,6 +46,7 @@ class Client(db.Model):
         String(120), unique=True, nullable=False)
     password: Mapped[str] = mapped_column(String(200), nullable=False)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+    photo_url: Mapped[str] = mapped_column(String(500), nullable=True)
 
     leases: Mapped[list["Leases"]] = relationship(
         back_populates="client", cascade="all, delete-orphan")
@@ -54,7 +55,8 @@ class Client(db.Model):
         return {
             "id": self.id,
             "email": self.email,
-            "is_active": self.is_active
+            "is_active": self.is_active,
+            "photo_url": self.photo_url
         }
 
 

@@ -56,6 +56,9 @@ import { CompanyStoragesEdit } from "./pages/CompanyStoragesEdit";
 import { CompanyLocationStorages } from "./pages/CompanyLocationStorages";
 import { ClientPrivateLeases } from "./pages/ClientePrivateLeases";
 import { CompanyPrivateEdit } from "./pages/CompanyPrivateEdit";
+import { CompanyEdit } from "./pages/CompanyEdit";
+import { LocationPublic } from "./pages/LocationPublic";
+import { SearchHome } from "./pages/SearchHome";
 
 
 
@@ -68,6 +71,9 @@ export const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<Layout />} errorElement={<h1>Not found!</h1>} >
       <Route path="/" element={<Home />} />
+      {/* ruta para el search de home */}
+      <Route path="/search" element={<SearchHome/>}/>
+
       {/* Rutas adminUser */}
 
       <Route path="/admin/login" element={<AdminLogin />} />
@@ -88,6 +94,7 @@ export const router = createBrowserRouter(
       <Route path="/companies" element={<Companies />} />
       <Route path="/createCompanies" element={<CreateCompanies />} />
       <Route path="/companies/:id" element={<CompanyDetails />} />
+      <Route path="/companies/:id/edit" element={<CompanyEdit />} />
       <Route path="/companies/login" element={<CompanyLogin />} />
       <Route path="/companies/private" element={<CompanyPrivate />} />
       <Route path="/companies/private/edit" element={<CompanyPrivateEdit />} />
@@ -102,10 +109,11 @@ export const router = createBrowserRouter(
       <Route path="/companies/private/storages/:id" element={<CompanyStoragesDetails />} />
 
       {/* Rutas location */}
-      <Route path="/location" element={<Location />} />
+      
       <Route path="/location-create" element={<LocationCreate />} />
       <Route path="/location-details/:id" element={<LocationDetails />} />
       <Route path="/location-edit/:id" element={<LocationEdit />} />
+      <Route path="/locations-public" element={<LocationPublic />} />
 
       {/* Rutas storage */}
       <Route path="/storages" element={<StorageList />} />
@@ -123,6 +131,8 @@ export const router = createBrowserRouter(
         <Route path="/admin-details/:id" element={<AdminUserDetails />} />
         <Route path="/clients-info" element={<Clients />} />
         <Route path="/companies" element={<Companies />} />
+        <Route path="/location" element={<Location />} />
+
       </Route>
 
       {/* Panel privado de Admin */}
@@ -133,7 +143,7 @@ export const router = createBrowserRouter(
       {/* Clients - Solo Admin puede ver la lista completa */}
 
       <Route element={<AdminProtectedRoute />}>
-        <Route path="/clients/:id/edit" element={<ClientEdit />} />
+        
         <Route path="/clients" element={<ClientList />} />
         <Route path="/clients/new" element={<ClientCreate />} />
         <Route path="/clients/:id" element={<ClientDetails />} />
@@ -148,6 +158,7 @@ export const router = createBrowserRouter(
       {/* ==== Rutas Protegidas Solo Client ==== */}
 
       <Route element={<ClientProtectedRoute />}>
+        <Route path="/clients/:id/edit" element={<ClientEdit />} />
         <Route path="/client/private" element={<ClientPrivate />} />
         <Route path="/client/private/leases" element={<ClientPrivateLeases />} />
         <Route path="/client/private/checkout/:storageId" element={<StoragePrivateCheckout />} />

@@ -150,6 +150,7 @@ def update_client(client_id):
 
     client.email = body.get("email", client.email)
     client.is_active = body.get("is_active", client.is_active)
+    client.photo_url = body.get("photo_url", client.photo_url)
 
     db.session.commit()
 
@@ -944,6 +945,7 @@ def get_storages_by_location(location_id):
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
 
 # private leases de cliente
 
