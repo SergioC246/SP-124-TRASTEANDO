@@ -57,6 +57,9 @@ import { CompanyLocationStorages } from "./pages/CompanyLocationStorages";
 import { ClientPrivateLeases } from "./pages/ClientePrivateLeases";
 import { SearchHome } from "./pages/SearchHome";
 import { Map } from "./pages/Map";
+import { CompanyEdit } from "./pages/CompanyEdit";
+import { LocationPublic } from "./pages/LocationPublic";
+import { SearchHome } from "./pages/SearchHome";
 
 
 
@@ -93,6 +96,7 @@ export const router = createBrowserRouter(
       <Route path="/companies" element={<Companies />} />
       <Route path="/createCompanies" element={<CreateCompanies />} />
       <Route path="/companies/:id" element={<CompanyDetails />} />
+      <Route path="/companies/:id/edit" element={<CompanyEdit />} />
       <Route path="/companies/login" element={<CompanyLogin />} />
       <Route path="/companies/private" element={<CompanyPrivate />} />
       <Route path="/companies/private/locations" element={<CompanyLocations />} />
@@ -106,10 +110,11 @@ export const router = createBrowserRouter(
       <Route path="/companies/private/storages/:id" element={<CompanyStoragesDetails />} />
 
       {/* Rutas location */}
-      <Route path="/location" element={<Location />} />
+      
       <Route path="/location-create" element={<LocationCreate />} />
       <Route path="/location-details/:id" element={<LocationDetails />} />
       <Route path="/location-edit/:id" element={<LocationEdit />} />
+      <Route path="/locations-public" element={<LocationPublic />} />
 
       {/* Rutas storage */}
       <Route path="/storages" element={<StorageList />} />
@@ -127,6 +132,8 @@ export const router = createBrowserRouter(
         <Route path="/admin-details/:id" element={<AdminUserDetails />} />
         <Route path="/clients-info" element={<Clients />} />
         <Route path="/companies" element={<Companies />} />
+        <Route path="/location" element={<Location />} />
+
       </Route>
 
       {/* Panel privado de Admin */}
@@ -137,7 +144,7 @@ export const router = createBrowserRouter(
       {/* Clients - Solo Admin puede ver la lista completa */}
 
       <Route element={<AdminProtectedRoute />}>
-        <Route path="/clients/:id/edit" element={<ClientEdit />} />
+        
         <Route path="/clients" element={<ClientList />} />
         <Route path="/clients/new" element={<ClientCreate />} />
         <Route path="/clients/:id" element={<ClientDetails />} />
@@ -152,6 +159,7 @@ export const router = createBrowserRouter(
       {/* ==== Rutas Protegidas Solo Client ==== */}
 
       <Route element={<ClientProtectedRoute />}>
+        <Route path="/clients/:id/edit" element={<ClientEdit />} />
         <Route path="/client/private" element={<ClientPrivate />} />
         <Route path="/client/private/leases" element={<ClientPrivateLeases />} />
         <Route path="/client/private/checkout/:storageId" element={<StoragePrivateCheckout />} />
