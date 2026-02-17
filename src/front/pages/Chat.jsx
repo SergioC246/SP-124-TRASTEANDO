@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import useGlobalReducer from "../hooks/useGlobalReducer";
 import { chatAPI } from "./utilsChat";
 import { jwtDecode } from "jwt-decode";
@@ -14,6 +14,7 @@ export const Chat = () => {
     const [contacts, setContacts] = useState([]);
     const [targetId, setTargetId] = useState(null);
     const [text, setText] = useState("");
+    const currentRoomRef = useRef(null);
 
     /* ===== USER ===== */
 
@@ -26,9 +27,9 @@ export const Chat = () => {
         : null;
 
     const myId = decodedClient
-        ? decodedClient.sub
+        ? parseInt(decodedClient.sub)
         : decodedCompany
-            ? decodedCompany.sub
+            ? parseInt(decodedCompany.sub)
             : null;
 
     const myRole = decodedClient
@@ -51,16 +52,10 @@ export const Chat = () => {
     const loadContacts = async () => {
     if (!myId || !myRole) return;
 
-    console.log("LOAD CONTACTS RUNNING");
-    console.log("MY ID:", myId);
-    console.log("MY ROLE:", myRole);
-
     if (myRole === "client") {
 
         const resp = await fetch(`${API_URL}api/companies`);
         const data = resp.ok ? await resp.json() : [];
-
-        console.log("CONTACTS RESPONSE:", data);
 
         setContacts(data);
 
@@ -71,8 +66,6 @@ export const Chat = () => {
     } else {
 
         const data = await chatAPI.getContacts(myId, myRole);
-
-        console.log("CONTACTS RESPONSE:", data);
 
         setContacts(data);
 
@@ -111,6 +104,7 @@ export const Chat = () => {
         if (!socket || !myId || !targetId) return;
 
         const handler = (msg) => {
+
             const isForThisChat =
                 (msg.sender_id === myId && 
                  msg.sender_role === myRole &&
@@ -125,7 +119,7 @@ export const Chat = () => {
             
             if (isForThisChat) {
                 setMessages(prev => [...prev, msg]);
-            }            
+            }    
         };
 
         socket.on("message:new", handler);
@@ -138,19 +132,22 @@ export const Chat = () => {
     useEffect(() => {
         if (!socket || !targetId) return;
 
-        const state = { joined: false};
+        const roomKey = `${targetId}-${targetRole}`;
+    
+    
+        if (currentRoomRef.current === roomKey) {
+            return;
+        }
 
         const doJoin = () => {
-            if (state.joined) return;
-            state.joined = true;
-
-            console.log(`🔵 Joining room - Target: ${targetId} (${targetRole})`);
 
             socket.emit("room:join", {
                 myRole,
                 targetId,
                 targetRole
             });
+
+            currentRoomRef.current = roomKey;
         };
 
         // Esperar un momento para que el socket conecte
@@ -160,7 +157,6 @@ export const Chat = () => {
             } else {
                 // Si no está conectado, esperar al evento connect
                 const handleConnect = () => {
-                    console.log("🟢 Socket connected");
                     doJoin();
                 };
 
@@ -170,19 +166,22 @@ export const Chat = () => {
 
         // Cleanup
         return () => {
-            clearTimeout(timer);
-
-            if (socket.connected && state.joined) {
-                console.log(`🔴 Leaving room - Target: ${targetId} (${targetRole})`);
-
+        clearTimeout(timer);
+        
+        // Solo hacer leave si realmente cambiamos de room
+        const newRoomKey = `${targetId}-${targetRole}`;
+        if (currentRoomRef.current && currentRoomRef.current !== newRoomKey) {
+            
+            if (socket.connected) {
                 socket.emit("room:leave", {
                     myRole,
                     targetId,
                     targetRole
                 });
             }
-        };
-    }, [socket, targetId, myRole, targetRole]);
+        }
+    };
+}, [socket, targetId, myRole, targetRole]);
 
 
 

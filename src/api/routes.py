@@ -980,12 +980,7 @@ def send_message():
         body["receiver_role"]
     )
 
-    print(f" Emitting message to room: {room}")
-    print(f"   Payload: {payload}")
-
     socketio.emit("message:new", payload, room=room)
-
-    print(f"✅ Message emitted successfully")
 
     return jsonify(payload), 201
 
