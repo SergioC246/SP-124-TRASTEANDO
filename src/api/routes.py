@@ -983,7 +983,7 @@ def get_my_leases():
         return jsonify([lease.serialize() for lease in leases]), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-    
+
 
 # crear un lease private para cliente
 
@@ -1103,5 +1103,64 @@ def storage_leases(storage_id):
             result["future"].append(lease_info)
         else:
             result["current"].append(lease_info)
+
+    return jsonify(result), 200
+
+
+# Leases for company
+@api.route("/private/company/leases-filtered", methods=["GET"])
+@jwt_required()
+def get_company_leases_filtered():
+    company_id = int(get_jwt_identity())
+    today = date.today()
+   
+    status_filter = request.args.get("status", None)
+    location_id = request.args.get("location_id", None) 
+    storage_id = request.args.get("storage_id", None)    
+
+    query = select(Leases).join(Storage).join(
+        Location).where(Location.company_id == company_id)
+
+    if location_id:
+        try:
+            location_id = int(location_id)
+            query = query.where(Storage.location_id == location_id)
+        except ValueError:
+            return jsonify({"message": "location_id must be an integer"}), 400
+
+    if storage_id:
+        try:
+            storage_id = int(storage_id)
+            query = query.where(Leases.storage_id == storage_id)
+        except ValueError:
+            return jsonify({"message": "storage_id must be an integer"}), 400
+
+    leases = db.session.execute(query).scalars().all()
+
+    result = {"current": [], "past": [], "future": []}
+
+    for lease in leases:
+        lease_info = {
+            "id": lease.id,
+            "start_date": lease.start_date.isoformat(),
+            "end_date": lease.end_date.isoformat(),
+            "status": lease.status,
+            "storage_id": lease.storage.id,
+            "storage_size": lease.storage.size,
+            "location_city": lease.storage.location.city,
+            "client_email": lease.client.email
+        }
+
+        # Clasificar según fechas
+        if lease.end_date < today:
+            result["past"].append(lease_info)
+        elif lease.start_date > today:
+            result["future"].append(lease_info)
+        else:
+            result["current"].append(lease_info)
+
+    # Si se filtró por status temporal, devolver solo ese
+    if status_filter in ["current", "past", "future"]:
+        return jsonify(result[status_filter]), 200
 
     return jsonify(result), 200
