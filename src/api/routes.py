@@ -150,6 +150,7 @@ def update_client(client_id):
 
     client.email = body.get("email", client.email)
     client.is_active = body.get("is_active", client.is_active)
+    client.photo_url = body.get("photo_url", client.photo_url)
 
     db.session.commit()
 
@@ -223,6 +224,7 @@ def update_company(company_id):
     company.cif = data.get("cif", company.cif)
     company.address = data.get("address", company.address)
     company.email = data.get("email", company.email)
+    company.photo_url = data.get("photo_url", company.photo_url)
 
     db.session.commit()
 
