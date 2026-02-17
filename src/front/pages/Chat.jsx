@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import useGlobalReducer from "../hooks/useGlobalReducer";
 import { chatAPI } from "./utilsChat";
 import { jwtDecode } from "jwt-decode";
+import { createSocket  } from "../../socket";
 
 const API_URL = import.meta.env.VITE_BACKEND_URL;
 
@@ -37,6 +38,13 @@ export const Chat = () => {
             : null;
 
     const targetRole = myRole === "client" ? "company" : "client";
+
+    const token = store.tokenClient || store.company_token;
+
+    const socket = useMemo(() => {
+        if (!token) return null;
+        return createSocket(token);
+     }, [token]);
 
     /* ===== LOAD CONTACTS ===== */
 
@@ -94,20 +102,89 @@ export const Chat = () => {
     }, [myId]);
 
     useEffect(() => {
+        setMessages([]);
         loadChat();
-    }, [targetId]);
+    }, [targetId, myId]);
 
-    /* ===== POLLING V2 ===== */
+    
+    useEffect(() => {
+        if (!socket || !myId || !targetId) return;
+
+        const handler = (msg) => {
+            const isForThisChat =
+                (msg.sender_id === myId && 
+                 msg.sender_role === myRole &&
+                 msg.receiver_id === targetId &&
+                 msg.receiver_role === targetRole
+                ) ||
+                (msg.sender_id === targetId && 
+                 msg.sender_role === targetRole &&
+                 msg.receiver_id === myId &&
+                 msg.receiver_role === myRole
+                );
+            
+            if (isForThisChat) {
+                setMessages(prev => [...prev, msg]);
+            }            
+        };
+
+        socket.on("message:new", handler);
+
+        return () => {
+            socket.off("message:new", handler);
+        };
+    }, [socket, myId, targetId, myRole, targetRole]);
 
     useEffect(() => {
-        if (!targetId) return;
+        if (!socket || !targetId) return;
 
-        const interval = setInterval(() => {
-            loadChat();
-        }, 4000);
+        const state = { joined: false};
 
-        return () => clearInterval(interval);
-    }, [targetId]);
+        const doJoin = () => {
+            if (state.joined) return;
+            state.joined = true;
+
+            console.log(`🔵 Joining room - Target: ${targetId} (${targetRole})`);
+
+            socket.emit("room:join", {
+                myRole,
+                targetId,
+                targetRole
+            });
+        };
+
+        // Esperar un momento para que el socket conecte
+        const timer = setTimeout(() => {
+            if (socket.connected) {
+                doJoin();
+            } else {
+                // Si no está conectado, esperar al evento connect
+                const handleConnect = () => {
+                    console.log("🟢 Socket connected");
+                    doJoin();
+                };
+
+                socket.once("connect", handleConnect);
+            }
+        }, 100);
+
+        // Cleanup
+        return () => {
+            clearTimeout(timer);
+
+            if (socket.connected && state.joined) {
+                console.log(`🔴 Leaving room - Target: ${targetId} (${targetRole})`);
+
+                socket.emit("room:leave", {
+                    myRole,
+                    targetId,
+                    targetRole
+                });
+            }
+        };
+    }, [socket, targetId, myRole, targetRole]);
+
+
 
     /* ===== SEND ===== */
 
@@ -125,7 +202,6 @@ export const Chat = () => {
         const sent = await chatAPI.send(payload);
 
         if (sent) {
-            setMessages(prev => [...prev, sent]);
             setText("");
         }
     };

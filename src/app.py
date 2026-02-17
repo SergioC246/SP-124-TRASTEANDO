@@ -51,8 +51,16 @@ setup_admin(app)
 setup_commands(app)
 
 # Add all endpoints form the API with a "api" prefix
+
+socketio.init_app(app, cors_allowed_origins="*")
+
+print("=" * 50)
+print("🚀 Socket.IO inicializado correctamente")
+print(f"🔌 CORS permitido desde: *")
+print(f"🌐 Async mode: eventlet")
+print("=" * 50)
+
 app.register_blueprint(api, url_prefix='/api')
-socketio.init_app(app)
 
 import api.socket_handlers
 
@@ -89,4 +97,4 @@ with app.app_context():
 # this only runs if `$ python src/main.py` is executed
 if __name__ == '__main__':
     PORT = int(os.environ.get('PORT', 3001))
-    socketio.run(app, host='0.0.0.0', port=PORT, debug=True)
+    socketio.run(app, host='0.0.0.0', port=PORT, debug=True, allow_unsafe_werkzeug=True)
