@@ -7,6 +7,8 @@ from api.models import db, User, AdminUser, Client, Company, Leases, Storage, Lo
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from sqlalchemy import select
+from datetime import datetime
+from datetime import date
 import sqlalchemy as sa
 
 
@@ -938,19 +940,36 @@ def delete_company_storage(storage_id):
 def get_storages_by_location(location_id):
     try:
         storages = db.session.execute(
-            select(Storage).where(Storage.location_id == location_id)).scalars().all()
-        if not storages:
-            return jsonify([]), 200
+            select(Storage).where(Storage.location_id == location_id)
+        ).scalars().all()
 
-        return jsonify([storage.serialize() for storage in storages]), 200
+        result = []
+
+        for storage in storages:
+            # Traer solo leases activas vigentes HOY
+            leases = db.session.execute(
+                select(Leases).where(
+                    Leases.storage_id == storage.id,
+                    Leases.status == "active",
+                    Leases.start_date <= date.today(),
+                    Leases.end_date >= date.today()
+                )
+            ).scalars().all()
+
+            occupied = len(leases) > 0
+
+            storage_data = storage.serialize()
+            storage_data["occupied"] = occupied
+            storage_data["active_leases_count"] = len(leases)
+            result.append(storage_data)
+
+        return jsonify(result), 200
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
 
 # private leases de cliente
-
-
 @api.route('/client/my-leases', methods=['GET'])
 @jwt_required()
 def get_my_leases():
@@ -964,9 +983,9 @@ def get_my_leases():
         return jsonify([lease.serialize() for lease in leases]), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
 
 # crear un lease private para cliente
-
 
 @api.route('/client/leases', methods=['POST'])
 @jwt_required()
@@ -975,18 +994,23 @@ def create_client_lease():
 
     current_client_id = get_jwt_identity()
 
-    start_date = data.get("start_date")
-    end_date = data.get("end_date")
-    status = data.get("status", True)
+    start_date_str = data.get("start_date")
+    end_date_str = data.get("end_date")
     storage_id = data.get("storage_id")
 
-    if not all([start_date, end_date, storage_id]):
+    if not all([start_date_str, end_date_str, storage_id]):
         return jsonify({"message": "Faltan datos obligatorios (fechas o storage_id)"}), 400
+
+    try:
+        start_date = datetime.strptime(start_date_str, "%Y-%m-%d").date()
+        end_date = datetime.strptime(end_date_str, "%Y-%m-%d").date()
+    except ValueError:
+        return jsonify({"message": "Formato de fecha inválido. Usa YYYY-MM-DD"}), 400
 
     new_lease = Leases(
         start_date=start_date,
         end_date=end_date,
-        status=status,
+        status="active",
         client_id=current_client_id,
         storage_id=storage_id
     )
@@ -1034,7 +1058,7 @@ def company_storages_occupancy():
         active_leases = db.session.execute(
             select(Leases).where(
                 Leases.storage_id == storage.id,
-                Leases.status == "true",
+                Leases.status == "active",
                 Leases.start_date <= sa.func.current_date(),
                 Leases.end_date >= sa.func.current_date()
             )
@@ -1053,7 +1077,7 @@ def company_storages_occupancy():
 @api.route("/private/company/storage/<int:storage_id>/leases", methods=["GET"])
 @jwt_required()
 def storage_leases(storage_id):
-    today = sa.func.current_date()
+    today = date.today()  # <-- usar fecha de Python
 
     # Traer leases con join a Client para obtener email
     leases = db.session.execute(
@@ -1068,12 +1092,14 @@ def storage_leases(storage_id):
         lease_info = {
             "email": email,
             "start_date": lease.start_date.isoformat(),
-            "end_date": lease.end_date.isoformat()
+            "end_date": lease.end_date.isoformat(),
+            "status": lease.status
         }
 
-        if lease.end_date < db.func.current_date():
+        # Comparar con today de Python
+        if lease.end_date < today:
             result["past"].append(lease_info)
-        elif lease.start_date > db.func.current_date():
+        elif lease.start_date > today:
             result["future"].append(lease_info)
         else:
             result["current"].append(lease_info)
