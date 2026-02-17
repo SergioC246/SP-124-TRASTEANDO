@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { getStoragesFiltered } from "../utilsStorages";
+
 
 export const SearchHome = () => {
     const inputRef = useRef(null);
@@ -69,8 +71,8 @@ export const SearchHome = () => {
             loc: searchData.location,
             lat: searchData.lat,
             lng: searchData.lng,
-            start: searchData.checkin,
-            end: searchData.checkout
+            checkin: searchData.checkin, 
+            checkout: searchData.checkout
         }).toString();
 
         navigate(`/search/map?${params}`);
@@ -79,8 +81,8 @@ export const SearchHome = () => {
     // para traerme los storages
     const fetchStorages = async () => {
         try {
-            const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}api/storage/map`);
-            const data = await response.json();
+            // const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}api/storage/map`);
+            const data = await getStoragesFiltered(searchData);
             setStorages(data);
         } catch (error) {
             console.error("Error cargando storages:", error);

@@ -1,0 +1,11 @@
+
+
+/* marcador para el mapa */
+.marker-nube {
+    background: white;
+    padding: 5px 10px;
+    border-radius: 20px;
+    border: 1px solid #ccc;
+    font-weight: bold;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}

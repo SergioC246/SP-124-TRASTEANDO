@@ -103,7 +103,7 @@ class Leases(db.Model):
         ForeignKey("storage.id"), nullable=False)
 
     client: Mapped["Client"] = relationship(back_populates="leases")
-    storage: Mapped["Storage"] = relationship(back_populates="leases")
+    storage: Mapped["Storage"] = relationship(back_populates="leases") 
 
     def serialize(self):
         return {
