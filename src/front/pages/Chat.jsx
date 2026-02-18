@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo, useRef } from "react";
 import useGlobalReducer from "../hooks/useGlobalReducer";
 import { chatAPI } from "./utilsChat";
 import { jwtDecode } from "jwt-decode";
-import { createSocket  } from "../../socket";
+import { createSocket } from "../../socket";
 
 const API_URL = import.meta.env.VITE_BACKEND_URL;
 
@@ -11,10 +11,16 @@ export const Chat = () => {
     const { store } = useGlobalReducer();
 
     const [messages, setMessages] = useState([]);
+
     const [contacts, setContacts] = useState([]);
+    const [directory, setDirectory] = useState([]);
+    
     const [targetId, setTargetId] = useState(null);
+    const [targetRole, setTargetRole] = useState(null);
+
     const [text, setText] = useState("");
     const currentRoomRef = useRef(null);
+    const [showNewChat, setShowNewChat] = useState(false);
 
     /* ===== USER ===== */
 
@@ -38,47 +44,56 @@ export const Chat = () => {
             ? "company"
             : null;
 
-    const targetRole = myRole === "client" ? "company" : "client";
-
     const token = store.tokenClient || store.company_token;
 
     const socket = useMemo(() => {
         if (!token) return null;
         return createSocket(token);
-     }, [token]);
+    }, [token]);
 
     /* ===== LOAD CONTACTS ===== */
 
     const loadContacts = async () => {
-    if (!myId || !myRole) return;
 
-    if (myRole === "client") {
+        if (!myId || !myRole) return;
 
-        const resp = await fetch(`${API_URL}api/companies`);
-        const data = resp.ok ? await resp.json() : [];
+        const data = await chatAPI.getContacts(myId, myRole); 
 
-        setContacts(data);
+            setContacts(data);
 
-        if (data.length > 0 && !targetId) {
-            setTargetId(data[0].id);
+            if (data.length > 0 && !targetId) {
+                setTargetId(data[0].id);
+                setTargetRole(data[0].role);
+            }
+
+        };
+    
+    /* ===== LOAD DIRECTORY (AGENDA) ===== */
+
+    const loadDirectory = async () => {
+
+        if (!myRole) return;
+
+        if (myRole === "client") {
+
+            const resp = await fetch(`${API_URL}/api/companies`); // ✅ FIX (barra)
+            const data = resp.ok ? await resp.json() : [];
+
+            setDirectory(data.map(c => ({ ...c, role: "company" })));
+
+        } else {
+
+            const resp = await fetch(`${API_URL}/api/clients`);
+            const data = resp.ok ? await resp.json() : [];
+
+            setDirectory(data.map(c => ({ ...c, role: "client" })));
         }
+    };
 
-    } else {
-
-        const data = await chatAPI.getContacts(myId, myRole);
-
-        setContacts(data);
-
-        if (data.length > 0 && !targetId) {
-            setTargetId(data[0].id);
-        }
-    }
-};
-
-    /* ===== LOAD CONVERSATION ===== */
+    /* ===== LOAD CHAT  ===== */
 
     const loadChat = async () => {
-        if (!myId || !targetId) return;
+        if (!myId || !targetId || !targetRole) return;
 
         const history = await chatAPI.getConversation(
             myId,
@@ -97,29 +112,29 @@ export const Chat = () => {
     useEffect(() => {
         setMessages([]);
         loadChat();
-    }, [targetId, myId]);
+    }, [targetId, targetRole]);
 
-    
+
     useEffect(() => {
         if (!socket || !myId || !targetId) return;
 
         const handler = (msg) => {
 
             const isForThisChat =
-                (msg.sender_id === myId && 
-                 msg.sender_role === myRole &&
-                 msg.receiver_id === targetId &&
-                 msg.receiver_role === targetRole
+                (msg.sender_id === myId &&
+                    msg.sender_role === myRole &&
+                    msg.receiver_id === targetId &&
+                    msg.receiver_role === targetRole
                 ) ||
-                (msg.sender_id === targetId && 
-                 msg.sender_role === targetRole &&
-                 msg.receiver_id === myId &&
-                 msg.receiver_role === myRole
+                (msg.sender_id === targetId &&
+                    msg.sender_role === targetRole &&
+                    msg.receiver_id === myId &&
+                    msg.receiver_role === myRole
                 );
-            
+
             if (isForThisChat) {
                 setMessages(prev => [...prev, msg]);
-            }    
+            }
         };
 
         socket.on("message:new", handler);
@@ -133,8 +148,8 @@ export const Chat = () => {
         if (!socket || !targetId) return;
 
         const roomKey = `${targetId}-${targetRole}`;
-    
-    
+
+
         if (currentRoomRef.current === roomKey) {
             return;
         }
@@ -166,22 +181,22 @@ export const Chat = () => {
 
         // Cleanup
         return () => {
-        clearTimeout(timer);
-        
-        // Solo hacer leave si realmente cambiamos de room
-        const newRoomKey = `${targetId}-${targetRole}`;
-        if (currentRoomRef.current && currentRoomRef.current !== newRoomKey) {
-            
-            if (socket.connected) {
-                socket.emit("room:leave", {
-                    myRole,
-                    targetId,
-                    targetRole
-                });
+            clearTimeout(timer);
+
+            // Solo hacer leave si realmente cambiamos de room
+            const newRoomKey = `${targetId}-${targetRole}`;
+            if (currentRoomRef.current && currentRoomRef.current !== newRoomKey) {
+
+                if (socket.connected) {
+                    socket.emit("room:leave", {
+                        myRole,
+                        targetId,
+                        targetRole
+                    });
+                }
             }
-        }
-    };
-}, [socket, targetId, myRole, targetRole]);
+        };
+    }, [socket, targetId, myRole, targetRole]);
 
 
 
@@ -205,6 +220,37 @@ export const Chat = () => {
         }
     };
 
+    /* ===== DELETE ===== */
+
+    const handleDeleteConversation = async () => {
+
+        const confirmDelete = window.confirm("¿Seguro que quieres borrar esta conversación?");
+        if (!confirmDelete) return;
+
+        await fetch(
+            `${import.meta.env.VITE_BACKEND_URL}/api/messages/conversation/${myId}/${myRole}/${targetId}/${targetRole}`,
+            {
+                method: "DELETE"
+            }
+        );
+
+        setMessages([]);
+
+        setContacts(prev =>
+            prev.filter(c => c.id !== targetId)
+        );
+
+        setTargetId(null);
+        setTargetRole(null);
+    };
+
+    /* ===== DELETE ===== */
+
+    const handleNewChat = async () => {
+    console.log("NEW CHAT CLICKED");
+        await loadDirectory();
+        setShowNewChat(true);
+};
     /* ===== RENDER ===== */
 
     return (
@@ -216,29 +262,82 @@ export const Chat = () => {
                     <div className="p-3 border-bottom fw-bold">
                         Conversaciones
                     </div>
+                    <div className="p-2 border-bottom">
+                        <button
+                            className="btn btn-primary w-100"
+                            onClick={handleNewChat}
+                        >
+                            Nuevo chat
+                        </button>
+                    </div>
+                    {showNewChat && (
+                        <div className="modal fade show d-block" style={{ backgroundColor: "rgba(0,0,0,0.5)" }}>
+                            <div className="modal-dialog">
+                                <div className="modal-content">
 
-                    <div className="list-group list-group-flush">
+                                    <div className="modal-header">
+                                        <h5>Nuevo chat</h5>
+                                        <button className="btn-close" onClick={() => setShowNewChat(false)} />
+                                    </div>
+
+                                    <div className="modal-body">
+
+                                        {directory.length === 0 ? (
+                                            <div className="text-muted">No hay contactos disponibles</div>
+                                        ) : (
+                                            directory.map(c => (
+                                                <button
+                                                    key={`${c.id}-${c.role}`}
+                                                    className="list-group-item list-group-item-action"
+                                                    onClick={() => {
+                                                        setTargetId(c.id);
+                                                        setTargetRole(c.role);
+                                                        setContacts(prev => {
+
+                                                            const exists = prev.some(p => p.id === c.id);
+
+                                                            if (exists) return prev;
+
+                                                            return [...prev, c];
+                                                        });
+
+                                                        setShowNewChat(false);
+                                                    }}
+                                                >
+                                                    {c.name || c.email}
+                                                </button>
+                                            ))
+                                        )}
+
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    <div className="list-group list-group-flush rounded p-2">
                         {contacts.map(c => (
                             <button
                                 key={`${c.id}-${c.role}`}
                                 onClick={() => setTargetId(c.id)}
-                                className={`list-group-item list-group-item-action ${targetId === c.id ? "active" : ""
+                                className={`list-group-item-info list-group-item-action rounded p-2 mb-1 ${targetId === c.id ? "active" : ""
                                     }`}
                             >
 
-                                <div className="d-flex align-items-center gap-2">
+                                <div className="d-flex align-items-center">   
 
                                     <img
-                                        src={c.photo_url || "https://via.placeholder.com/32"}
+                                        src={c.photo_url || c.photo || "https://via.placeholder.com/32"}
                                         alt="avatar"
                                         width="32"
                                         height="32"
-                                        className="rounded-circle"
+                                        className="rounded-circle me-3"
                                         style={{ objectFit: "cover" }}
                                     />
 
-                                    <div className="text-truncate">
-                                        {c.email || c.name}                                
+                                    <div className="text-truncate align-items-center p-1">
+                                        { c.name }
                                     </div>
                                 </div>
                             </button>
@@ -251,9 +350,18 @@ export const Chat = () => {
 
                     {/* HEADER */}
                     <div className="border-bottom p-3 fw-bold">
-                        {contacts.find(c => c.id === targetId)?.email ||
+                        <span>{contacts.find(c => c.id === targetId)?.email ||
                             contacts.find(c => c.id === targetId)?.name ||
                             "Selecciona conversación"}
+                        </span>
+                        {targetId && (
+                            <button
+                                className="btn btn-sm btn-outline-danger"
+                                onClick={handleDeleteConversation}
+                            >
+                                🗑
+                            </button>
+                        )}
                     </div>
 
                     {/* MESSAGES */}
@@ -262,14 +370,14 @@ export const Chat = () => {
                             <div
                                 key={i}
                                 className={`d-flex mb-2 ${m.sender_role === myRole
-                                        ? "justify-content-end"
-                                        : "justify-content-start"
+                                    ? "justify-content-end"
+                                    : "justify-content-start"
                                     }`}
                             >
                                 <div
                                     className={`p-2 rounded ${m.sender_role === myRole
-                                            ? "bg-primary text-white"
-                                            : "bg-light border"
+                                        ? "bg-primary text-white"
+                                        : "bg-light border"
                                         }`}
                                     style={{ maxWidth: "70%" }}
                                 >

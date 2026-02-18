@@ -1288,7 +1288,7 @@ def get_company_leases_filtered():
 
     return jsonify(result), 200
 
-# Messages
+# Messages enviar
 
 @api.route('/messages', methods=["POST"])
 def send_message():
@@ -1343,6 +1343,8 @@ def send_message():
 #     ).order_by(Message.timestamp.asc()).all()
 
 #     return jsonify([m.serialize() for m in messages]), 200
+
+#Messages Conversaciones
     
 @api.route('/messages/conversation/<int:my_id>/<string:my_role>/<int:target_id>/<string:target_role>', methods=["GET"])
 def get_conversation(my_id, my_role, target_id, target_role):
@@ -1365,6 +1367,8 @@ def get_conversation(my_id, my_role, target_id, target_role):
     ).order_by(Message.timestamp.asc()).all()
 
     return jsonify([m.serialize() for m in messages]), 200
+
+# Messages cargar contactos
 
 @api.route('/messages/contacts/<int:my_id>/<string:my_role>', methods=["GET"])
 def get_contacts(my_id, my_role):
@@ -1423,3 +1427,28 @@ def get_contacts(my_id, my_role):
                 })
 
     return jsonify(result), 200
+
+# Messages delete
+
+@api.route('/messages/conversation/<int:my_id>/<int:target_id>', methods=["DELETE"])
+def delete_conversation(my_id, target_id):
+
+    deleted = Message.query.filter(
+        db.or_(
+            db.and_(
+                Message.sender_id == my_id,
+                Message.receiver_id == target_id
+            ),
+            db.and_(
+                Message.sender_id == target_id,
+                Message.receiver_id == my_id
+            )
+        )
+    ).delete(synchronize_session=False)
+
+    db.session.commit()
+
+    return jsonify({
+        "msg": "Conversation deleted",
+        "deleted_count": deleted
+    }), 200
