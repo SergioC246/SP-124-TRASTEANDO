@@ -57,6 +57,7 @@ import { CompanyLocationStorages } from "./pages/CompanyLocationStorages";
 import { ClientPrivateLeases } from "./pages/ClientePrivateLeases";
 import { SearchHome } from "./pages/SearchHome";
 import { Map } from "./pages/Map";
+import { CompanyPrivateEdit } from "./pages/CompanyPrivateEdit";
 import { CompanyEdit } from "./pages/CompanyEdit";
 import { LocationPublic } from "./pages/LocationPublic";
 
@@ -98,6 +99,7 @@ export const router = createBrowserRouter(
       <Route path="/companies/:id/edit" element={<CompanyEdit />} />
       <Route path="/companies/login" element={<CompanyLogin />} />
       <Route path="/companies/private" element={<CompanyPrivate />} />
+      <Route path="/companies/private/edit" element={<CompanyPrivateEdit />} />
       <Route path="/companies/private/locations" element={<CompanyLocations />} />
       <Route path="/companies/private/locations/create" element={<CompanyLocationsCreate />} />
       <Route path="/companies/private/locations/:id" element={<CompanyLocationsDetails />} />

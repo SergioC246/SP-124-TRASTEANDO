@@ -12,7 +12,9 @@ export const CompanyStoragesEdit = () => {
     const [price, setPrice] = useState("")
     const [locationId, setLocationId] = useState("")
     const [status, setStatus] = useState("true")
+    const [photo, setPhoto] = useState("")
     const [loading, setLoading] = useState(true)
+    const [uploading, setUploading] = useState(false)
 
     useEffect(() => {
         const token = localStorage.getItem("token_company")
@@ -34,11 +36,13 @@ export const CompanyStoragesEdit = () => {
                 setLocationId(data.location_id)
                 setStatus(data.status)
                 setLoading(false)
+                setPhoto(data.photo)
             })
             .catch(err => {
                 console.error(err)
                 setLoading(false)
             })
+
         fetch(`${import.meta.env.VITE_BACKEND_URL}/api/private/company/locations`, {
             headers: { Authorization: "Bearer " + token }
         })
@@ -53,11 +57,44 @@ export const CompanyStoragesEdit = () => {
             })
     }, [])
 
+    const handleUploadPhoto = async (e) => {
+        const file = e.target.files[0]
+        if (!file) return
+
+        const formData = new FormData()
+        formData.append("file", file)
+        formData.append("upload_preset", "topydai")
+
+        setUploading(true)
+
+        try {
+            const result = await fetch(
+                "https://api.cloudinary.com/v1_1/dofzpindm/image/upload",
+                {
+                    method: "POST",
+                    body: formData,
+                }
+            )
+
+            const data = await result.json()
+
+            if (data.secure_url) {
+                setPhoto(data.secure_url)
+            } else {
+                console.error("Error en Cloudinary:", data)
+            }
+
+        } catch (error) {
+            console.error("Error subiendo foto:", error)
+        } finally {
+            setUploading(false)
+        }
+    }
 
     const handleUpdate = () => {
         const token = localStorage.getItem("token_company")
 
-        fetch(import.meta.env.VITE_BACKEND_URL + `api/storage/${storage_id}`, {
+        fetch(import.meta.env.VITE_BACKEND_URL + `api/private/company/storages/${storage_id}`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
@@ -67,7 +104,8 @@ export const CompanyStoragesEdit = () => {
                 size,
                 price,
                 location_id: locationId,
-                status
+                status,
+                photo
             })
         })
             .then(response => response.json())
@@ -120,6 +158,18 @@ export const CompanyStoragesEdit = () => {
                                         <option value="false">Occupied</option>
                                     </select>
                                 </div>
+
+                                <div>
+                                    <label className="form-label fw-semibold">Photo</label>
+                                    <input type="file" className="form-control" onChange={handleUploadPhoto} />
+                                </div>
+
+                                {uploading && <p className="mt-2">Uploading image...</p>}
+
+                                {photo && (<div className="mt-3 text-center">
+                                    <img src={photo} alt="Location" className="img-fluid rounded shadow" />
+                                </div>
+                                )}
                             </div>
 
                             <div className="card-footer bg-white border-0 py-3 d-flex justify-content-center gap-3">

@@ -1,13 +1,18 @@
 """
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
+import sqlalchemy as sa
+from datetime import date
+from datetime import datetime
+from sqlalchemy import select
+import math
+from sqlalchemy import select, and_, not_, cast, Date
 from flask import Flask, request, jsonify, url_for, Blueprint
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 from api.models import db, User, AdminUser, Client, Company, Leases, Storage, Location
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
-from sqlalchemy import select, and_, not_, cast, Date
-import math
+
 
 
 api = Blueprint('api', __name__)
@@ -225,7 +230,7 @@ def update_company(company_id):
     company.cif = data.get("cif", company.cif)
     company.address = data.get("address", company.address)
     company.email = data.get("email", company.email)
-    company.photo_url = data.get("photo_url", company.photo_url)
+    company.photo = data.get("photo", company.photo)
 
     db.session.commit()
 
@@ -559,6 +564,39 @@ def private_company():
         return jsonify({"messagge": "Company not found"}), 404
 
     return jsonify(company.serialize()), 200
+
+
+# Company Private Edit
+@api.route('/private/company/<int:company_id>', methods=["GET", "PUT"])
+@jwt_required()
+def company_private_by_id(company_id):
+    current_company_id = int(get_jwt_identity())
+
+    if company_id != current_company_id:
+        return jsonify({"message": "No tienes permisos para editar esta compañía"}), 403
+
+    company = db.session.execute(select(Company).where(
+        Company.id == company_id)).scalar_one_or_none()
+
+    if not company:
+        return jsonify({"message": "Compañía no encontrada"}), 404
+
+    if request.method == "GET":
+        return jsonify(company.serialize()), 200
+
+    if request.method == "PUT":
+        data = request.get_json()
+        company.name = data.get("name", company.name)
+        company.email = data.get("email", company.email)
+        company.cif = data.get("cif", company.cif)
+        company.address = data.get("address", company.address)
+        company.photo = data.get("photo", company.photo)
+
+        db.session.commit()
+
+        return jsonify(company.serialize()), 200
+
+
 # All storages Overview
 
 
@@ -693,6 +731,7 @@ def company_locations():
         city = data.get("city")
         latitude = data.get("latitude")
         longitude = data.get("longitude")
+        photo = data.get("photo")
 
         if not all([address, city, latitude, longitude]):
             return jsonify({"message": "Missing data"}), 400
@@ -702,7 +741,8 @@ def company_locations():
             city=city,
             latitude=latitude,
             longitude=longitude,
-            company_id=company_id
+            company_id=company_id,
+            photo=photo
         )
 
         db.session.add(new_location)
@@ -812,6 +852,7 @@ def create_company_storage():
     size = data.get("size")
     price = data.get("price")
     location_id = data.get("location_id")
+    photo = data.get("photo")
 
     if not all([size, price, location_id]):
         return jsonify({"message": "Missing data"}), 400
@@ -824,7 +865,8 @@ def create_company_storage():
         size=size,
         price=price,
         location_id=location_id,
-        status=True
+        status=True,
+        photo=photo
     )
 
     db.session.add(new_storage)
@@ -855,6 +897,7 @@ def company_storage_by_id(storage_id):
         storage.size = data.get("size", storage.size)
         storage.price = data.get("price", storage.price)
         storage.location_id = data.get("location_id", storage.location_id)
+        storage.photo = data.get("photo", storage.photo)
 
         if "status" in data:
             storage.status = data.get("status")
@@ -902,18 +945,36 @@ def delete_company_storage(storage_id):
 def get_storages_by_location(location_id):
     try:
         storages = db.session.execute(
-            select(Storage).where(Storage.location_id == location_id)).scalars().all()
-        if not storages:
-            return jsonify([]), 200
+            select(Storage).where(Storage.location_id == location_id)
+        ).scalars().all()
 
-        return jsonify([storage.serialize() for storage in storages]), 200
+        result = []
+
+        for storage in storages:
+            # Traer solo leases activas vigentes HOY
+            leases = db.session.execute(
+                select(Leases).where(
+                    Leases.storage_id == storage.id,
+                    Leases.status == "active",
+                    Leases.start_date <= date.today(),
+                    Leases.end_date >= date.today()
+                )
+            ).scalars().all()
+
+            occupied = len(leases) > 0
+
+            storage_data = storage.serialize()
+            storage_data["occupied"] = occupied
+            storage_data["active_leases_count"] = len(leases)
+            result.append(storage_data)
+
+        return jsonify(result), 200
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
 
 # private leases de cliente
-
 @api.route('/client/my-leases', methods=['GET'])
 @jwt_required()
 def get_my_leases():
@@ -927,6 +988,7 @@ def get_my_leases():
         return jsonify([lease.serialize() for lease in leases]), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
 
 # crear un lease private para cliente
 
@@ -977,6 +1039,8 @@ def create_client_lease():
 # borrar un lease de cliente
 
 # obsoleto
+
+
 @api.route('/client/leases/<int:lease_id>', methods=['DELETE'])
 @jwt_required()
 def delete_client_lease(lease_id):
@@ -1017,7 +1081,8 @@ def get_storages_for_map():
     checkin = request.args.get('checkin')
     checkout = request.args.get('checkout')
 
-    query = select(Storage, Location).join(Location).where(Storage.status == True)
+    query = select(Storage, Location).join(
+        Location).where(Storage.status == True)
 
     if checkin and checkout:
         # Buscamos los trasteros que tienen un alquiler que CHOCA con las fechas pedidas
@@ -1078,3 +1143,183 @@ def get_storages_for_map():
         seen_ids.add(storage.id)
 
     return jsonify(final_result), 200
+
+
+
+
+@api.route('/client/leases', methods=['POST'])
+@jwt_required()
+def create_client_lease():
+    data = request.get_json()
+    current_client_id = get_jwt_identity()
+
+    start_date_str = data.get("start_date")
+    end_date_str = data.get("end_date")
+    storage_id = data.get("storage_id")
+
+    if not all([start_date_str, end_date_str, storage_id]):
+        return jsonify({"message": "Faltan datos obligatorios (fechas o storage_id)"}), 400
+
+    try:
+        start_date = datetime.strptime(start_date_str, "%Y-%m-%d").date()
+        end_date = datetime.strptime(end_date_str, "%Y-%m-%d").date()
+    except ValueError:
+        return jsonify({"message": "Formato de fecha inválido. Usa YYYY-MM-DD"}), 400
+
+    new_lease = Leases(
+        start_date=start_date,
+        end_date=end_date,
+        status="active",
+        client_id=current_client_id,
+        storage_id=storage_id
+    )
+
+    db.session.add(new_lease)
+    db.session.commit()
+
+    return jsonify(new_lease.serialize()), 201
+
+
+# Get occupancy of storages from location
+@api.route("/mycompany/locations-overview", methods=["GET"])
+@jwt_required()
+def mycompany_locations_overview():
+
+    try:
+        company_id = int(get_jwt_identity())
+
+        locations = db.session.execute(select(Location).where(
+            Location.company_id == company_id)).scalars().all()
+
+        result = [loc.serialize() for loc in locations]
+
+        return jsonify(result), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+# Storage status per company
+
+@api.route("/private/company/storages-occupancy", methods=["GET"])
+@jwt_required()
+def company_storages_occupancy():
+    company_id = int(get_jwt_identity())
+
+    # Obtener todos los storages de la empresa
+    storages = db.session.execute(
+        select(Storage).join(Location).where(Location.company_id == company_id)
+    ).scalars().all()
+
+    result = []
+    for storage in storages:
+        # contar leases activas
+        active_leases = db.session.execute(
+            select(Leases).where(
+                Leases.storage_id == storage.id,
+                Leases.status == "active",
+                Leases.start_date <= sa.func.current_date(),
+                Leases.end_date >= sa.func.current_date()
+            )
+        ).scalars().all()
+
+        storage_data = storage.serialize()
+        storage_data["occupied"] = len(active_leases) > 0
+        storage_data["active_leases_count"] = len(active_leases)
+
+        result.append(storage_data)
+
+    return jsonify(result), 200
+
+
+# Endpoint para leases de un storage específico
+@api.route("/private/company/storage/<int:storage_id>/leases", methods=["GET"])
+@jwt_required()
+def storage_leases(storage_id):
+    today = date.today()  # <-- usar fecha de Python
+
+    # Traer leases con join a Client para obtener email
+    leases = db.session.execute(
+        select(Leases, Client.email)
+        .join(Client, Leases.client_id == Client.id)
+        .where(Leases.storage_id == storage_id)
+    ).all()
+
+    result = {"current": [], "past": [], "future": []}
+
+    for lease, email in leases:
+        lease_info = {
+            "email": email,
+            "start_date": lease.start_date.isoformat(),
+            "end_date": lease.end_date.isoformat(),
+            "status": lease.status
+        }
+
+        # Comparar con today de Python
+        if lease.end_date < today:
+            result["past"].append(lease_info)
+        elif lease.start_date > today:
+            result["future"].append(lease_info)
+        else:
+            result["current"].append(lease_info)
+
+    return jsonify(result), 200
+
+
+# Leases for company
+@api.route("/private/company/leases-filtered", methods=["GET"])
+@jwt_required()
+def get_company_leases_filtered():
+    company_id = int(get_jwt_identity())
+    today = date.today()
+
+    status_filter = request.args.get("status", None)
+    location_id = request.args.get("location_id", None)
+    storage_id = request.args.get("storage_id", None)
+
+    query = select(Leases).join(Storage).join(
+        Location).where(Location.company_id == company_id)
+
+    if location_id:
+        try:
+            location_id = int(location_id)
+            query = query.where(Storage.location_id == location_id)
+        except ValueError:
+            return jsonify({"message": "location_id must be an integer"}), 400
+
+    if storage_id:
+        try:
+            storage_id = int(storage_id)
+            query = query.where(Leases.storage_id == storage_id)
+        except ValueError:
+            return jsonify({"message": "storage_id must be an integer"}), 400
+
+    leases = db.session.execute(query).scalars().all()
+
+    result = {"current": [], "past": [], "future": []}
+
+    for lease in leases:
+        lease_info = {
+            "id": lease.id,
+            "start_date": lease.start_date.isoformat(),
+            "end_date": lease.end_date.isoformat(),
+            "status": lease.status,
+            "storage_id": lease.storage.id,
+            "storage_size": lease.storage.size,
+            "location_city": lease.storage.location.city,
+            "client_email": lease.client.email
+        }
+
+        # Clasificar según fechas
+        if lease.end_date < today:
+            result["past"].append(lease_info)
+        elif lease.start_date > today:
+            result["future"].append(lease_info)
+        else:
+            result["current"].append(lease_info)
+
+    # Si se filtró por status temporal, devolver solo ese
+    if status_filter in ["current", "past", "future"]:
+        return jsonify(result[status_filter]), 200
+
+    return jsonify(result), 200

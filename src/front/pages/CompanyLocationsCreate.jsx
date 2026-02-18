@@ -7,37 +7,69 @@ export const CompanyLocationsCreate = () => {
     const [city, setCity] = useState("")
     const [latitude, setLatitude] = useState("")
     const [longitude, setLongitude] = useState("")
+    const [photo, setPhoto] = useState(null)
     const navigate = useNavigate()
 
-    const handleCreate = () => {
+    const uploadImage = async () => {
+        if (!photo) return null
+
+        const formData = new FormData()
+        formData.append("file", photo)
+        formData.append("upload_preset", "topydai")
+
+        const response = await fetch(
+            "https://api.cloudinary.com/v1_1/dofzpindm/image/upload",
+            {
+                method: "POST",
+                body: formData
+            }
+        )
+        const data = await response.json()
+        return data.secure_url
+    }
+
+    const handleCreate = async () => {
         const token = localStorage.getItem("token_company")
         if (!token) {
             navigate("/companies/login")
             return
         }
 
-        fetch(`${import.meta.env.VITE_BACKEND_URL}/api/private/company/locations`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: "Bearer " + token
-            },
-            body: JSON.stringify({
-                address,
-                city,
-                latitude,
-                longitude
-            })
-        })
+        try {
+            let imageUrl = null
+            
+            if (photo) {
+                imageUrl = await uploadImage()
+            }
+            
+            const response = await fetch(
+                `${import.meta.env.VITE_BACKEND_URL}/api/private/company/locations`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: "Bearer " + token
+                    },
+                    body: JSON.stringify({
+                        address,
+                        city,
+                        latitude,
+                        longitude,
+                        photo: imageUrl
+                    })
+                }
+            )
 
-            .then(response => response.json())
-            .then(() => {
-                navigate("/companies/private/locations")
-            })
-            .catch(error => {
-                console.error(error)
-                alert("Error creating location")
-            })
+            if (!response.ok) {
+                throw new Error("Create failed")
+            }
+
+            navigate("/companies/private/locations")
+
+        } catch (error) {
+            console.error(error)
+            alert("Error creating location")
+        }
     }
 
     return (
@@ -54,14 +86,16 @@ export const CompanyLocationsCreate = () => {
 
                         <div className="card-body py-4">
 
-                            <div className="mb-3">
-                                <label className="form-label fw-semibold">Address</label>
-                                <input type="text" className="form-control" placeholder="Avenida de America 123" value={address} onChange={e => setAddress(e.target.value)} />
-                            </div>
+                            <div className="row">
+                                <div className="col-md-6 mb-3">
+                                    <label className="form-label fw-semibold">Address</label>
+                                    <input type="text" className="form-control" placeholder="Avenida de America 123" value={address} onChange={e => setAddress(e.target.value)} />
+                                </div>
 
-                            <div className="mb-3">
-                                <label className="form-label fw-semibold">City</label>
-                                <input type="text" className="form-control" placeholder="Madrid" value={city} onChange={e => setCity(e.target.value)} />
+                                <div className="col-md-6 mb-3">
+                                    <label className="form-label fw-semibold">City</label>
+                                    <input type="text" className="form-control" placeholder="Madrid" value={city} onChange={e => setCity(e.target.value)} />
+                                </div>
                             </div>
 
                             <div className="row">
@@ -74,6 +108,16 @@ export const CompanyLocationsCreate = () => {
                                     <label className="form-label fw-semibold">Longitude</label>
                                     <input type="text" className="form-control" placeholder="-74.0060" value={longitude} onChange={e => setLongitude(e.target.value)} />
                                 </div>
+                            </div>
+
+                            <div className="mb-3">
+                                <label className="form-label fw-semibold">Photo</label>
+                                <input
+                                    type="file"
+                                    className="form-control"
+                                    accept="image/*"
+                                    onChange={e => setPhoto(e.target.files[0])}
+                                />
                             </div>
 
                             <div className="card-footer bg-white border-0 py-2">
@@ -92,5 +136,4 @@ export const CompanyLocationsCreate = () => {
             </div>
         </div>
     )
-
 }
