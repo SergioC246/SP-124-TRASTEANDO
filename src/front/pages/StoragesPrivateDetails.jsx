@@ -27,7 +27,7 @@ export const StoragesPrivateDetails = () => {
 
                 setStorage(data);
                 console.log("data es:", data)
-                setIsAvailable(data.status === true && !data.occupied);
+                setIsAvailable(data.status === "available" && !data.occupied);
 
             } catch (error) {
                 console.error("Error al cargar los detalles del trastero.", error);

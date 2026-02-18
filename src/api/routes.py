@@ -637,7 +637,7 @@ def get_storage_overview(storage_id):
 
     storage_data["company_name"] = company.name
     storage_data["city"] = location.city
-    storage_data["status"] = "available" if not storage.status else "occupied"
+    storage_data["status"] = "available" if storage.status else "occupied"
 
     return jsonify(storage_data), 200
 
@@ -993,48 +993,48 @@ def get_my_leases():
 # crear un lease private para cliente
 
 
-# @api.route('/client/leases', methods=['POST'])
-# @jwt_required()
-# def create_client_lease():
-#     try:
-#         data = request.get_json()
-#         # cambio ----------------- get_jwt_identity()
-#         current_client_id = int(get_jwt_identity())
+@api.route('/client/leases', methods=['POST'])
+@jwt_required()
+def create_client_lease():
+    try:
+        data = request.get_json()
+        # cambio ----------------- get_jwt_identity()
+        current_client_id = int(get_jwt_identity())
 
-#         start_date = data.get("start_date")
-#         end_date = data.get("end_date")
-#         storage_id = data.get("storage_id")
+        start_date = data.get("start_date")
+        end_date = data.get("end_date")
+        storage_id = data.get("storage_id")
 
-#         if not all([start_date, end_date, storage_id]):
-#             return jsonify({"message": "Faltan datos obligatorios"}), 400
+        if not all([start_date, end_date, storage_id]):
+            return jsonify({"message": "Faltan datos obligatorios"}), 400
 
-#         storage = Storage.query.get(storage_id)
+        storage = Storage.query.get(storage_id)
 
-#         if not storage:
-#             return jsonify({"message": "Trastero no encontrado"}), 404
+        if not storage:
+            return jsonify({"message": "Trastero no encontrado"}), 404
 
-#         if not storage.status:
-#             return jsonify({"message": "El trastero ya está ocupado"}), 400
+        if not storage.status:
+            return jsonify({"message": "El trastero ya está ocupado"}), 400
 
-#         new_lease = Leases(
-#             start_date=start_date,
-#             end_date=end_date,
-#             status=True,
-#             client_id=current_client_id,
-#             storage_id=storage_id
-#         )
+        new_lease = Leases(
+            start_date=start_date,
+            end_date=end_date,
+            status=True,
+            client_id=current_client_id,
+            storage_id=storage_id
+        )
 
-#         storage.status = False
+        storage.status = False
 
-#         db.session.add(new_lease)
-#         db.session.commit()
+        db.session.add(new_lease)
+        db.session.commit()
 
-#         return jsonify(new_lease.serialize()), 201
+        return jsonify(new_lease.serialize()), 201
 
-#     except Exception as e:
-#         db.session.rollback()
-#         print("ERROR INTERNO:", e)
-#         return jsonify({"error": str(e)}), 500
+    except Exception as e:
+        db.session.rollback()
+        print("ERROR INTERNO:", e)
+        return jsonify({"error": str(e)}), 500
 
 # borrar un lease de cliente
 
@@ -1143,42 +1143,6 @@ def get_storages_for_map():
         seen_ids.add(storage.id)
 
     return jsonify(final_result), 200
-
-
-
-
-@api.route('/client/leases', methods=['POST'])
-@jwt_required()
-def create_client_lease():
-    data = request.get_json()
-    current_client_id = get_jwt_identity()
-
-    start_date_str = data.get("start_date")
-    end_date_str = data.get("end_date")
-    storage_id = data.get("storage_id")
-
-    if not all([start_date_str, end_date_str, storage_id]):
-        return jsonify({"message": "Faltan datos obligatorios (fechas o storage_id)"}), 400
-
-    try:
-        start_date = datetime.strptime(start_date_str, "%Y-%m-%d").date()
-        end_date = datetime.strptime(end_date_str, "%Y-%m-%d").date()
-    except ValueError:
-        return jsonify({"message": "Formato de fecha inválido. Usa YYYY-MM-DD"}), 400
-
-    new_lease = Leases(
-        start_date=start_date,
-        end_date=end_date,
-        status="active",
-        client_id=current_client_id,
-        storage_id=storage_id
-    )
-
-    db.session.add(new_lease)
-    db.session.commit()
-
-    return jsonify(new_lease.serialize()), 201
-
 
 # Get occupancy of storages from location
 @api.route("/mycompany/locations-overview", methods=["GET"])
