@@ -10,43 +10,60 @@ export const ClientPrivateLeases = () => {
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate()
 
-    const handleDelete = async (id) => {
-        if (!window.confirm("¿Estás seguro de que quieres cancelar esta reserva?")) {
-            return;
+    const fetchLeases = async () => {
+        try {
+            const backendUrl = import.meta.env.VITE_BACKEND_URL;
+            const resp = await fetch(`${backendUrl}/api/client/my-leases`, {
+                headers: {
+                    "Authorization": `Bearer ${store.tokenClient}`,
+                    "Content-Type": "application/json"
+                }
+            });
+
+            if (resp.ok) {
+                const data = await resp.json();
+                setMyLeases(data);
+            }
+        } catch (error) {
+            console.error("Error al obtener mis contratos:", error);
+        } finally {
+            setLoading(false);
         }
+    };
+
+    // const handleDelete = async (id) => {
+    //     if (!window.confirm("¿Estás seguro de que quieres cancelar esta reserva?")) {
+    //         return;
+    //     }
+
+    //     try {
+    //         await deleteClientLease(id, store.tokenClient);
+    //         alert("Reserva eliminada con éxito");
+    //         setMyLeases(myLeases.filter(lease => lease.id !== id));
+
+    //     } catch (error) {
+    //         console.error("Error al borrar:", error);
+    //         alert("Error: " + error.message);
+    //     }
+
+    // }
+
+    const handleCancelLease = async (leaseId) => {
+        if (!window.confirm("¿Deseas cancelar esta reserva?")) return;
 
         try {
-            await deleteClientLease(id, store.tokenClient);
-            alert("Reserva eliminada con éxito");
-            setMyLeases(myLeases.filter(lease => lease.id !== id));
-
+            await deleteClientLease(leaseId, store.tokenClient);
+            alert("Reserva cancelada con éxito");
+            fetchLeases(); // recargar lista de leases
         } catch (error) {
-            console.error("Error al borrar:", error);
-            alert("Error: " + error.message);
+            console.error(error);
+            alert("Error al cancelar la reserva");
         }
+    };
 
-    }
+
     useEffect(() => {
-        const fetchLeases = async () => {
-            try {
-                const backendUrl = import.meta.env.VITE_BACKEND_URL;
-                const resp = await fetch(`${backendUrl}/api/client/my-leases`, {
-                    headers: {
-                        "Authorization": `Bearer ${store.tokenClient}`,
-                        "Content-Type": "application/json"
-                    }
-                });
 
-                if (resp.ok) {
-                    const data = await resp.json();
-                    setMyLeases(data);
-                }
-            } catch (error) {
-                console.error("Error al obtener mis contratos:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
 
         if (store.tokenClient) fetchLeases();
     }, [store.tokenClient]);
@@ -85,7 +102,7 @@ export const ClientPrivateLeases = () => {
                                         <span className="small fw-bold">{lease.status ? 'Contrato Activo' : 'Finalizado'}</span>
                                     </div>
                                     <div className="d-flex justify-content-start mt-3">
-                                        <button type="button" className="btn btn-outline-secondary btn-lg w-100 py-3 fw-bold rounded-pill border-2" onClick={() => handleDelete(lease.id)}>
+                                        <button type="button" className="btn btn-outline-secondary btn-lg w-100 py-3 fw-bold rounded-pill border-2" onClick={() => handleCancelLease(lease.id)}>
                                             Cancelar reserva
                                         </button>
                                     </div>

@@ -105,7 +105,7 @@ class Leases(db.Model):
         ForeignKey("storage.id"), nullable=False)
 
     client: Mapped["Client"] = relationship(back_populates="leases")
-    storage: Mapped["Storage"] = relationship(back_populates="leases")
+    storage: Mapped["Storage"] = relationship(back_populates="leases") 
 
     def serialize(self):
         return {
@@ -125,7 +125,7 @@ class Storage(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     size: Mapped[str] = mapped_column(nullable=False)
     price: Mapped[str] = mapped_column(nullable=False)
-    status: Mapped[bool] = mapped_column(nullable=True, default=True)
+    status: Mapped[bool] = mapped_column(nullable=False, default=True)
     photo: Mapped[str] = mapped_column(nullable=True)
 
     location_id: Mapped[int] = mapped_column(

@@ -51,7 +51,7 @@ export const ClientLogin = () => {
                 payload: { tokenClient: data.token},
             });
 
-            setTimeout(()=> navigate("/client/private/locations"), 1000);
+            setTimeout(()=> navigate("/search"), 1000);
 
         } catch (err) {
             setError("Network error");
@@ -59,7 +59,6 @@ export const ClientLogin = () => {
             setLoading(false);
         }
     };
-
 
 
     return (

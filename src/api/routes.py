@@ -1,15 +1,18 @@
 """
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
+import sqlalchemy as sa
+from datetime import date
+from datetime import datetime
+from sqlalchemy import select
+import math
+from sqlalchemy import select, and_, not_, cast, Date
 from flask import Flask, request, jsonify, url_for, Blueprint
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 from api.models import db, User, AdminUser, Client, Company, Leases, Storage, Location
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
-from sqlalchemy import select
-from datetime import datetime
-from datetime import date
-import sqlalchemy as sa
+
 
 
 api = Blueprint('api', __name__)
@@ -596,6 +599,7 @@ def company_private_by_id(company_id):
 
 # All storages Overview
 
+
 @api.route('/storage/overview', methods=["GET"])
 def get_all_storage_overview():
 
@@ -633,6 +637,7 @@ def get_storage_overview(storage_id):
 
     storage_data["company_name"] = company.name
     storage_data["city"] = location.city
+    storage_data["status"] = "available" if storage.status else "occupied"
 
     return jsonify(storage_data), 200
 
@@ -987,39 +992,157 @@ def get_my_leases():
 
 # crear un lease private para cliente
 
+
 @api.route('/client/leases', methods=['POST'])
 @jwt_required()
 def create_client_lease():
-    data = request.get_json()
-
-    current_client_id = get_jwt_identity()
-
-    start_date_str = data.get("start_date")
-    end_date_str = data.get("end_date")
-    storage_id = data.get("storage_id")
-
-    if not all([start_date_str, end_date_str, storage_id]):
-        return jsonify({"message": "Faltan datos obligatorios (fechas o storage_id)"}), 400
-
     try:
-        start_date = datetime.strptime(start_date_str, "%Y-%m-%d").date()
-        end_date = datetime.strptime(end_date_str, "%Y-%m-%d").date()
-    except ValueError:
-        return jsonify({"message": "Formato de fecha inválido. Usa YYYY-MM-DD"}), 400
+        data = request.get_json()
+        # cambio ----------------- get_jwt_identity()
+        current_client_id = int(get_jwt_identity())
 
-    new_lease = Leases(
-        start_date=start_date,
-        end_date=end_date,
-        status="active",
-        client_id=current_client_id,
-        storage_id=storage_id
-    )
+        start_date = data.get("start_date")
+        end_date = data.get("end_date")
+        storage_id = data.get("storage_id")
 
-    db.session.add(new_lease)
-    db.session.commit()
+        if not all([start_date, end_date, storage_id]):
+            return jsonify({"message": "Faltan datos obligatorios"}), 400
 
-    return jsonify(new_lease.serialize()), 201
+        storage = Storage.query.get(storage_id)
 
+        if not storage:
+            return jsonify({"message": "Trastero no encontrado"}), 404
+
+        if not storage.status:
+            return jsonify({"message": "El trastero ya está ocupado"}), 400
+
+        new_lease = Leases(
+            start_date=start_date,
+            end_date=end_date,
+            status=True,
+            client_id=current_client_id,
+            storage_id=storage_id
+        )
+
+        storage.status = False
+
+        db.session.add(new_lease)
+        db.session.commit()
+
+        return jsonify(new_lease.serialize()), 201
+
+    except Exception as e:
+        db.session.rollback()
+        print("ERROR INTERNO:", e)
+        return jsonify({"error": str(e)}), 500
+
+# borrar un lease de cliente
+
+# obsoleto
+
+
+@api.route('/client/leases/<int:lease_id>', methods=['DELETE'])
+@jwt_required()
+def delete_client_lease(lease_id):
+    try:
+        client_id = get_jwt_identity()
+
+        lease = db.session.get(Leases, lease_id)
+        if not lease:
+            return jsonify({"message": "Lease not found"}), 404
+
+        if lease.client_id != int(client_id):
+            return jsonify({"message": "No autorizado"}), 403
+
+        storage = db.session.get(Storage, lease.storage_id)
+        if storage:
+            storage.status = True
+            db.session.add(storage)
+        db.session.delete(lease)
+        db.session.commit()
+
+        return jsonify({"message": "Reserva cancelada con éxito"}), 200
+
+    except Exception as e:
+        db.session.rollback()
+        print("ERROR AL CANCELAR LEASE:", e)
+        return jsonify({"error": str(e)}), 500
+
+
+# NO TOCAR ENDPOINT PARA EL MAPA
+    # el JOIN entre Storage y Location para Haces 1 sola consulta a la base de datos en lugar de 50 o 100
+@api.route('/storage/map', methods=["GET"])
+def get_storages_for_map():
+
+    from datetime import datetime
+
+    search_lat = request.args.get('lat')
+    search_lng = request.args.get('lng')
+    checkin = request.args.get('checkin')
+    checkout = request.args.get('checkout')
+
+    query = select(Storage, Location).join(
+        Location).where(Storage.status == True)
+
+    if checkin and checkout:
+        # Buscamos los trasteros que tienen un alquiler que CHOCA con las fechas pedidas
+        occupied_subquery = select(Leases.storage_id).where(
+            and_(
+                Leases.status == True,
+                Leases.start_date <= checkout,
+                Leases.end_date >= checkin
+            )
+        )
+        # Excluimos esos IDs de la consulta principal
+        print(occupied_subquery)
+        print("despues de print occupied-subquery")
+        query = query.where(not_(Storage.id.in_(occupied_subquery)))
+
+    results = db.session.execute(query).all()
+
+    results = db.session.execute(query).all()
+
+    final_result = []
+    seen_ids = set()
+
+    for storage, location in results:
+        if storage.id in seen_ids:
+            continue
+
+        data = {
+            "storage_id": storage.id,
+            "price": storage.price,
+            "size": storage.size,
+            "latitude": float(location.latitude),
+            "longitude": float(location.longitude),
+            "city": location.city,
+            "address": location.address
+        }
+
+        if search_lat and search_lng:
+
+            R = 6371
+            s_lat, s_lng = math.radians(
+                float(search_lat)), math.radians(float(search_lng))
+            t_lat, t_lng = math.radians(float(location.latitude)), math.radians(
+                float(location.longitude))
+
+            dlat = t_lat - s_lat
+            dlng = t_lng - s_lng
+
+            a = math.sin(dlat/2)**2 + math.cos(s_lat) * \
+                math.cos(t_lat) * math.sin(dlng/2)**2
+            c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
+            distance = R * c
+
+            if distance > 20:
+                continue
+            data["distance_km"] = round(distance, 1)
+
+        final_result.append(data)
+        seen_ids.add(storage.id)
+
+    return jsonify(final_result), 200
 
 # Get occupancy of storages from location
 @api.route("/mycompany/locations-overview", methods=["GET"])
@@ -1113,10 +1236,10 @@ def storage_leases(storage_id):
 def get_company_leases_filtered():
     company_id = int(get_jwt_identity())
     today = date.today()
-   
+
     status_filter = request.args.get("status", None)
-    location_id = request.args.get("location_id", None) 
-    storage_id = request.args.get("storage_id", None)    
+    location_id = request.args.get("location_id", None)
+    storage_id = request.args.get("storage_id", None)
 
     query = select(Leases).join(Storage).join(
         Location).where(Location.company_id == company_id)

@@ -93,7 +93,7 @@ export const createClientLease = async (leaseData, token) => {
 // delete lease de cliente con cuenta logeada
 
 export const deleteClientLease = async (leaseId, token) => {
-  const response = await fetch(LEASES_URL + "/" + leaseId, {
+  const response = await fetch(BACKEND_URL + "api/client/leases/" + leaseId, {
     method: "DELETE",
     headers: {
       Authorization: "Bearer " + token,
@@ -105,3 +105,4 @@ export const deleteClientLease = async (leaseId, token) => {
   }
   return await response.json();
 };
+

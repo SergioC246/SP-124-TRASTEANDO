@@ -55,10 +55,12 @@ import { CompanyStoragesCreate } from "./pages/CompanyStoragesCreate";
 import { CompanyStoragesEdit } from "./pages/CompanyStoragesEdit";
 import { CompanyLocationStorages } from "./pages/CompanyLocationStorages";
 import { ClientPrivateLeases } from "./pages/ClientePrivateLeases";
+import { SearchHome } from "./pages/SearchHome";
+import { Map } from "./pages/Map";
 import { CompanyPrivateEdit } from "./pages/CompanyPrivateEdit";
 import { CompanyEdit } from "./pages/CompanyEdit";
 import { LocationPublic } from "./pages/LocationPublic";
-import { SearchHome } from "./pages/SearchHome";
+
 
 
 
@@ -73,6 +75,7 @@ export const router = createBrowserRouter(
       <Route path="/" element={<Home />} />
       {/* ruta para el search de home */}
       <Route path="/search" element={<SearchHome/>}/>
+      <Route path="/search/map" element={<Map/>}/>
 
       {/* Rutas adminUser */}
 
@@ -81,8 +84,7 @@ export const router = createBrowserRouter(
       {/* Rutas client */}
 
       <Route path="/clients-edit/:id/edit" element={<ClientEdit />} />
-      <Route path="/client-login/login" element={<ClientLogin />} />
-
+     
 
       <Route path="/client/login" element={<ClientLogin />} />
       <Route path="/client/signup" element={<ClientSignup />} />

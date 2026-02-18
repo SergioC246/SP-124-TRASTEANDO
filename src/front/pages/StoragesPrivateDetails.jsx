@@ -16,7 +16,7 @@ export const StoragesPrivateDetails = () => {
         const fetchDetail = async () => {
             try {
                 const token = store.tokenClient;
-                const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/storage/${storageId}/overview`, {
+                const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}api/storage/${storageId}/overview`, {
                     headers: {
                         "Authorization": `Bearer ${token}`,
                         "Content-Type": "application/json"
@@ -26,8 +26,8 @@ export const StoragesPrivateDetails = () => {
                 const data = await response.json();
 
                 setStorage(data);
-                
-                setIsAvailable(data.status === true && !data.occupied);
+                console.log("data es:", data)
+                setIsAvailable(data.status === "available" && !data.occupied);
 
             } catch (error) {
                 console.error("Error al cargar los detalles del trastero.", error);
@@ -37,7 +37,6 @@ export const StoragesPrivateDetails = () => {
         };
         if (storageId && store.tokenClient) fetchDetail();
     }, [storageId, store.tokenClient]);
-
 
     if (loading) return (
         <div className="container py-5 text-center">
@@ -78,7 +77,6 @@ export const StoragesPrivateDetails = () => {
                                         </span>
 
                                     </div>
-
                                     <div className="row g-3 mb-4">
                                         <div>
                                             {/* <div className="col-6 text-center border rounded-4 p-3 bg-light"> */}
@@ -100,14 +98,10 @@ export const StoragesPrivateDetails = () => {
                                     </button>
                                 </div>
                             </div>
-
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     );
-
-
-
 }
