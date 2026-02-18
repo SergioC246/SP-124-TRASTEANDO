@@ -1,7 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import String, Boolean, ForeignKey, Integer, DateTime
+from sqlalchemy import String, Boolean, ForeignKey, Integer, DateTime, Date
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from datetime import datetime
+from datetime import date, datetime
 
 db = SQLAlchemy()
 

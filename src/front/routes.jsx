@@ -60,7 +60,6 @@ import { Map } from "./pages/Map";
 import { CompanyPrivateEdit } from "./pages/CompanyPrivateEdit";
 import { CompanyEdit } from "./pages/CompanyEdit";
 import { LocationPublic } from "./pages/LocationPublic";
-import { SearchHome } from "./pages/SearchHome";
 import { Chat } from "./pages/Chat";
 
 

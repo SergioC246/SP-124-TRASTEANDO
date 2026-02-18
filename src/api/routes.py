@@ -1419,7 +1419,7 @@ def get_contacts(my_id, my_role):
                     "id": company.id,
                     "role": "company",
                     "name": company.name,
-                    "photo_url": client.photo_url
+                    "photo_url": company.photo_url
                 })
 
     return jsonify(result), 200
