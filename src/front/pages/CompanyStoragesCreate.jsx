@@ -8,6 +8,7 @@ export const CompanyStoragesCreate = () => {
     const [size, setSize] = useState("")
     const [price, setPrice] = useState("")
     const [locationId, setLocationId] = useState("")
+    const [photo, setPhoto] = useState(null)
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
     const navigate = useNavigate()
@@ -36,8 +37,28 @@ export const CompanyStoragesCreate = () => {
             })
     }, [])
 
-    const handleSubmit = (e) => {
+    const uploadImage = async () => {
+        if (!photo) return null
+
+        const formData = new FormData()
+        formData.append("file", photo)
+        formData.append("upload_preset", "topydai")
+
+        const response = await fetch(
+            "https://api.cloudinary.com/v1_1/dofzpindm/image/upload",
+            {
+                method: "POST",
+                body: formData
+            }
+        )
+
+        const data = await response.json()
+        return data.secure_url
+    }
+
+    const handleSubmit = async (e) => {
         e.preventDefault()
+
         const token = localStorage.getItem("token_company")
         if (!token) return
 
@@ -46,36 +67,44 @@ export const CompanyStoragesCreate = () => {
             return
         }
 
-        fetch(`${import.meta.env.VITE_BACKEND_URL}/api/private/company/storages`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": "Bearer " + token
-            },
-            body: JSON.stringify({
-                size,
-                price,
-                location_id: locationId
-            })
-        })
+        try {
 
-            .then(response => response.json())
-            .then(data => {
-                if (data.message) {
-                    setError(data.message)
-                } else {
-                    navigate(-1)
+            let imageUrl = null
+
+            if (photo) {
+                imageUrl = await uploadImage()
+            }
+
+            const response = await fetch(
+                `${import.meta.env.VITE_BACKEND_URL}/api/private/company/storages`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": "Bearer " + token
+                    },
+                    body: JSON.stringify({
+                        size,
+                        price,
+                        location_id: locationId,
+                        photo: imageUrl
+                    })
                 }
-            })
-            .catch(error => {
-                console.error(error)
-                setError("Failed to create storage")
-            })
+            )
+
+            if (!response.ok) {
+                throw new Error("Failed to create storage")
+            }
+
+            navigate(-1)
+
+        } catch (error) {
+            console.error(error)
+            setError("Failed to create storage")
+        }
     }
 
     if (loading) return <h2>Loading locations...</h2>
-
-
 
     return (
         <div className="container py-5">
@@ -84,42 +113,60 @@ export const CompanyStoragesCreate = () => {
                     <div className="card shadow-lg border-0">
 
                         <div className="card-header bg-info-subtle text-info-emphasis text-center py-4">
-                            <h3 className="mb-0">Create New Storage</h3>
+                            <h3 className="mb-0">
+                                Create New Storage
+                            </h3>
                         </div>
 
                         <div className="card-body py-4">
 
                             <form onSubmit={handleSubmit}>
-                                <div className="mb-3">
-                                    <label className="form-label fw-semibold">Size</label>
-                                    <input type="text" className="form-control" value={size} onChange={(e) => setSize(e.target.value)} />
-                                </div>
+                                <div className="row">
+                                    <div className="col-md-6 mb-3">
+                                        <label className="form-label fw-semibold">Size</label>
+                                        <input type="text" className="form-control" value={size} onChange={(e) => setSize(e.target.value)} />
+                                    </div>
 
-                                <div className="mb-3">
-                                    <label className="form-label fw-semibold">Price</label>
-                                    <input type="number" className="form-control" value={price} onChange={(e) => setPrice(e.target.value)} />
-                                </div>
+                                    <div className="col-md-6 mb-3">
+                                        <label className="form-label fw-semibold">Price</label>
+                                        <input type="number" className="form-control" value={price} onChange={(e) => setPrice(e.target.value)} />
+                                    </div>
 
-                                <div className="mb-3">
-                                    <label className="form-label fw-semibold">Location</label>
-                                    <select className="form-select" value={locationId} onChange={(e) => setLocationId(e.target.value)}>
-                                        <option value="">Select location</option>
-                                        {locations.map(loc => (
-                                            <option key={loc.id} value={loc.id}>
-                                                {loc.address} - {loc.city}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
+                                    <div className="mb-3">
+                                        <label className="form-label fw-semibold">Location</label>
+                                        <select
+                                            className="form-select"
+                                            value={locationId}
+                                            onChange={(e) => setLocationId(e.target.value)}
+                                        >
+                                            <option value="">Select location</option>
+                                            {locations.map(loc => (
+                                                <option key={loc.id} value={loc.id}>
+                                                    {loc.address} - {loc.city}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
 
-                                <div className="card-footer bg-white border-0 py-2">
-                                    <div className="d-flex flex-column align-items-center gap-3">
-                                        <button type="submit" className="btn btn-outline-success shadow">
-                                            Create Storage
-                                        </button>
-                                        <button type="button" className="btn btn-outline-secondary shadow" onClick={() => navigate(-1)}>
-                                            Back
-                                        </button>
+                                    <div className="mb-3">
+                                        <label className="form-label fw-semibold">Photo</label>
+                                        <input
+                                            type="file"
+                                            className="form-control"
+                                            accept="image/*"
+                                            onChange={(e) => setPhoto(e.target.files[0])}
+                                        />
+                                    </div>
+
+                                    <div className="card-footer bg-white border-0 py-2">
+                                        <div className="d-flex flex-column align-items-center gap-3">
+                                            <button type="submit" className="btn btn-outline-success shadow">
+                                                Create Storage
+                                            </button>
+                                            <button type="button" className="btn btn-outline-secondary shadow" onClick={() => navigate(-1)}>
+                                                Back
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </form>

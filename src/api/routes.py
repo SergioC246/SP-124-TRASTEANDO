@@ -7,7 +7,9 @@ from api.models import db, User, AdminUser, Client, Company, Leases, Storage, Lo
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from sqlalchemy import select
-
+from datetime import datetime
+from datetime import date
+import sqlalchemy as sa
 
 
 api = Blueprint('api', __name__)
@@ -126,7 +128,7 @@ def create_client():
 
     if not body.get("email") or not body.get("password"):
         return jsonify({"msg": "Email and password are required"}), 400
-    
+
     new_client = Client(
         email=body["email"],
         password=body["password"],
@@ -225,7 +227,7 @@ def update_company(company_id):
     company.cif = data.get("cif", company.cif)
     company.address = data.get("address", company.address)
     company.email = data.get("email", company.email)
-    company.photo_url = data.get("photo_url", company.photo_url)
+    company.photo = data.get("photo", company.photo)
 
     db.session.commit()
 
@@ -247,7 +249,6 @@ def delete_company(company_id):
     return jsonify({"message": "Company deleted"}), 200
 
 
-
 # conseguir location
 @api.route('/location/<int:location_id>', methods=['GET'])
 def get_one_location(location_id):
@@ -257,7 +258,7 @@ def get_one_location(location_id):
         return jsonify({"message": "location not found"}), 404
 
     return jsonify(location.serialize()), 200
-    
+
 
 # crear un location
 @api.route('/location', methods=['POST', 'GET'])
@@ -274,7 +275,8 @@ def create_or_get_location():
         if not all([address, city, latitude, longitude, company_id]):
             return jsonify({"message": "Missing data"}), 400
 
-        new_location = Location(address=address, city=city, latitude=latitude, longitude=longitude, company_id=company_id)
+        new_location = Location(
+            address=address, city=city, latitude=latitude, longitude=longitude, company_id=company_id)
         db.session.add(new_location)
         db.session.commit()
 
@@ -283,7 +285,7 @@ def create_or_get_location():
     else:
         result = db.session.execute(select(Location)).scalars().all()
         return jsonify([location.serialize() for location in result]), 200
-    
+
 
 # editar un location
 @api.route('/location/<int:location_id>', methods=["PUT"])
@@ -292,7 +294,7 @@ def update_location(location_id):
 
     location = db.session.get(Location, location_id)
     if not location:
-       return jsonify({"message": "location not found"}), 404
+        return jsonify({"message": "location not found"}), 404
 
     location.address = data.get("address", location.address)
     location.city = data.get("city", location.city)
@@ -315,7 +317,7 @@ def update_location(location_id):
 @api.route('/location/<int:location_id>', methods=["DELETE"])
 def delete_location(location_id):
     location = db.session.get(Location, location_id)
-    
+
     if not location:
         return jsonify({"message": "location not found"}), 404
 
@@ -325,6 +327,7 @@ def delete_location(location_id):
     return jsonify({"message": "location deleted"}), 201
 # get all leases
 
+
 @api.route('/leases', methods=["GET"])
 def get_leases():
     leases = db.session.execute(select(Leases)).scalars().all()
@@ -332,14 +335,14 @@ def get_leases():
 
 # get one lease
 
+
 @api.route('/leases/<int:lease_id>', methods=['GET'])
 def get_one_lease(lease_id):
     lease = db.session.get(Leases, lease_id)
 
     if not lease:
-        return jsonify({"message":"Lease not found"}), 404
+        return jsonify({"message": "Lease not found"}), 404
     return jsonify(lease.serialize()), 200
-    
 
 
 # crear un lease
@@ -356,26 +359,27 @@ def create_lease():
 
     if None in [start_date, end_date, client_id, storage_id]:
         return jsonify({"message": "Missing required IDs or dates"}), 400
-    
+
     new_lease = Leases(
-        start_date = start_date,
-        end_date = end_date,
-        status = status,
-        client_id = client_id,
-        storage_id =storage_id
+        start_date=start_date,
+        end_date=end_date,
+        status=status,
+        client_id=client_id,
+        storage_id=storage_id
     )
 
     db.session.add(new_lease)
     db.session.commit()
-    
+
     return jsonify(new_lease.serialize()), 201
 
 # delete a lease
 
+
 @api.route('/leases/<int:lease_id>', methods=['DELETE'])
 def delete_lease(lease_id):
     lease = db.session.get(Leases, lease_id)
- 
+
     if not lease:
         return jsonify({"message": "Lease not found"}), 404
 
@@ -386,6 +390,7 @@ def delete_lease(lease_id):
 
 # edit a lease
 
+
 @api.route('/leases/<int:lease_id>', methods=['PUT'])
 def update_lease(lease_id):
     data = request.get_json()
@@ -393,7 +398,7 @@ def update_lease(lease_id):
     lease = db.session.get(Leases, lease_id)
     if not lease:
         return jsonify({'message': "lease not found"}), 404
-    
+
     lease.start_date = data.get("start_date", lease.start_date)
     lease.end_date = data.get("end_date", lease.end_date)
     lease.status = data.get("status", lease.status)
@@ -405,47 +410,50 @@ def update_lease(lease_id):
     return jsonify(lease.serialize()), 200
 # All Storages
 
+
 @api.route("/company/storage", methods=["GET"])
 @jwt_required()
 def get_company_storage():
-    
+
     try:
         identity = get_jwt_identity()
         company_id = int(identity)
-        
+
         # Obtener storages cuya location pertenezca a esta company
         storages = db.session.query(Storage).join(Location).filter(
             Location.company_id == company_id
         ).all()
-        
+
         detailed_list = []
         for storage in storages:
             storage_data = storage.serialize()
-            
-            # Enriquecer con city 
+
+            # Enriquecer con city
             location = db.session.get(Location, storage.location_id)
             if location:
                 storage_data["city"] = location.city
             else:
                 storage_data["city"] = "No asignada"
-            
+
             detailed_list.append(storage_data)
-        
+
         return jsonify(detailed_list), 200
-        
+
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-    
+
 # Get Storage
+
+
 @api.route("/storage/<int:storage_id>", methods=["GET"])
 def get_storage(storage_id):
-    storage = db.session.execute(select(Storage).where(Storage.id == storage_id)).scalar_one_or_none()
+    storage = db.session.execute(select(Storage).where(
+        Storage.id == storage_id)).scalar_one_or_none()
 
     if storage is None:
         return jsonify({"message": "Storage not found"}), 404
 
-    return jsonify(storage.serialize()),200
-
+    return jsonify(storage.serialize()), 200
 
 
 # Update Storage
@@ -456,7 +464,7 @@ def update_storage(storage_id):
 
     if storage is None:
         return jsonify({"message": "Storage not found"}), 404
-    
+
     data = request.get_json()
 
     storage.size = data.get("size", storage.size)
@@ -467,7 +475,8 @@ def update_storage(storage_id):
         val = data.get("status")
         if isinstance(val, bool):
             storage.status = val
-        else: storage.status = True if str(val).lower() == "available" else False        
+        else:
+            storage.status = True if str(val).lower() == "available" else False
 
     db.session.commit()
 
@@ -475,16 +484,17 @@ def update_storage(storage_id):
 
 # Delete Storage
 
+
 @api.route('/storage/<int:storage_id>', methods=["DELETE"])
 def delete_storage(storage_id):
     storage = db.session.get(Storage, storage_id)
 
     if storage is None:
         return jsonify({"message": "Storage not found"}), 404
-    
+
     if storage.status == "occupied":
         return jsonify({"mesage": "Cannot delete occupied storage"}), 400
-    
+
     db.session.delete(storage)
     db.session.commit()
 
@@ -496,43 +506,48 @@ def delete_storage(storage_id):
 def login_client():
     body = request.get_json()
     if body is None:
-        return jsonify({"message":"Bad request"}), 400
-    
+        return jsonify({"message": "Bad request"}), 400
+
     email = body.get("email")
     password = body.get("password")
 
-    client = db.session.execute(select(Client).where(Client.email == email)).scalar_one_or_none()
+    client = db.session.execute(select(Client).where(
+        Client.email == email)).scalar_one_or_none()
 
     if client is None or client.password != password:
-        return jsonify({"message":"Wrong email or password"}), 401
+        return jsonify({"message": "Wrong email or password"}), 401
 
     access_token = create_access_token(identity=str(client.id))
-   
+
     return jsonify({
-        "token":access_token,
-        "client_id":client.id
+        "token": access_token,
+        "client_id": client.id
     }), 200
 
 # private
+
 
 @api.route('/private/client', methods=['GET'])
 @jwt_required()
 def private():
     client_id = int(get_jwt_identity())
-    client = db.session.execute(select(Client).where(Client.id == client_id)).scalar_one()
-    return jsonify(client.serialize()),200
+    client = db.session.execute(select(Client).where(
+        Client.id == client_id)).scalar_one()
+    return jsonify(client.serialize()), 200
+
 
 @api.route('/login/company', methods=["POST"])
 def login_company():
     email = request.json.get("email", None)
     password = request.json.get("password", None)
-    company = db.session.execute(select(Company).where(Company.email == email, Company.password == password)).scalar_one_or_none()
+    company = db.session.execute(select(Company).where(
+        Company.email == email, Company.password == password)).scalar_one_or_none()
 
-    if not company: 
+    if not company:
         return jsonify({"msg": "Bad email or password"}), 401
-    
+
     company_token = create_access_token(identity=str(company.id))
-    return jsonify({"company_token":company_token}), 200
+    return jsonify({"company_token": company_token}), 200
 
 
 @api.route("/private/company", methods=["GET"])
@@ -544,15 +559,47 @@ def private_company():
 
     if not company:
         return jsonify({"messagge": "Company not found"}), 404
-    
+
     return jsonify(company.serialize()), 200
+
+
+# Company Private Edit
+@api.route('/private/company/<int:company_id>', methods=["GET", "PUT"])
+@jwt_required()
+def company_private_by_id(company_id):
+    current_company_id = int(get_jwt_identity())
+
+    if company_id != current_company_id:
+        return jsonify({"message": "No tienes permisos para editar esta compañía"}), 403
+
+    company = db.session.execute(select(Company).where(
+        Company.id == company_id)).scalar_one_or_none()
+
+    if not company:
+        return jsonify({"message": "Compañía no encontrada"}), 404
+
+    if request.method == "GET":
+        return jsonify(company.serialize()), 200
+
+    if request.method == "PUT":
+        data = request.get_json()
+        company.name = data.get("name", company.name)
+        company.email = data.get("email", company.email)
+        company.cif = data.get("cif", company.cif)
+        company.address = data.get("address", company.address)
+        company.photo = data.get("photo", company.photo)
+
+        db.session.commit()
+
+        return jsonify(company.serialize()), 200
+
+
 # All storages Overview
 
 @api.route('/storage/overview', methods=["GET"])
 def get_all_storage_overview():
-    
-    result = db.session.execute(select(Storage)).scalars().all()
 
+    result = db.session.execute(select(Storage)).scalars().all()
 
     detailed_list = []
     for storage in result:
@@ -563,20 +610,22 @@ def get_all_storage_overview():
 
         storage_data["company_name"] = company.name
         storage_data["city"] = location.city
-        
+
         detailed_list.append(storage_data)
-        
+
     return jsonify(detailed_list), 200
 
 # Get Storage Overview
 
+
 @api.route("/storage/<int:storage_id>/overview", methods=["GET"])
 def get_storage_overview(storage_id):
-    storage = db.session.execute(select(Storage).where(Storage.id == storage_id)).scalar_one_or_none()
+    storage = db.session.execute(select(Storage).where(
+        Storage.id == storage_id)).scalar_one_or_none()
 
     if storage is None:
         return jsonify({"message": "Storage not found"}), 404
-    
+
     storage_data = storage.serialize()
 
     location = db.session.get(Location, storage.location_id)
@@ -584,17 +633,18 @@ def get_storage_overview(storage_id):
 
     storage_data["company_name"] = company.name
     storage_data["city"] = location.city
-        
+
     return jsonify(storage_data), 200
 
 # Login admin
+
 
 @api.route('/login/admin', methods=['POST'])
 def login_admin():
     body = request.get_json()
     if body is None:
         return jsonify({"message": "User and Password is mandatory"}), 400
-    
+
     email = body.get("email")
     password = body.get("password")
 
@@ -607,7 +657,7 @@ def login_admin():
 
     if admin is None or admin.password != password:
         return jsonify({"message": "Wrong email or password"}), 401
-    
+
     admin_token = create_access_token(identity=str(admin.id))
 
     return jsonify({
@@ -615,7 +665,8 @@ def login_admin():
         "admin": admin.serialize()
     }), 200
 
-# Private admin   
+# Private admin
+
 
 @api.route('/private/admin', methods=['GET'])
 @jwt_required()
@@ -628,24 +679,27 @@ def private_admin():
 
     if admin is None:
         return jsonify({"message": "Admin not found"}), 404
-    
+
     return jsonify(admin.serialize()), 200
 
 # # private storages view
+
+
 @api.route('/private/client/storages', methods=['GET'])
 @jwt_required()
 def get_client_storages_by_location():
-    location_id= request.args.get("location_id", None)
+    location_id = request.args.get("location_id", None)
 
     if location_id is None:
         return jsonify({"message": "location_id query param is required"}), 400
-    
+
     try:
         location_id = int(location_id)
     except ValueError:
         return jsonify({"message": "location_id must be an integer"}), 400
-    
-    result = db.session.execute(select(Storage).where(Storage.location_id == location_id)).scalars().all()
+
+    result = db.session.execute(select(Storage).where(
+        Storage.location_id == location_id)).scalars().all()
     storages = []
     for storage in result:
         storages.append(storage.serialize())
@@ -658,12 +712,13 @@ def get_client_storages_by_location():
 @jwt_required()
 def company_locations():
     company_id = int(get_jwt_identity())
-    
+
     if request.method == "GET":
-        locations = db.session.execute(select(Location).where(Location.company_id == company_id)).scalars().all()
+        locations = db.session.execute(select(Location).where(
+            Location.company_id == company_id)).scalars().all()
 
         return jsonify([location.serialize() for location in locations]), 200
-    
+
     if request.method == "POST":
         data = request.get_json()
 
@@ -671,6 +726,7 @@ def company_locations():
         city = data.get("city")
         latitude = data.get("latitude")
         longitude = data.get("longitude")
+        photo = data.get("photo")
 
         if not all([address, city, latitude, longitude]):
             return jsonify({"message": "Missing data"}), 400
@@ -680,7 +736,8 @@ def company_locations():
             city=city,
             latitude=latitude,
             longitude=longitude,
-            company_id=company_id
+            company_id=company_id,
+            photo=photo
         )
 
         db.session.add(new_location)
@@ -694,7 +751,8 @@ def company_locations():
 @jwt_required()
 def get_company_storages():
     company_id = get_jwt_identity()
-    storages = db.session.execute(select(Storage).join(Storage.location).where(Location.company_id == company_id)).scalars().all()
+    storages = db.session.execute(select(Storage).join(Storage.location).where(
+        Location.company_id == company_id)).scalars().all()
 
     return jsonify([storage.serialize() for storage in storages]), 200
 
@@ -705,13 +763,13 @@ def get_company_storages():
 def get_company_storage_by_id(storage_id):
     company_id = get_jwt_identity()
 
-    storage = db.session.execute(select(Storage).join(Storage.location).where(Storage.id == storage_id, Location.company_id == company_id)).scalar_one_or_none()
+    storage = db.session.execute(select(Storage).join(Storage.location).where(
+        Storage.id == storage_id, Location.company_id == company_id)).scalar_one_or_none()
 
     if not storage:
         return jsonify({"message": "Storage not found or not yours"}), 404
-    
-    return jsonify(storage.serialize()), 200
 
+    return jsonify(storage.serialize()), 200
 
 
 # Company private Locations Details
@@ -721,13 +779,13 @@ def get_company_storage_by_id(storage_id):
 def get_company_location_by_id(location_id):
     company_id = int(get_jwt_identity())
 
-    location = db.session.execute(select(Location).where(Location.id == location_id, Location.company_id == company_id)).scalar_one_or_none()
+    location = db.session.execute(select(Location).where(
+        Location.id == location_id, Location.company_id == company_id)).scalar_one_or_none()
 
     if not location:
         return jsonify({"message": "Location not found or not yours"}), 404
 
     return jsonify(location.serialize()), 200
-
 
 
 # Company private Locations Edit
@@ -758,7 +816,7 @@ def company_location_by_id(location_id):
         db.session.commit()
 
         return jsonify(location.serialize()), 200
-    
+
 
 # Company private Locations Delete
 
@@ -767,7 +825,8 @@ def company_location_by_id(location_id):
 def delete_company_location(location_id):
     company_id = int(get_jwt_identity())
 
-    location = db.session.execute(select(Location).where(Location.id == location_id, Location.company_id == company_id)).scalar_one_or_none()
+    location = db.session.execute(select(Location).where(
+        Location.id == location_id, Location.company_id == company_id)).scalar_one_or_none()
 
     if not location:
         return jsonify({"message": "Location not found or not yours"}), 404
@@ -778,40 +837,37 @@ def delete_company_location(location_id):
     return jsonify({"message": "Location deleted"}), 200
 
 
-
 # Company private create storage
 @api.route('/private/company/storages', methods=['POST'])
 @jwt_required()
 def create_company_storage():
-    company_id = get_jwt_identity() 
+    company_id = get_jwt_identity()
     data = request.get_json()
 
     size = data.get("size")
     price = data.get("price")
     location_id = data.get("location_id")
+    photo = data.get("photo")
 
-    
     if not all([size, price, location_id]):
         return jsonify({"message": "Missing data"}), 400
 
-    
     location = db.session.get(Location, location_id)
     if not location or location.company_id != int(company_id):
         return jsonify({"message": "Invalid location or does not belong to your company"}), 400
 
-    
     new_storage = Storage(
         size=size,
         price=price,
         location_id=location_id,
-        status=True
+        status=True,
+        photo=photo
     )
 
     db.session.add(new_storage)
     db.session.commit()
 
     return jsonify(new_storage.serialize()), 201
-
 
 
 # Company private Storages Edit
@@ -821,7 +877,8 @@ def create_company_storage():
 def company_storage_by_id(storage_id):
     company_id = int(get_jwt_identity())
 
-    storage = db.session.execute(select(Storage).join(Location).where(Storage.id == storage_id, Location.company_id == company_id)).scalar_one_or_none()
+    storage = db.session.execute(select(Storage).join(Location).where(
+        Storage.id == storage_id, Location.company_id == company_id)).scalar_one_or_none()
 
     if not storage:
         return jsonify({"message": "Storage not found or not yours"}), 404
@@ -835,6 +892,7 @@ def company_storage_by_id(storage_id):
         storage.size = data.get("size", storage.size)
         storage.price = data.get("price", storage.price)
         storage.location_id = data.get("location_id", storage.location_id)
+        storage.photo = data.get("photo", storage.photo)
 
         if "status" in data:
             storage.status = data.get("status")
@@ -844,7 +902,6 @@ def company_storage_by_id(storage_id):
         return jsonify(storage.serialize()), 200
 
 
-
 # Company Storages Delete
 
 @api.route('/private/company/storages/<int:storage_id>', methods=["DELETE"])
@@ -852,7 +909,8 @@ def company_storage_by_id(storage_id):
 def delete_company_storage(storage_id):
     company_id = int(get_jwt_identity())
 
-    storage = db.session.execute(select(Storage).join(Location).where(Storage.id == storage_id, Location.company_id == company_id)).scalar_one_or_none()
+    storage = db.session.execute(select(Storage).join(Location).where(
+        Storage.id == storage_id, Location.company_id == company_id)).scalar_one_or_none()
 
     if not storage:
         return jsonify({"message": "Storage not found or not yours"}), 404
@@ -860,8 +918,7 @@ def delete_company_storage(storage_id):
     db.session.delete(storage)
     db.session.commit()
 
-    return jsonify({"message": "Storage deleted"}), 200   
-
+    return jsonify({"message": "Storage deleted"}), 200
 
 
 # #  Company Storages by Location
@@ -878,36 +935,55 @@ def delete_company_storage(storage_id):
 
 
 # conseguir todos los storages para los clientes
-@api.route('/location/<int:location_id>/storages', methods=['GET']) 
+@api.route('/location/<int:location_id>/storages', methods=['GET'])
 @jwt_required()
 def get_storages_by_location(location_id):
     try:
         storages = db.session.execute(
-            select(Storage).where(Storage.location_id == location_id)).scalars().all()
-        if not storages:
-            return jsonify([]), 200
-            
-        return jsonify([storage.serialize() for storage in storages]), 200
+            select(Storage).where(Storage.location_id == location_id)
+        ).scalars().all()
+
+        result = []
+
+        for storage in storages:
+            # Traer solo leases activas vigentes HOY
+            leases = db.session.execute(
+                select(Leases).where(
+                    Leases.storage_id == storage.id,
+                    Leases.status == "active",
+                    Leases.start_date <= date.today(),
+                    Leases.end_date >= date.today()
+                )
+            ).scalars().all()
+
+            occupied = len(leases) > 0
+
+            storage_data = storage.serialize()
+            storage_data["occupied"] = occupied
+            storage_data["active_leases_count"] = len(leases)
+            result.append(storage_data)
+
+        return jsonify(result), 200
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-    
+
 
 # private leases de cliente
-
 @api.route('/client/my-leases', methods=['GET'])
 @jwt_required()
 def get_my_leases():
     try:
         client_id = get_jwt_identity()
-        
+
         leases = db.session.execute(
             select(Leases).where(Leases.client_id == client_id)
         ).scalars().all()
-        
+
         return jsonify([lease.serialize() for lease in leases]), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
 
 # crear un lease private para cliente
 
@@ -916,25 +992,175 @@ def get_my_leases():
 def create_client_lease():
     data = request.get_json()
 
-    current_client_id = get_jwt_identity() 
+    current_client_id = get_jwt_identity()
 
-    start_date = data.get("start_date")
-    end_date = data.get("end_date")
-    status = data.get("status", True)
+    start_date_str = data.get("start_date")
+    end_date_str = data.get("end_date")
     storage_id = data.get("storage_id")
 
-    if not all([start_date, end_date, storage_id]):
+    if not all([start_date_str, end_date_str, storage_id]):
         return jsonify({"message": "Faltan datos obligatorios (fechas o storage_id)"}), 400
-    
+
+    try:
+        start_date = datetime.strptime(start_date_str, "%Y-%m-%d").date()
+        end_date = datetime.strptime(end_date_str, "%Y-%m-%d").date()
+    except ValueError:
+        return jsonify({"message": "Formato de fecha inválido. Usa YYYY-MM-DD"}), 400
+
     new_lease = Leases(
-        start_date = start_date,
-        end_date = end_date,
-        status = status,
-        client_id = current_client_id,
-        storage_id = storage_id
+        start_date=start_date,
+        end_date=end_date,
+        status="active",
+        client_id=current_client_id,
+        storage_id=storage_id
     )
 
     db.session.add(new_lease)
     db.session.commit()
-    
+
     return jsonify(new_lease.serialize()), 201
+
+
+# Get occupancy of storages from location
+@api.route("/mycompany/locations-overview", methods=["GET"])
+@jwt_required()
+def mycompany_locations_overview():
+
+    try:
+        company_id = int(get_jwt_identity())
+
+        locations = db.session.execute(select(Location).where(
+            Location.company_id == company_id)).scalars().all()
+
+        result = [loc.serialize() for loc in locations]
+
+        return jsonify(result), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+# Storage status per company
+
+@api.route("/private/company/storages-occupancy", methods=["GET"])
+@jwt_required()
+def company_storages_occupancy():
+    company_id = int(get_jwt_identity())
+
+    # Obtener todos los storages de la empresa
+    storages = db.session.execute(
+        select(Storage).join(Location).where(Location.company_id == company_id)
+    ).scalars().all()
+
+    result = []
+    for storage in storages:
+        # contar leases activas
+        active_leases = db.session.execute(
+            select(Leases).where(
+                Leases.storage_id == storage.id,
+                Leases.status == "active",
+                Leases.start_date <= sa.func.current_date(),
+                Leases.end_date >= sa.func.current_date()
+            )
+        ).scalars().all()
+
+        storage_data = storage.serialize()
+        storage_data["occupied"] = len(active_leases) > 0
+        storage_data["active_leases_count"] = len(active_leases)
+
+        result.append(storage_data)
+
+    return jsonify(result), 200
+
+
+# Endpoint para leases de un storage específico
+@api.route("/private/company/storage/<int:storage_id>/leases", methods=["GET"])
+@jwt_required()
+def storage_leases(storage_id):
+    today = date.today()  # <-- usar fecha de Python
+
+    # Traer leases con join a Client para obtener email
+    leases = db.session.execute(
+        select(Leases, Client.email)
+        .join(Client, Leases.client_id == Client.id)
+        .where(Leases.storage_id == storage_id)
+    ).all()
+
+    result = {"current": [], "past": [], "future": []}
+
+    for lease, email in leases:
+        lease_info = {
+            "email": email,
+            "start_date": lease.start_date.isoformat(),
+            "end_date": lease.end_date.isoformat(),
+            "status": lease.status
+        }
+
+        # Comparar con today de Python
+        if lease.end_date < today:
+            result["past"].append(lease_info)
+        elif lease.start_date > today:
+            result["future"].append(lease_info)
+        else:
+            result["current"].append(lease_info)
+
+    return jsonify(result), 200
+
+
+# Leases for company
+@api.route("/private/company/leases-filtered", methods=["GET"])
+@jwt_required()
+def get_company_leases_filtered():
+    company_id = int(get_jwt_identity())
+    today = date.today()
+   
+    status_filter = request.args.get("status", None)
+    location_id = request.args.get("location_id", None) 
+    storage_id = request.args.get("storage_id", None)    
+
+    query = select(Leases).join(Storage).join(
+        Location).where(Location.company_id == company_id)
+
+    if location_id:
+        try:
+            location_id = int(location_id)
+            query = query.where(Storage.location_id == location_id)
+        except ValueError:
+            return jsonify({"message": "location_id must be an integer"}), 400
+
+    if storage_id:
+        try:
+            storage_id = int(storage_id)
+            query = query.where(Leases.storage_id == storage_id)
+        except ValueError:
+            return jsonify({"message": "storage_id must be an integer"}), 400
+
+    leases = db.session.execute(query).scalars().all()
+
+    result = {"current": [], "past": [], "future": []}
+
+    for lease in leases:
+        lease_info = {
+            "id": lease.id,
+            "start_date": lease.start_date.isoformat(),
+            "end_date": lease.end_date.isoformat(),
+            "status": lease.status,
+            "storage_id": lease.storage.id,
+            "storage_size": lease.storage.size,
+            "location_city": lease.storage.location.city,
+            "client_email": lease.client.email
+        }
+
+        # Clasificar según fechas
+        if lease.end_date < today:
+            result["past"].append(lease_info)
+        elif lease.start_date > today:
+            result["future"].append(lease_info)
+        else:
+            result["current"].append(lease_info)
+
+    # Si se filtró por status temporal, devolver solo ese
+    if status_filter in ["current", "past", "future"]:
+        return jsonify(result[status_filter]), 200
+
+    return jsonify(result), 200
