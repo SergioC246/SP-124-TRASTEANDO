@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { getStoragesFiltered } from "../utilsStorages";
+import { getAllStoragesOverview } from "../utilsStorages";
 
 
 export const SearchHome = () => {
@@ -82,7 +82,7 @@ export const SearchHome = () => {
     const fetchStorages = async () => {
         try {
             // const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}api/storage/map`);
-            const data = await getStoragesFiltered(searchData);
+            const data = await getAllStoragesOverview(searchData);
             setStorages(data);
         } catch (error) {
             console.error("Error cargando storages:", error);
@@ -116,16 +116,17 @@ export const SearchHome = () => {
 
             {/* SECCIÓN DE TRASTEROS */}
             <div className="container py-5">
-                <h3 className="fw-bold mb-4">Trasteros cerca de ti</h3>
+                <h3 className="fw-bold mb-4">Trasteros disponibles</h3>
                 <div className="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
                     {storages.map(storage => (
-                        <div key={storage.storage_id} className="col">
+                        <div key={storage.id} className="col">
                             <div className="card h-100 border-0 shadow-sm rounded-3 p-3">
                                 <div className="bg-light rounded mb-3" style={{ height: "150px" }}></div>
-                                <h5 className="fw-bold mb-1">{storage.address}, {storage.city}</h5>
+                                <h4 className="fw-bold mb-1 text-capitalize pb-1">{storage.city}</h4>
+                                <h5 className="mb-1 text-capitalize">{storage.company_name}</h5>
                                 <p className="text-muted small mb-1">{storage.size} m²</p>
                                 <p className="fw-bold mt-auto mb-0">{storage.price}€ / mes</p>
-                                <button className="btn btn-primary mt-2" onClick={() => navigate(`/storages/${storage.storage_id}`)} >Ver detalles</button>
+                                <button className="btn btn-primary mt-2" onClick={() => navigate(`/client/private/storage/${storage.id}`)} >Ver detalles</button>
                             </div>
                         </div>
                     ))}

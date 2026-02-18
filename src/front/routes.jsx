@@ -59,7 +59,7 @@ import { SearchHome } from "./pages/SearchHome";
 import { Map } from "./pages/Map";
 import { CompanyEdit } from "./pages/CompanyEdit";
 import { LocationPublic } from "./pages/LocationPublic";
-import { SearchHome } from "./pages/SearchHome";
+
 
 
 
@@ -83,8 +83,7 @@ export const router = createBrowserRouter(
       {/* Rutas client */}
 
       <Route path="/clients-edit/:id/edit" element={<ClientEdit />} />
-      <Route path="/client-login/login" element={<ClientLogin />} />
-
+     
 
       <Route path="/client/login" element={<ClientLogin />} />
       <Route path="/client/signup" element={<ClientSignup />} />

@@ -4,8 +4,6 @@ import { useEffect, useState } from "react";
 import { getStorageOverview } from "../utilsStorages";
 
 
-
-
 export const StoragesPrivateDetails = () => {
     const { storageId } = useParams();
     const { store } = useGlobalReducer();

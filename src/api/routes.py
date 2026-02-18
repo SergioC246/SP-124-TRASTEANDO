@@ -7,6 +7,7 @@ from api.models import db, User, AdminUser, Client, Company, Leases, Storage, Lo
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from sqlalchemy import select, and_, not_, cast, Date
+import math
 
 
 api = Blueprint('api', __name__)
@@ -598,6 +599,7 @@ def get_storage_overview(storage_id):
 
     storage_data["company_name"] = company.name
     storage_data["city"] = location.city
+    storage_data["status"] = "available" if not storage.status else "occupied"
 
     return jsonify(storage_data), 200
 
@@ -974,7 +976,7 @@ def create_client_lease():
 
 # borrar un lease de cliente
 
-
+# obsoleto
 @api.route('/client/leases/<int:lease_id>', methods=['DELETE'])
 @jwt_required()
 def delete_client_lease(lease_id):
@@ -1007,8 +1009,7 @@ def delete_client_lease(lease_id):
     # el JOIN entre Storage y Location para Haces 1 sola consulta a la base de datos en lugar de 50 o 100
 @api.route('/storage/map', methods=["GET"])
 def get_storages_for_map():
-    import math
-    from sqlalchemy import and_, not_
+
     from datetime import datetime
 
     search_lat = request.args.get('lat')
@@ -1028,6 +1029,8 @@ def get_storages_for_map():
             )
         )
         # Excluimos esos IDs de la consulta principal
+        print(occupied_subquery)
+        print("despues de print occupied-subquery")
         query = query.where(not_(Storage.id.in_(occupied_subquery)))
 
     results = db.session.execute(query).all()
