@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback  } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import useGlobalReducer from "../hooks/useGlobalReducer.jsx";
 
@@ -107,7 +107,7 @@ export const StoragesPrivateList = () => {
                                         </div>
                                     </div>
                                 </div>
-                                <button className={`btn w-100 fw-bold py-3 shadow-sm ${storagesAvailability[storage.id] ? 'btn-primary' : 'btn-light disabled'}`} style={{ borderRadius: "12px" }} onClick={() => navigate(`/client/private/storage/${storage.id}`)}>
+                                <button className={'btn w-100 fw-bold py-3 shadow-sm btn-primary'} style={{ borderRadius: "12px" }} onClick={() => navigate(`/client/private/storage/${storage.id}`)}>
                                     Ver detalles
                                 </button>
                             </div>

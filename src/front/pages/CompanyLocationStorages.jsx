@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 
-
 export const CompanyLocationStorages = () => {
 
     const { id } = useParams()
@@ -12,49 +11,87 @@ export const CompanyLocationStorages = () => {
 
     useEffect(() => {
         const token = localStorage.getItem("token_company")
-
         if (!token) {
             navigate("/companies/login")
             return
         }
 
-        const url = `${import.meta.env.VITE_BACKEND_URL}/api/location/${id}/storages`
-
-        fetch(url, {
+        fetch(`${import.meta.env.VITE_BACKEND_URL}api/location/${id}/storages`, {
             headers: {
                 "Authorization": "Bearer " + token,
             },
         })
-            .then(response => {
-                if (!response.ok) throw new Error("Error fetching storages")
-                return response.json()
+            .then(res => {
+                if (!res.ok) throw new Error("Error fetching storages")
+                return res.json()
             })
-            .then(data => {
-                setStorages(data)
+            .then(async (storagesData) => {
+
+                try {
+
+                    const leasesRes = await fetch(
+                        `${import.meta.env.VITE_BACKEND_URL}api/private/company/leases-filtered`,
+                        {
+                            headers: {
+                                "Authorization": "Bearer " + token,
+                            },
+                        }
+                    )
+
+                    console.log("LEASES STATUS:", leasesRes.status)
+
+                    if (!leasesRes.ok) {
+                        const text = await leasesRes.text()
+                        console.log("LEASES RESPONSE:", text)
+                        throw new Error("Leases fetch failed")
+                    }
+
+                    const leasesData = await leasesRes.json()
+
+                    // Unimos current + future (los activos y reservados)
+                    const allLeases = [
+                        ...(leasesData.current || []),
+                        ...(leasesData.future || [])
+                    ]
+
+                    const leasesByStorage = {}
+
+                    allLeases.forEach(lease => {
+                        if (!leasesByStorage[lease.storage_id]) {
+                            leasesByStorage[lease.storage_id] = []
+                        }
+                        leasesByStorage[lease.storage_id].push(lease)
+                    })
+
+                    const storagesWithLeases = storagesData.map(storage => ({
+                        ...storage,
+                        leases: leasesByStorage[storage.id] || []
+                    }))
+
+                    setStorages(storagesWithLeases)
+
+                } catch (error) {
+
+                    console.warn("Leases could not be loaded. Showing storages only.")
+                    setStorages(storagesData)
+                }
                 setLoading(false)
             })
-            .catch(error => {
-                console.error(error)
+            .catch(err => {
+                console.error(err)
                 setLoading(false)
             })
 
         fetch(`${import.meta.env.VITE_BACKEND_URL}/api/location/${id}`, {
-            headers: {
-                Authorization: "Bearer " + token,
-            },
+            headers: { Authorization: "Bearer " + token }
         })
             .then(res => {
-                if (!response.ok) throw new Error("Error fetching location")
-                return response.json()
+                if (!res.ok) throw new Error("Error fetching location")
+                return res.json()
             })
-            .then(data => {
-                setLocation(data)
-                setLoading(false)
-            })
-            .catch(error => {
-                console.error("Location error:", error)
-                setLoading(false)
-            })
+            .then(data => setLocation(data))
+            .catch(err => console.error(err))
+
     }, [id])
 
     const handleDelete = (storageId) => {
@@ -78,64 +115,158 @@ export const CompanyLocationStorages = () => {
     }
 
     if (loading) return <h2>Loading storages...</h2>
-    if (storages.length === 0) return <h2>No storages found for this location</h2>
 
+    if (storages.length === 0) {
+        return (
+            <div className="container py-5">
+                <div className="row justify-content-center">
+                    <div className="col-12 col-md-8 col-lg-5">
+                        <div className="card shadow-lg border-0">
+                            <div className="card-header bg-info-subtle text-info-emphasis text-center py-4">
+                                <h3 className="mb-0">No Storages Found</h3>
+                            </div>
+                            <div className="card-body py-4">
+                                <div className="d-flex flex-column align-items-center gap-3">
+                                    <button
+                                        className="btn btn-outline-success shadow"
+                                        onClick={() => navigate("/companies/private/storages/create")}
+                                    >
+                                        Create Storage
+                                    </button>
+                                    <button
+                                        className="btn btn-outline-secondary shadow"
+                                        onClick={() => navigate("/companies/private/locations")}
+                                    >
+                                        Back
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        )
+    }
 
     return (
         <div className="container-fluid py-5 px-4">
             <div className="row">
                 <div className="col-12 col-xl-12 mx-auto">
                     <div className="card shadow-lg border-0">
-
                         <div className="card-header bg-info-subtle text-info-emphasis text-center py-4">
                             <h4 className="mb-0">
-                                Storages in {location?.name}
+                                Storages in {location?.address}
                             </h4>
                         </div>
 
                         <div className="card-body bg-light">
                             <div className="row g-4">
-                                {storages.map(storage => (
-                                    <div key={storage.id} className="col-12 col-md-6 col-lg-3">
-                                        <div className="card shadow-sm border-0 h-100">
+                                {storages.map(storage => {
 
-                                            <img src="https://media.istockphoto.com/id/2161730367/fr/photo/unit%C3%A9s-dentreposage-de-location-10-par-30-pieds-location-dunit%C3%A9s-dentreposage-pour-les.jpg?s=2048x2048&w=is&k=20&c=W1mSZ3KgOXGI22pN0T3_--5Df7iTs8SpSGBZZJn4tiw="
-                                                className="card-img-top"
-                                                alt="Storage"
-                                                style={{ height: "180px", objectFit: "cover" }}
-                                            />
-                                            <div className="card-body">
-                                                <h5 className="fw-bold">Size: {storage.size}</h5>
-                                                <p className="mb-1"><strong>Price:</strong> {storage.price}</p>
-                                                <p className="mb-0"><strong>Status:</strong> {storage.status ? "Available" : "Occupied"}</p>
+                                    const today = new Date()
 
-                                                <div className="d-flex justify-content-end gap-1 mt-2">
-                                                    <button className="btn btn-md btn-outline-primary shadow"
-                                                        onClick={() => navigate(`/companies/private/storages/${storage.id}`)}>
-                                                        <i className="fa-regular fa-eye"></i>
-                                                    </button>
+                                    const hasActiveLease = storage.leases?.some(lease => {
+                                        const start = new Date(lease.start_date)
+                                        const end = new Date(lease.end_date)
+                                        return today >= start && today <= end
+                                    })
 
-                                                    <button className="btn btn-md btn-outline-success shadow"
-                                                        onClick={() => navigate(`/companies/private/storages/edit/${storage.id}`)}>
-                                                        <i className="fa-solid fa-pencil"></i>
-                                                    </button>
+                                    const statusClass = hasActiveLease ? "text-danger" : "text-success"
+                                    const occupancyLabel = hasActiveLease ? "Occupied" : "Available"
 
-                                                    <button className="btn btn-md btn-outline-danger"
-                                                        onClick={() => handleDelete(storage.id)}>
-                                                        <i className="fa-solid fa-trash"></i>
-                                                    </button>
+                                    return (
+                                        <div key={storage.id} className="col-12 col-md-6 col-lg-3">
+                                            <div className="card shadow-sm border-0 h-100">
+
+                                                {storage.photo ? (
+                                                    <img
+                                                        src={storage.photo}
+                                                        className="card-img-top"
+                                                        alt="Storage"
+                                                        style={{
+                                                            aspectRatio: "16/9",
+                                                            width: "100%",
+                                                            objectFit: "cover"
+                                                        }}
+                                                    />
+                                                ) : (
+                                                    <div
+                                                        className="d-flex align-items-center justify-content-center bg-light text-muted fw-bold"
+                                                        style={{
+                                                            aspectRatio: "16/9",
+                                                            width: "100%"
+                                                        }}
+                                                    >
+                                                        No image
+                                                    </div>
+                                                )}
+
+                                                <div className="card-body">
+                                                    <h5 className="fw-bold">
+                                                        Size: {storage.size}
+                                                    </h5>
+
+                                                    <p className="mb-1">
+                                                        <strong>Price:</strong> {storage.price}
+                                                    </p>
+
+                                                    <p className={`mb-2 fw-bold ${statusClass}`}>
+                                                        <strong>Status:</strong> {occupancyLabel}
+                                                    </p>
+
+                                                    {storage.leases && storage.leases.length > 0 && (
+                                                        <div className="mt-2">
+                                                            <h6>Reservations:</h6>
+                                                            <ul className="list-unstyled mb-0">
+                                                                {storage.leases.map(l => (
+                                                                    <li key={l.id}>
+                                                                        {l.client_email} ({l.start_date} - {l.end_date})
+                                                                    </li>
+                                                                ))}
+                                                            </ul>
+                                                        </div>
+                                                    )}
+
+                                                    <div className="d-flex justify-content-end gap-1 mt-2">
+                                                        <button
+                                                            className="btn btn-md btn-outline-primary shadow"
+                                                            onClick={() => navigate(`/companies/private/storages/${storage.id}`)}
+                                                        >
+                                                            <i className="fa-regular fa-eye"></i>
+                                                        </button>
+
+                                                        <button
+                                                            className="btn btn-md btn-outline-success shadow"
+                                                            onClick={() => navigate(`/companies/private/storages/edit/${storage.id}`)}
+                                                        >
+                                                            <i className="fa-solid fa-pencil"></i>
+                                                        </button>
+
+                                                        <button
+                                                            className="btn btn-md btn-outline-danger"
+                                                            onClick={() => handleDelete(storage.id)}
+                                                        >
+                                                            <i className="fa-solid fa-trash"></i>
+                                                        </button>
+                                                    </div>
                                                 </div>
+
                                             </div>
                                         </div>
-                                    </div>
-                                ))}
-
+                                    )
+                                })}
                                 <div className="card-footer bg-white border-0 py-3">
                                     <div className="d-flex flex-column align-items-center gap-3">
-                                        <button className="btn btn-outline-success shadow" onClick={() => navigate("/companies/private/storages/create")}>
+                                        <button
+                                            className="btn btn-outline-success shadow"
+                                            onClick={() => navigate("/companies/private/storages/create")}
+                                        >
                                             Create Storage
                                         </button>
-                                        <button className="btn btn-outline-secondary shadow" onClick={() => navigate("/companies/private/locations")}>
+                                        <button
+                                            className="btn btn-outline-secondary shadow"
+                                            onClick={() => navigate("/companies/private/locations")}
+                                        >
                                             Back
                                         </button>
                                     </div>

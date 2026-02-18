@@ -3,9 +3,6 @@ import useGlobalReducer from "../hooks/useGlobalReducer";
 import { useEffect, useState } from "react";
 import { getStorageOverview } from "../utilsStorages";
 
-
-
-
 export const StoragesPrivateDetails = () => {
     const { storageId } = useParams();
     const { store } = useGlobalReducer();
@@ -15,53 +12,31 @@ export const StoragesPrivateDetails = () => {
     const [loading, setLoading] = useState(true)
     const [isAvailable, setIsAvailable] = useState(true);
 
-
     useEffect(() => {
         const fetchDetail = async () => {
             try {
                 const token = store.tokenClient;
-                const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/storage/${storageId}/overview`, {
+                const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}api/storage/${storageId}/overview`, {
                     headers: {
                         "Authorization": `Bearer ${token}`,
                         "Content-Type": "application/json"
                     }
                 });
-
                 if (!response.ok) throw new Error("Error storage");
                 const data = await response.json();
+
                 setStorage(data);
+                console.log("data es:", data)
+                setIsAvailable(data.status === "available" && !data.occupied);
+
             } catch (error) {
                 console.error("Error al cargar los detalles del trastero.", error);
             } finally {
                 setLoading(false);
             }
         };
-
         if (storageId && store.tokenClient) fetchDetail();
     }, [storageId, store.tokenClient]);
-
-
-    useEffect(() => {
-        const checkAvailability = async () => {
-            if (!storageId || !store.tokenClient || !storage) return;
-
-            try {
-                const backendUrl = import.meta.env.VITE_BACKEND_URL;
-                const resp = await fetch(`${backendUrl}/api/leases?storage_id=${storageId}`, {
-                    headers: { "Authorization": `Bearer ${store.tokenClient}` }
-                });
-
-                if (resp.ok) {
-                    const leases = await resp.json();
-                    setIsAvailable(storage.status === true && leases.length === 0);
-                }
-            } catch (error) {
-                console.error("Error check:", error);
-            }
-        };
-        checkAvailability();
-    }, [storageId, store.tokenClient, storage]);
-
 
     if (loading) return (
         <div className="container py-5 text-center">
@@ -102,7 +77,6 @@ export const StoragesPrivateDetails = () => {
                                         </span>
 
                                     </div>
-
                                     <div className="row g-3 mb-4">
                                         <div>
                                             {/* <div className="col-6 text-center border rounded-4 p-3 bg-light"> */}
@@ -124,14 +98,10 @@ export const StoragesPrivateDetails = () => {
                                     </button>
                                 </div>
                             </div>
-
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     );
-
-
-
 }

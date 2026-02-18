@@ -5,9 +5,9 @@ import useGlobalReducer from "../hooks/useGlobalReducer"
 export const CompanyPrivate = () => {
 
     const [company, setCompany] = useState(null)
+    const [photo, setPhoto] = useState("")
 
     const navigate = useNavigate()
-
     const { dispatch } = useGlobalReducer()
 
     function handleLogout() {
@@ -17,7 +17,6 @@ export const CompanyPrivate = () => {
             type: 'set_auth_company',
             payload: false
         })
-
         navigate("/")
     }
 
@@ -44,6 +43,7 @@ export const CompanyPrivate = () => {
             })
             .then(data => {
                 setCompany(data)
+                setPhoto(data.photo || "")
             })
 
     }, [])
@@ -55,61 +55,69 @@ export const CompanyPrivate = () => {
     return (
         <div className="container py-4">
             <div className="row justify-content-center">
-                <div className="col-md-6">
-                    <div className="card show">
-                        <div className="card-header bg-primary text-white d-flex align-items-center gap-3">
+                <div className="col-12 col-md-8 col-lg-5">
+                    <div className="card shadow-lg border-0">
 
+                        <div className="card-header bg-info-subtle text-info-emphasis py-4 position-relative">
 
-                            <div
-                                className="rounded-circle bg-light d-flex align-items-center justify-content-center shadow-sm"
-                                style={{
-                                    width: "60px",
-                                    height: "60px",
-                                    border: "3px solid white",
-                                    overflow: "hidden"
-                                }}
+                            <h2 className="mb-0 text-center">
+                                Welcome {company.name}
+                            </h2>
+
+                            <button
+                                className="btn btn-outline-success btn-sm shadow position-absolute top-50 end-0 translate-middle-y me-3"
+                                onClick={() => navigate("/companies/private/edit")}
                             >
-                                {company.photo_url ? (
-                                    <img
-                                        src={company.photo_url}
-                                        alt="Company logo"
-                                        style={{
-                                            width: "100%",
-                                            height: "100%",
-                                            objectFit: "cover"
-                                        }}
-                                    />
-                                ) : (
-                                    <span className="fs-4 fw-bold text-primary">
-                                        {company.name?.charAt(0).toUpperCase()}
-                                    </span>
-                                )}
-                            </div>
+                                <i className="fa-solid fa-pencil"></i>
+                            </button>
 
-
-
-
-
-
-
-
-                            <h4 className="mb-0">Company Private Area</h4>
                         </div>
 
-                        <div className="card-footer bg-white border-0 py-3">
+                        <div className="card-body text-center">
 
-                            <div className="d-grid gap-3 px-4">
+                            {photo ? (
+                                <img
+                                    src={photo}
+                                    alt="Company"
+                                    className="rounded-circle mb-4 shadow-sm"
+                                    style={{ width: "150px", height: "150px", objectFit: "cover" }}
+                                />
+                            ) : (
+                                <div
+                                    className="rounded-circle mb-4 shadow-sm d-flex align-items-center justify-content-center bg-light text-muted"
+                                    style={{ width: "150px", height: "150px" }}
+                                >
+                                    No image
+                                </div>
+                            )}
 
-                                <Link to="/companies/private/locations" className="btn btn-outline-primary btn-lg shadow">
-                                    My Locations
-                                </Link>
-                                <Link to="/companies/private/storages" className="btn btn-primary btn-sm">
-                                    My Storages
-                                </Link>
-                                <Link to={`/companies/${company.id}/edit`} className="btn btn-primary btn-sm">
-                                    Edit
-                                </Link>
-                                <button className="btn btn-danger btn-sm" onClick={handleLogout}>Logout</button>
+                            <div className="text-start px-3">
+
+                                <p className="mb-2">
+                                    <strong>Email:</strong><br />
+                                    <span className="text-muted">{company.email}</span>
+                                </p>
+
+                                <p className="mb-2">
+                                    <strong>CIF:</strong><br />
+                                    <span className="text-muted">{company.cif}</span>
+                                </p>
+
+                                <p className="mb-2">
+                                    <strong>Address:</strong><br />
+                                    <span className="text-muted">{company.address}</span>
+                                </p>
+                            </div>
+                            <div className="card-footer bg-white border-0 py-3">
+                                <div className="d-grid gap-3 px-4">
+                                    <Link to="/companies/private/locations"
+                                        className="btn btn-outline-primary btn-lg shadow">
+                                        My Locations
+                                    </Link>
+                                    <button className="btn btn-outline-danger btn-lg shadow"
+                                        onClick={handleLogout}>
+                                        Logout </button>
+                                </div>
                             </div>
                         </div>
                     </div>

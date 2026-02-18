@@ -49,7 +49,7 @@ export const CompanyLocationsEdit = () => {
 
         const formData = new FormData()
         formData.append("file", file)
-        formData.append("upload_preset", "topydai") // tu preset
+        formData.append("upload_preset", "topydai")
 
         setUploading(true)
 

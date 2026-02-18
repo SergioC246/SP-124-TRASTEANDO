@@ -60,6 +60,8 @@ export const Navbar = () => {
 
 						{/* <li className="nav-item ms-2">
 							<Link to="/location" className="btn btn-outline-success">
+						<li className="nav-item ms-2">
+							<Link to="/companies/private/locations" className="btn btn-outline-success">
 								Locations
 							</Link>
 						</li> */}
@@ -92,7 +94,7 @@ export const Navbar = () => {
 									</Link>
 								</li>
 								<li className="nav-item ms-2">
-									<Link to="/location" className="btn btn-outline-warning" >
+									<Link to="/companies/private/locations" className="btn btn-outline-warning" >
 										Locations
 									</Link>
 								</li>

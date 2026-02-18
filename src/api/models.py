@@ -71,7 +71,7 @@ class Company(db.Model):
     address: Mapped[str] = mapped_column(nullable=False)
     email: Mapped[str] = mapped_column(unique=True, nullable=False)
     password: Mapped[str] = mapped_column(nullable=False)
-    photo_url: Mapped[str] = mapped_column(String(500), nullable=True)
+    photo: Mapped[str] = mapped_column(nullable=True)
 
     locations: Mapped[list["Location"]] = relationship(
         back_populates="company", cascade="all, delete-orphan")
@@ -79,13 +79,12 @@ class Company(db.Model):
     def serialize(self):
 
         return {
-
             "id": self.id,
             "name": self.name,
             "cif": self.cif,
             "address": self.address,
             "email": self.email,
-            "photo_url": self.photo_url
+            "photo": self.photo
         }
 
 
@@ -94,9 +93,11 @@ class Leases(db.Model):
     __tablename__ = "leases"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    start_date: Mapped[str] = mapped_column(nullable=False)
-    end_date: Mapped[str] = mapped_column(nullable=False)
-    status: Mapped[bool] = mapped_column(nullable=True, default=False)
+
+    start_date: Mapped[date] = mapped_column(Date, nullable=False)
+    end_date: Mapped[date] = mapped_column(Date, nullable=False)
+
+    status: Mapped[str] = mapped_column(String(20), default="active")
 
     client_id: Mapped[int] = mapped_column(
         ForeignKey("clients.id"), nullable=False)
@@ -104,13 +105,13 @@ class Leases(db.Model):
         ForeignKey("storage.id"), nullable=False)
 
     client: Mapped["Client"] = relationship(back_populates="leases")
-    storage: Mapped["Storage"] = relationship(back_populates="leases")
+    storage: Mapped["Storage"] = relationship(back_populates="leases") 
 
     def serialize(self):
         return {
             "id": self.id,
-            "start_date": self.start_date,
-            "end_date": self.end_date,
+            "start_date": self.start_date.isoformat(),
+            "end_date": self.end_date.isoformat(),
             "status": self.status,
             "client_id": self.client_id,
             "storage_id": self.storage_id
@@ -125,6 +126,7 @@ class Storage(db.Model):
     size: Mapped[str] = mapped_column(nullable=False)
     price: Mapped[str] = mapped_column(nullable=False)
     status: Mapped[bool] = mapped_column(nullable=False, default=True)
+    photo: Mapped[str] = mapped_column(nullable=True)
 
     location_id: Mapped[int] = mapped_column(
         ForeignKey("location.id"), nullable=False)
@@ -138,8 +140,9 @@ class Storage(db.Model):
             "id": self.id,
             "size": self.size,
             "price": self.price,
-            "status": "Available" if self.status else "Occupied",
-            "location_id": self.location_id
+            "status": self.status,
+            "location_id": self.location_id,
+            "photo": self.photo
         }
 
 
@@ -162,6 +165,10 @@ class Location(db.Model):
         back_populates="location", cascade="all, delete-orphan")
 
     def serialize(self):
+        total_storages = len(self.storages)
+        occupied_storages = sum(1 for s in self.storages if s.status)
+        available_storages = total_storages - occupied_storages
+
         return {
             "id": self.id,
             "address": self.address,
@@ -170,7 +177,10 @@ class Location(db.Model):
             "longitude": self.longitude,
             "photo": self.photo,
             "company_id": self.company_id,
-            "company_name": self.company.name
+            "company_name": self.company.name,
+            "total_storages": total_storages,
+            "occupied_storages": occupied_storages,
+            "available_storages": available_storages
         }
 
 
