@@ -993,48 +993,48 @@ def get_my_leases():
 # crear un lease private para cliente
 
 
-@api.route('/client/leases', methods=['POST'])
-@jwt_required()
-def create_client_lease():
-    try:
-        data = request.get_json()
-        # cambio ----------------- get_jwt_identity()
-        current_client_id = int(get_jwt_identity())
+# @api.route('/client/leases', methods=['POST'])
+# @jwt_required()
+# def create_client_lease():
+#     try:
+#         data = request.get_json()
+#         # cambio ----------------- get_jwt_identity()
+#         current_client_id = int(get_jwt_identity())
 
-        start_date = data.get("start_date")
-        end_date = data.get("end_date")
-        storage_id = data.get("storage_id")
+#         start_date = data.get("start_date")
+#         end_date = data.get("end_date")
+#         storage_id = data.get("storage_id")
 
-        if not all([start_date, end_date, storage_id]):
-            return jsonify({"message": "Faltan datos obligatorios"}), 400
+#         if not all([start_date, end_date, storage_id]):
+#             return jsonify({"message": "Faltan datos obligatorios"}), 400
 
-        storage = Storage.query.get(storage_id)
+#         storage = Storage.query.get(storage_id)
 
-        if not storage:
-            return jsonify({"message": "Trastero no encontrado"}), 404
+#         if not storage:
+#             return jsonify({"message": "Trastero no encontrado"}), 404
 
-        if not storage.status:
-            return jsonify({"message": "El trastero ya está ocupado"}), 400
+#         if not storage.status:
+#             return jsonify({"message": "El trastero ya está ocupado"}), 400
 
-        new_lease = Leases(
-            start_date=start_date,
-            end_date=end_date,
-            status=True,
-            client_id=current_client_id,
-            storage_id=storage_id
-        )
+#         new_lease = Leases(
+#             start_date=start_date,
+#             end_date=end_date,
+#             status=True,
+#             client_id=current_client_id,
+#             storage_id=storage_id
+#         )
 
-        storage.status = False
+#         storage.status = False
 
-        db.session.add(new_lease)
-        db.session.commit()
+#         db.session.add(new_lease)
+#         db.session.commit()
 
-        return jsonify(new_lease.serialize()), 201
+#         return jsonify(new_lease.serialize()), 201
 
-    except Exception as e:
-        db.session.rollback()
-        print("ERROR INTERNO:", e)
-        return jsonify({"error": str(e)}), 500
+#     except Exception as e:
+#         db.session.rollback()
+#         print("ERROR INTERNO:", e)
+#         return jsonify({"error": str(e)}), 500
 
 # borrar un lease de cliente
 

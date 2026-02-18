@@ -16,7 +16,7 @@ export const StoragesPrivateDetails = () => {
         const fetchDetail = async () => {
             try {
                 const token = store.tokenClient;
-                const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/storage/${storageId}/overview`, {
+                const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}api/storage/${storageId}/overview`, {
                     headers: {
                         "Authorization": `Bearer ${token}`,
                         "Content-Type": "application/json"
@@ -26,7 +26,7 @@ export const StoragesPrivateDetails = () => {
                 const data = await response.json();
 
                 setStorage(data);
-                
+                console.log("data es:", data)
                 setIsAvailable(data.status === true && !data.occupied);
 
             } catch (error) {
