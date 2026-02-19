@@ -91,10 +91,12 @@ export const StoragesPrivateList = () => {
                                 <div>
                                     <div className="d-flex justify-content-between align-items-start mb-2">
                                         <h3 className="fw-bold mb-0">Unidad {storage.id}</h3>
-                                        <span className={`badge rounded-pill border ${storagesAvailability[storage.id] ? 'border-success text-success' : 'border-danger text-danger'}`}
-                                            style={{ backgroundColor: "transparent" }}>
-                                            {storagesAvailability[storage.id] ? 'Disponible' : 'Ocupado'}
-                                        </span>
+                                        {/* ${storagesAvailability[storage.id] ? 'border-success text-success' : 'border-danger text-danger'}`} */}
+                                        <span className={`badge rounded-pill border
+                                         ${storagesAvailability[storage.id] ? 'border-success text-success' : 'border-danger text-danger'}`}
+                                            style={{ backgroundColor: "transparent" }}> 
+                                            {storagesAvailability[storage.id] === undefined ? 'Cargando...' : storagesAvailability[storage.id] === true ? 'Disponible' : 'Ocupado'}
+                                        </span>                
                                     </div>
 
                                     <p className="text-muted mb-4"> Espacio optimizado con techos altos y vigilancia individual.</p>

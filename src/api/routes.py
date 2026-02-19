@@ -2,8 +2,7 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 import sqlalchemy as sa
-from datetime import date
-from datetime import datetime
+from datetime import date, datetime
 from sqlalchemy import select
 import math
 from sqlalchemy import select, and_, not_, cast, Date
@@ -1074,7 +1073,6 @@ def delete_client_lease(lease_id):
 @api.route('/storage/map', methods=["GET"])
 def get_storages_for_map():
 
-    from datetime import datetime
 
     search_lat = request.args.get('lat')
     search_lng = request.args.get('lng')
@@ -1093,7 +1091,7 @@ def get_storages_for_map():
                 Leases.end_date >= checkin
             )
         )
-        # Excluimos esos IDs de la consulta principal
+
         print(occupied_subquery)
         print("despues de print occupied-subquery")
         query = query.where(not_(Storage.id.in_(occupied_subquery)))
