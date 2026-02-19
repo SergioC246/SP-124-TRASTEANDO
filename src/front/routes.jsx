@@ -61,6 +61,9 @@ import { CompanyPrivateEdit } from "./pages/CompanyPrivateEdit";
 import { CompanyEdit } from "./pages/CompanyEdit";
 import { LocationPublic } from "./pages/LocationPublic";
 import { Chat } from "./pages/Chat";
+import { SubscriptionCheckout } from "./pages/SubscriptionCheckout";
+import { PaymentSuccess } from "./pages/PaymentSucess";
+import { PaymentCancel } from "./pages/PaymentCancel";
 
 
 
@@ -170,6 +173,12 @@ export const router = createBrowserRouter(
         <Route path="/client/private/storages/:locationId" element={<StoragesPrivateList />} />
         <Route path="/client/private/storage/:storageId" element={<StoragesPrivateDetails />} />
       </Route>
+
+      {/* ==== Rutas Stripe ==== */}
+      <Route path="/checkout" element={<SubscriptionCheckout />} />
+      <Route path="/payment/success" element={<PaymentSuccess />} />
+      <Route path="/payment/cancel" element={<PaymentCancel />} />
+
 
       {/* <Route path="/leases" element={<Leases />} /> */}
       {/* <Route path="/leasesCreate" element={<LeasesCreate />} />

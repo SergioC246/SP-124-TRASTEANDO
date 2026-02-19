@@ -94,7 +94,7 @@ export const Navbar = () => {
 									</Link>
 								</li>
 								<li className="nav-item ms-2">
-									<Link to="/companies/private/locations" className="btn btn-outline-warning" >
+									<Link to="/locations-public" className="btn btn-outline-warning" >
 										Locations
 									</Link>
 								</li>
@@ -129,7 +129,7 @@ export const Navbar = () => {
 									</Link>
 								</li>
 								<li className="nav-item ms-2">
-									<Link to="/client/private/" className="btn btn-outline-warning">
+									<Link to="/search" className="btn btn-outline-warning">
 										Storages available
 									</Link>
 								</li>

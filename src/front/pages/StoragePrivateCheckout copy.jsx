@@ -37,39 +37,13 @@ export const StoragePrivateCheckout = () => {
                 storage_id: parseInt(storageId),
                 start_date: startDate, 
                 end_date: endDate,     
-                status: "pending_payment"  //1️⃣Cambio de true a"pending_payment"
+                status: true
             };
 
-            const lease = await createClientLease(leaseData, store.tokenClient); //2️⃣Modifico para guardar el lease creado
+            await createClientLease(leaseData, store.tokenClient);
 
-            if (!lease || !lease.id) {
-                alert("Error creando el contrato.");
-                return;
-            }
-            
-            //3️⃣ Añado llamada a Stripe
-            const response = await fetch(
-                `${import.meta.env.VITE_BACKEND_URL}api/stripe/create-subscription-session`,
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        plan: "monthly",
-                        lease_id: lease.id
-                    })
-                }
-            );
-
-            const data = await response.json();
-
-            if (data.url) {
-                window.location.href = data.url;
-            } else {
-                alert("Error iniciando el pago");
-            }
-
+            alert("¡Reserva confirmada con éxito!");
+            navigate("/client/private/leases"); 
         } catch (error) {
             console.error("Error detallado:", error);
             alert("Error al procesar el arrendamiento. Revisa la consola.");

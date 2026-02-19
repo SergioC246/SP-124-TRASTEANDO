@@ -12,13 +12,24 @@ from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from api.socketio_instance import socketio
 from api.realtime_rooms import conversation_room
-
+from dotenv import load_dotenv
+from pathlib import Path
+import os
+import stripe
 
 
 api = Blueprint('api', __name__)
 
 # Allow CORS requests to this API
 CORS(api)
+
+# cargar .env
+env_path = Path(__file__).resolve().parent.parent / ".env"
+load_dotenv(dotenv_path=env_path)
+
+print("STRIP SECRET KEY:", os.getenv("STRIPE_SECRET_KEY"))
+
+stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
 
 
 @api.route('/hello', methods=['POST', 'GET'])
@@ -1145,6 +1156,8 @@ def get_storages_for_map():
     return jsonify(final_result), 200
 
 # Get occupancy of storages from location
+
+
 @api.route("/mycompany/locations-overview", methods=["GET"])
 @jwt_required()
 def mycompany_locations_overview():
@@ -1290,6 +1303,7 @@ def get_company_leases_filtered():
 
 # Messages enviar
 
+
 @api.route('/messages', methods=["POST"])
 def send_message():
 
@@ -1299,15 +1313,14 @@ def send_message():
         print("ERROR: Body vacío")
         return jsonify({"msg": "Body is empty"}), 400
 
-
-    required = ["sender_id", "receiver_id", "sender_role", "receiver_role", "content"]
-
+    required = ["sender_id", "receiver_id",
+                "sender_role", "receiver_role", "content"]
 
     missing = [f for f in required if f not in body or body[f] is None]
-    
+
     if missing:
         return jsonify({"msg": "Missing fields", "missing": missing}), 400
-    
+
     new_msg = Message(
         sender_id=body["sender_id"],
         receiver_id=body["receiver_id"],
@@ -1318,9 +1331,8 @@ def send_message():
 
     db.session.add(new_msg)
     db.session.commit()
-    
-    payload = new_msg.serialize()
 
+    payload = new_msg.serialize()
 
     room = conversation_room(
         body["sender_id"],
@@ -1344,8 +1356,9 @@ def send_message():
 
 #     return jsonify([m.serialize() for m in messages]), 200
 
-#Messages Conversaciones
-    
+# Messages Conversaciones
+
+
 @api.route('/messages/conversation/<int:my_id>/<string:my_role>/<int:target_id>/<string:target_role>', methods=["GET"])
 def get_conversation(my_id, my_role, target_id, target_role):
 
@@ -1369,6 +1382,7 @@ def get_conversation(my_id, my_role, target_id, target_role):
     return jsonify([m.serialize() for m in messages]), 200
 
 # Messages cargar contactos
+
 
 @api.route('/messages/contacts/<int:my_id>/<string:my_role>', methods=["GET"])
 def get_contacts(my_id, my_role):
@@ -1430,6 +1444,7 @@ def get_contacts(my_id, my_role):
 
 # Messages delete
 
+
 @api.route('/messages/conversation/<int:my_id>/<int:target_id>', methods=["DELETE"])
 def delete_conversation(my_id, target_id):
 
@@ -1452,3 +1467,93 @@ def delete_conversation(my_id, target_id):
         "msg": "Conversation deleted",
         "deleted_count": deleted
     }), 200
+
+# Stripe subscripciones
+
+
+PRICE_MAP = {
+    "monthly": "price_1T2b1qKDc6NNyu7SmcI4irpk",
+    "quarterly": "price_1T2b2wKDc6NNyu7Svq2CMhdX",
+    "semiannual": "price_1T2b3NKDc6NNyu7SzvyNP0gJ",
+    "annual": "price_1T2b3oKDc6NNyu7SqT6ABkFx",
+}
+
+
+@api.route("/stripe/create-subscription-session", methods=["POST"])
+def stripe_create_subscription_session():
+    try:
+
+        data = request.get_json() or {}
+        plan = data.get("plan")
+        lease_id = data.get("lease_id")
+
+        if plan not in PRICE_MAP:
+            return jsonify({"error": "Plan inválido"}), 400
+
+        session = stripe.checkout.Session.create(
+            mode="subscription",
+            line_items=[{
+                "price": PRICE_MAP[plan],
+                "quantity": 1,
+            }],
+
+            success_url=os.getenv("FRONTEND_URL") + "payment/success",
+            cancel_url=os.getenv("FRONTEND_URL") + "payment/cancel",
+            metadata={
+                "lease_id": str(lease_id)
+            }
+        )
+
+        return jsonify({"url": session.url})
+
+    except Exception as e:
+        print("ERROR STRIE:", e)
+        return jsonify({"error": str(e)}), 500
+
+
+# @api.route("/stripe/create-subscription-session", methods=["POST"])
+# def stripe_create_subscription_session():
+#     print("ENTRANDO EN ENDPOINT STRIPE")
+
+#     return jsonify({
+#         "url": "https://checkout.stripe.com/test"
+#     }), 200
+
+# Stripe pagos
+
+
+@api.route("/stripe/webhook", methods=["post"])
+def stripe_webhook():
+    payload = request.data
+    sig_header = request.headers.get("Stripe-Signature")
+    webhook_secret = os.getenvet("STRIPE_WEBHOOK_SECRET")
+
+    try:
+        event = stripe.Webhook.construct_event(
+            payload, sig_header, webhook_secret)
+    except Exception:
+        return "Invalid webhook", 400
+
+    # Checkout completo
+    if event["type"] == "checkout.session.completed":
+        session = event["data"]["object"]
+        # session.get("subscription"), session.get("customer"), session.get("metadata")
+        # 👉 aquí normalmente guardas subscription_id/customer_id en tu DB (Lease)
+
+    # Factura pagada
+    if event["type"] == "invoice.paid":
+        invoice = event["data"]["object"]
+        # invoice["subscription"] -> subscription_id
+        # 👉 marcar lease ACTIVE + actualizar current_period_end
+
+    # Fallo de pago
+    if event["type"] == "invoice.payment_failed":
+        invoice = event["data"]["object"]
+        # 👉 marcar lease PAST_DUE
+
+    # Cancelción subscripción
+    if event["type"] == "customer.subscription.deleted":
+        sub = event["data"]["object"]
+        # 👉 marcar lease CANCELLED
+
+    return "OK", 200
