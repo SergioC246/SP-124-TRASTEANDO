@@ -8,16 +8,29 @@ import math
 from sqlalchemy import select, and_, not_, cast, Date
 from flask import Flask, request, jsonify, url_for, Blueprint
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
-from api.models import db, User, AdminUser, Client, Company, Leases, Storage, Location
+from api.models import db, User, AdminUser, Client, Company, Leases, Storage, Location, Message
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
-
+from api.socketio_instance import socketio
+from api.realtime_rooms import conversation_room
+from dotenv import load_dotenv
+from pathlib import Path
+import os
+import stripe
 
 
 api = Blueprint('api', __name__)
 
 # Allow CORS requests to this API
 CORS(api)
+
+# cargar .env
+env_path = Path(__file__).resolve().parent.parent / ".env"
+load_dotenv(dotenv_path=env_path)
+
+print("STRIP SECRET KEY:", os.getenv("STRIPE_SECRET_KEY"))
+
+stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
 
 
 @api.route('/hello', methods=['POST', 'GET'])
@@ -1101,9 +1114,10 @@ def get_storages_for_map():
     if checkin and checkout and checkin != "" and checkout != "":
         occupied_subquery = select(Leases.storage_id).where(
             and_(
-                Leases.status == "active", # Verifica que en tu DB el status sea el string "active"
+                Leases.status.in_(["active", "pending payment"]), #bloquea ambos
                 Leases.start_date <= checkout,
                 Leases.end_date >= checkin
+
             )
         )
         # Excluimos los trasteros ocupados
@@ -1156,6 +1170,8 @@ def get_storages_for_map():
 
 
 # Get occupancy of storages from location
+
+
 @api.route("/mycompany/locations-overview", methods=["GET"])
 @jwt_required()
 def mycompany_locations_overview():
@@ -1298,3 +1314,212 @@ def get_company_leases_filtered():
         return jsonify(result[status_filter]), 200
 
     return jsonify(result), 200
+
+# Messages enviar
+
+
+@api.route('/messages', methods=["POST"])
+def send_message():
+
+    body = request.get_json()
+
+    if not body:
+        print("ERROR: Body vacío")
+        return jsonify({"msg": "Body is empty"}), 400
+
+    required = ["sender_id", "receiver_id",
+                "sender_role", "receiver_role", "content"]
+
+    missing = [f for f in required if f not in body or body[f] is None]
+
+    if missing:
+        return jsonify({"msg": "Missing fields", "missing": missing}), 400
+
+    new_msg = Message(
+        sender_id=body["sender_id"],
+        receiver_id=body["receiver_id"],
+        sender_role=body["sender_role"],
+        receiver_role=body["receiver_role"],
+        content=body["content"]
+    )
+
+    db.session.add(new_msg)
+    db.session.commit()
+
+    payload = new_msg.serialize()
+
+    room = conversation_room(
+        body["sender_id"],
+        body["sender_role"],
+        body["receiver_id"],
+        body["receiver_role"]
+    )
+
+    socketio.emit("message:new", payload, room=room)
+
+    return jsonify(payload), 201
+
+# @api.route('/messages/<int:user_id>/<string:role>', methods=["GET"])
+# def get_chat_history(user_id, role):
+#     messages = Message.query.filter(
+#         db.or_(
+#             db.and_(Message.sender_id == user_id, Message.sender_role == role),
+#             db.and_(Message.receiver_id == user_id, Message.receiver_role == role)
+#         )
+#     ).order_by(Message.timestamp.asc()).all()
+
+#     return jsonify([m.serialize() for m in messages]), 200
+
+# Messages Conversaciones
+
+
+@api.route('/messages/conversation/<int:my_id>/<string:my_role>/<int:target_id>/<string:target_role>', methods=["GET"])
+def get_conversation(my_id, my_role, target_id, target_role):
+
+    messages = Message.query.filter(
+        db.or_(
+            db.and_(
+                Message.sender_id == my_id,
+                Message.sender_role == my_role,
+                Message.receiver_id == target_id,
+                Message.receiver_role == target_role
+            ),
+            db.and_(
+                Message.sender_id == target_id,
+                Message.sender_role == target_role,
+                Message.receiver_id == my_id,
+                Message.receiver_role == my_role
+            )
+        )
+    ).order_by(Message.timestamp.asc()).all()
+
+    return jsonify([m.serialize() for m in messages]), 200
+
+# Messages cargar contactos
+
+
+@api.route('/messages/contacts/<int:my_id>/<string:my_role>', methods=["GET"])
+def get_contacts(my_id, my_role):
+
+    sent = Message.query.filter_by(
+        sender_id=my_id,
+        sender_role=my_role
+    ).all()
+
+    received = Message.query.filter_by(
+        receiver_id=my_id,
+        receiver_role=my_role
+    ).all()
+
+    contacts = {}
+
+    for m in sent:
+        key = (m.receiver_id, m.receiver_role)
+        contacts[key] = {
+            "id": m.receiver_id,
+            "role": m.receiver_role
+        }
+
+    for m in received:
+        key = (m.sender_id, m.sender_role)
+        contacts[key] = {
+            "id": m.sender_id,
+            "role": m.sender_role
+        }
+
+    result = []
+
+    for (contact_id, role), value in contacts.items():
+
+        if contact_id == my_id and role == my_role:
+            continue
+
+        if role == "client":
+            client = Client.query.get(contact_id)
+            if client:
+                result.append({
+                    "id": client.id,
+                    "role": "client",
+                    "email": client.email,
+                    "photo_url": client.photo_url
+                })
+
+        elif role == "company":
+            company = Company.query.get(contact_id)
+            if company:
+                result.append({
+                    "id": company.id,
+                    "role": "company",
+                    "name": company.name,
+                    "photo_url": company.photo_url
+                })
+
+    return jsonify(result), 200
+
+# Messages delete
+
+
+@api.route('/messages/conversation/<int:my_id>/<int:target_id>', methods=["DELETE"])
+def delete_conversation(my_id, target_id):
+
+    deleted = Message.query.filter(
+        db.or_(
+            db.and_(
+                Message.sender_id == my_id,
+                Message.receiver_id == target_id
+            ),
+            db.and_(
+                Message.sender_id == target_id,
+                Message.receiver_id == my_id
+            )
+        )
+    ).delete(synchronize_session=False)
+
+    db.session.commit()
+
+    return jsonify({
+        "msg": "Conversation deleted",
+        "deleted_count": deleted
+    }), 200
+
+# Stripe subscripciones
+
+
+PRICE_MAP = {
+    "monthly": "price_1T2b1qKDc6NNyu7SmcI4irpk",
+    "quarterly": "price_1T2b2wKDc6NNyu7Svq2CMhdX",
+    "semiannual": "price_1T2b3NKDc6NNyu7SzvyNP0gJ",
+    "annual": "price_1T2b3oKDc6NNyu7SqT6ABkFx",
+}
+
+
+@api.route("/stripe/create-subscription-session", methods=["POST"])
+def stripe_create_subscription_session():
+    try:
+
+        data = request.get_json() or {}
+        plan = data.get("plan")
+        lease_id = data.get("lease_id")
+
+        if plan not in PRICE_MAP:
+            return jsonify({"error": "Plan inválido"}), 400
+
+        session = stripe.checkout.Session.create(
+            mode="subscription",
+            line_items=[{
+                "price": PRICE_MAP[plan],
+                "quantity": 1,
+            }],
+
+            success_url=os.getenv("FRONTEND_URL") + "payment/success",
+            cancel_url=os.getenv("FRONTEND_URL") + "payment/cancel",
+            metadata={
+                "lease_id": str(lease_id)
+            }
+        )
+
+        return jsonify({"url": session.url})
+
+    except Exception as e:
+        print("ERROR STRIE:", e)
+        return jsonify({"error": str(e)}), 500

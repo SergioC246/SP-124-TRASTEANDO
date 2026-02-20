@@ -63,6 +63,8 @@ export const Navbar = () => {
 
 						{/* ==== Siempre visibles ==== */}
 
+						{/* <li className="nav-item ms-2">
+							<Link to="/location" className="btn btn-outline-success">
 						<li className="nav-item ms-2">
 							<Link to="/search/map" className="btn btn-outline-primary">
 								Buscar trasteros
@@ -72,13 +74,16 @@ export const Navbar = () => {
 							<Link to="/companies/private/locations" className="btn btn-outline-success">
 								Locations
 							</Link>
-						</li>
+						</li> */}
 						{/* <li className="nav-item ms-2">
 							<Link to="/client/login">
 								<button className="btn btn-outline-secondary">Login as client</button>
 							</Link>
 						</li> */}
 
+						<Link to="/chat" className="btn btn-outline-primary ms-2">
+    						<i className="fas fa-comments"></i> Chat
+						</Link>
 
 						{/* ==== Solo Admin ==== */}
 
@@ -100,7 +105,7 @@ export const Navbar = () => {
 									</Link>
 								</li>
 								<li className="nav-item ms-2">
-									<Link to="/companies/private/locations" className="btn btn-outline-warning" >
+									<Link to="/locations-public" className="btn btn-outline-warning" >
 										Locations
 									</Link>
 								</li>
@@ -135,7 +140,7 @@ export const Navbar = () => {
 									</Link>
 								</li>
 								<li className="nav-item ms-2">
-									<Link to="/client/private" className="btn btn-outline-warning">
+									<Link to="/search" className="btn btn-outline-warning">
 										Storages available
 									</Link>
 								</li>

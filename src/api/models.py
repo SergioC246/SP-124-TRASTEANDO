@@ -1,7 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import String, Boolean, ForeignKey, Date
+from sqlalchemy import String, Boolean, ForeignKey, Integer, DateTime, Date
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from datetime import date
+from datetime import date, datetime
 
 db = SQLAlchemy()
 
@@ -183,3 +183,43 @@ class Location(db.Model):
             "available_storages": available_storages
         }
 
+
+class Message(db.Model):
+    __tablename__ = "messages"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    sender_id: Mapped[int] = mapped_column(Integer, nullable=False)
+    receiver_id: Mapped[int] = mapped_column(Integer, nullable=False)
+    sender_role: Mapped[str] = mapped_column(String(50), nullable=False)
+    receiver_role: Mapped[str] = mapped_column(String(50), nullable=False)
+    content: Mapped[str] = mapped_column(String(1000), nullable=False)
+    timestamp: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+    def serialize(self):
+
+        sender_name = None
+        sender_photo = None
+
+        if self.sender_role == "client":
+            sender = Client.query.get(self.sender_id)
+            if sender:
+                sender_name = sender.email
+                sender_photo = sender.photo_url
+
+            elif self.sender_role == "company":
+                sender = Company.query.get(self.sender_id)
+            if sender:
+                sender_name = sender.email
+                sender_photo = sender.photo_url
+
+        return {
+            "id": self.id,
+            "sender_id": self.sender_id,
+            "receiver_id": self. receiver_id,
+            "sender_role": self.sender_role,
+            "receiver_role": self.receiver_role,
+            "content": self.content,
+            "timestamp": self.timestamp.isoformat(),
+            "sender_name": sender_name,
+            "sender_photo": sender_photo
+        }

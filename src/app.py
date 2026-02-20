@@ -2,17 +2,23 @@
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
 import os
+
+import eventlet 
+eventlet.monkey_patch()
+
 from flask import Flask, request, jsonify, url_for, send_from_directory
 from flask_migrate import Migrate
 from flask_cors import CORS
 from flask_swagger import swagger
 from flask_jwt_extended import JWTManager
+
 from api.utils import APIException, generate_sitemap
 from api.models import db
 from api.routes import api
 from api.admin import setup_admin
 from api.commands import setup_commands
-from flask_jwt_extended import JWTManager
+
+from api.socketio_instance import socketio
 
 # from models import Person
 
@@ -25,9 +31,6 @@ jwt = JWTManager(app)
 
 CORS(app)
 app.url_map.strict_slashes = False
-
-app.config["JWT_SECRET_KEY"] = "super-secret-key"
-jwt = JWTManager(app)
 
 # database condiguration
 db_url = os.getenv("DATABASE_URL")
@@ -48,7 +51,18 @@ setup_admin(app)
 setup_commands(app)
 
 # Add all endpoints form the API with a "api" prefix
+
+socketio.init_app(app, cors_allowed_origins="*")
+
+print("=" * 50)
+print("🚀 Socket.IO inicializado correctamente")
+print(f"🔌 CORS permitido desde: *")
+print(f"🌐 Async mode: eventlet")
+print("=" * 50)
+
 app.register_blueprint(api, url_prefix='/api')
+
+import api.socket_handlers
 
 # Handle/serialize errors like a JSON object
 
@@ -83,4 +97,4 @@ with app.app_context():
 # this only runs if `$ python src/main.py` is executed
 if __name__ == '__main__':
     PORT = int(os.environ.get('PORT', 3001))
-    app.run(host='0.0.0.0', port=PORT, debug=True)
+    socketio.run(app, host='0.0.0.0', port=PORT, debug=True, allow_unsafe_werkzeug=True)
