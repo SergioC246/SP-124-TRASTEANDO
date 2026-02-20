@@ -18,7 +18,7 @@ export const Navbar = () => {
 	return (
 		<nav className="navbar navbar-expand-lg navbar-light bg-light">
 			<div className="container-fluid">
-				<Link className="navbar-brand" to="/">
+				<Link className="navbar-brand" to="/search">
 					<span className="navbar-brand mb-0 h1">Trasteando</span>
 				</Link>
 				<div className="collapse navbar-collapse show">
@@ -28,6 +28,11 @@ export const Navbar = () => {
 
 						{!role && (
 							<>
+								<li className="nav-item ms-2">
+									<Link to="/search/map" className="btn btn-outline-primary">
+										Buscar trasteros
+									</Link>
+								</li>
 								<li className="nav-item ms-2">
 									<Link to="/client/login" className="btn btn-outline-primary">
 										Login as client
@@ -59,6 +64,11 @@ export const Navbar = () => {
 						{/* ==== Siempre visibles ==== */}
 
 						<li className="nav-item ms-2">
+							<Link to="/search/map" className="btn btn-outline-primary">
+								Buscar trasteros
+							</Link>
+						</li>
+						<li className="nav-item ms-2">
 							<Link to="/companies/private/locations" className="btn btn-outline-success">
 								Locations
 							</Link>
@@ -68,7 +78,7 @@ export const Navbar = () => {
 								<button className="btn btn-outline-secondary">Login as client</button>
 							</Link>
 						</li> */}
-						
+
 
 						{/* ==== Solo Admin ==== */}
 
@@ -99,7 +109,7 @@ export const Navbar = () => {
 										My Profile
 									</Link>
 								</li>
-								
+
 							</>
 						)}
 

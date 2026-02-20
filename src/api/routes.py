@@ -621,24 +621,33 @@ def get_all_storage_overview():
 # Get Storage Overview
 
 
+# endpoint 100% funcional, el de las fecahs cambiado abajo
+
 @api.route("/storage/<int:storage_id>/overview", methods=["GET"])
 def get_storage_overview(storage_id):
-    storage = db.session.execute(select(Storage).where(
-        Storage.id == storage_id)).scalar_one_or_none()
+    storage = db.session.execute(select(Storage).where(Storage.id == storage_id)).scalar_one_or_none()
 
     if storage is None:
         return jsonify({"message": "Storage not found"}), 404
 
     storage_data = storage.serialize()
+    
+    # Añadimos los leases actuales para que el frontend vea las fechas ocupadas
+    leases = Leases.query.filter_by(storage_id=storage_id, status="active").all()
+    storage_data["occupied_dates"] = [
+        {"start": l.start_date.isoformat(), "end": l.end_date.isoformat()} 
+        for l in leases
+    ]
 
     location = db.session.get(Location, storage.location_id)
     company = db.session.get(Company, location.company_id)
 
     storage_data["company_name"] = company.name
     storage_data["city"] = location.city
-    storage_data["status"] = "available" if storage.status else "occupied"
+    storage_data["status"] = "available" if storage.status else "not_operating"
 
     return jsonify(storage_data), 200
+
 
 # Login admin
 
@@ -991,15 +1000,13 @@ def get_my_leases():
 
 # crear un lease private para cliente
 
-
+# este endpoint de aqui abajo es el qeu funciona al 100%, arriba el nuevo para las fechas
 @api.route('/client/leases', methods=['POST'])
 @jwt_required()
 def create_client_lease():
     try:
         data = request.get_json()
-        # cambio ----------------- get_jwt_identity()
         current_client_id = int(get_jwt_identity())
-
         start_date = data.get("start_date")
         end_date = data.get("end_date")
         storage_id = data.get("storage_id")
@@ -1007,24 +1014,36 @@ def create_client_lease():
         if not all([start_date, end_date, storage_id]):
             return jsonify({"message": "Faltan datos obligatorios"}), 400
 
+        # 1. Verificar si el trastero existe y si el dueño lo tiene activo
         storage = Storage.query.get(storage_id)
+        if not storage or not storage.status:
+            return jsonify({"message": "Trastero no disponible o no encontrado"}), 404
 
-        if not storage:
-            return jsonify({"message": "Trastero no encontrado"}), 404
+        # 2. VALIDACIÓN DE FECHAS: Comprobar si ya hay un lease en esas fechas
+        # Esta es la parte "mágica" que evita solapamientos
+        conflict_query = select(Leases).where(
+            and_(
+                Leases.storage_id == storage_id,
+                Leases.status == "active", # o True según tu modelo
+                Leases.start_date <= end_date,
+                Leases.end_date >= start_date
+            )
+        )
+        existing_conflict = db.session.execute(conflict_query).first()
+        
+        if existing_conflict:
+            return jsonify({"message": "El trastero ya está reservado en esas fechas"}), 400
 
-        if not storage.status:
-            return jsonify({"message": "El trastero ya está ocupado"}), 400
-
+        # 3. Crear el nuevo lease
         new_lease = Leases(
             start_date=start_date,
             end_date=end_date,
-            status=True,
+            status="active", # Asegúrate de usar el string o bool que definiste en models
             client_id=current_client_id,
             storage_id=storage_id
         )
 
-        storage.status = False
-
+        # IMPORTANTE: NO hacemos storage.status = False
         db.session.add(new_lease)
         db.session.commit()
 
@@ -1032,12 +1051,7 @@ def create_client_lease():
 
     except Exception as e:
         db.session.rollback()
-        print("ERROR INTERNO:", e)
         return jsonify({"error": str(e)}), 500
-
-# borrar un lease de cliente
-
-# obsoleto
 
 
 @api.route('/client/leases/<int:lease_id>', methods=['DELETE'])
@@ -1072,38 +1086,37 @@ def delete_client_lease(lease_id):
     # el JOIN entre Storage y Location para Haces 1 sola consulta a la base de datos en lugar de 50 o 100
 @api.route('/storage/map', methods=["GET"])
 def get_storages_for_map():
-
+    import math # Asegúrate de tener esto arriba o aquí
+    from sqlalchemy import and_, not_, select
 
     search_lat = request.args.get('lat')
     search_lng = request.args.get('lng')
     checkin = request.args.get('checkin')
     checkout = request.args.get('checkout')
 
-    query = select(Storage, Location).join(
-        Location).where(Storage.status == True)
+    # 1. Base de la consulta: Solo trasteros activos (status del dueño)
+    query = select(Storage, Location).join(Location).where(Storage.status == True)
 
-    if checkin and checkout:
-        # Buscamos los trasteros que tienen un alquiler que CHOCA con las fechas pedidas
+    # 2. Filtro de disponibilidad por fechas
+    if checkin and checkout and checkin != "" and checkout != "":
         occupied_subquery = select(Leases.storage_id).where(
             and_(
-                Leases.status == True,
+                Leases.status == "active", # Verifica que en tu DB el status sea el string "active"
                 Leases.start_date <= checkout,
                 Leases.end_date >= checkin
             )
         )
-
-        print(occupied_subquery)
-        print("despues de print occupied-subquery")
+        # Excluimos los trasteros ocupados
         query = query.where(not_(Storage.id.in_(occupied_subquery)))
 
-    results = db.session.execute(query).all()
-
+    # 3. Ejecutar la consulta (UNA SOLA VEZ)
     results = db.session.execute(query).all()
 
     final_result = []
     seen_ids = set()
 
     for storage, location in results:
+        # Evitar duplicados por el join
         if storage.id in seen_ids:
             continue
 
@@ -1114,25 +1127,24 @@ def get_storages_for_map():
             "latitude": float(location.latitude),
             "longitude": float(location.longitude),
             "city": location.city,
-            "address": location.address
+            "address": location.address,
+            "status": "available" # Para el frontend
         }
 
+        # 4. Filtro de distancia (Haversine)
         if search_lat and search_lng:
-
-            R = 6371
-            s_lat, s_lng = math.radians(
-                float(search_lat)), math.radians(float(search_lng))
-            t_lat, t_lng = math.radians(float(location.latitude)), math.radians(
-                float(location.longitude))
+            R = 6371 # Radio de la Tierra
+            s_lat, s_lng = math.radians(float(search_lat)), math.radians(float(search_lng))
+            t_lat, t_lng = math.radians(float(location.latitude)), math.radians(float(location.longitude))
 
             dlat = t_lat - s_lat
             dlng = t_lng - s_lng
 
-            a = math.sin(dlat/2)**2 + math.cos(s_lat) * \
-                math.cos(t_lat) * math.sin(dlng/2)**2
+            a = math.sin(dlat/2)**2 + math.cos(s_lat) * math.cos(t_lat) * math.sin(dlng/2)**2
             c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
             distance = R * c
 
+            # Si está a más de 20km, lo ignoramos
             if distance > 20:
                 continue
             data["distance_km"] = round(distance, 1)
@@ -1141,6 +1153,7 @@ def get_storages_for_map():
         seen_ids.add(storage.id)
 
     return jsonify(final_result), 200
+
 
 # Get occupancy of storages from location
 @api.route("/mycompany/locations-overview", methods=["GET"])

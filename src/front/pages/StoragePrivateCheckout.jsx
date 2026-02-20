@@ -35,20 +35,33 @@ export const StoragePrivateCheckout = () => {
         try {
             const leaseData = {
                 storage_id: parseInt(storageId),
-                start_date: startDate, 
-                end_date: endDate,     
-                status: true
+                start_date: startDate,
+                end_date: endDate,
+                // status: true
             };
 
             await createClientLease(leaseData, store.tokenClient);
-
             alert("¡Reserva confirmada con éxito!");
-            navigate("/client/private/leases"); 
+            navigate("/client/private/leases");
         } catch (error) {
             console.error("Error detallado:", error);
-            alert("Error al procesar el arrendamiento. Revisa la consola.");
+            alert("Las fechas que has seleccionado no estan disponibles");
         }
     }
+
+    // codigo añadido para lo de las fechas
+    const isDateConflict = () => {
+        if (!startDate || !endDate || !storage?.occupied_dates) return false;
+
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+
+        return storage.occupied_dates.some(lease => {
+            const leaseStart = new Date(lease.start);
+            const leaseEnd = new Date(lease.end);
+            return start <= leaseEnd && end >= leaseStart;
+        });
+    };
 
     useEffect(() => {
         const loadInfo = async () => {
@@ -82,17 +95,6 @@ export const StoragePrivateCheckout = () => {
                         <label className="text-muted small fw-bold mb-2 text-uppercase">Fecha de salida</label>
                         <input type="date" className="form-control form-control-lg border-2" style={{ borderRadius: "12px" }} value={endDate} min={startDate} onChange={(e) => setEndDate(e.target.value)} />
                     </div>
-                    {/* <div className="card shadow-sm border-0 p-4" style={{ borderRadius: "20px" }}>
-                        <h5 className="fw-bold mb-3">Método de pago</h5>
-                        <div className="mb-3">
-                            <input type="text" className="form-control mb-2" placeholder="Número de tarjeta" />
-                            <div className="row">
-                                <div className="col-6"><input type="text" className="form-control" placeholder="MM/YY" /></div>
-                                <div className="col-6"><input type="text" className="form-control" placeholder="CVV" /></div>
-                            </div>
-                        </div>
-                    </div> */}
-
                 </div>
                 <div className="col-md-5">
                     <div className="card shadow-lg border-0 p-4 bg-light sticky-top" style={{ borderRadius: "25px", top: "20px" }}>
@@ -110,7 +112,13 @@ export const StoragePrivateCheckout = () => {
                         <div className="d-flex justify-content-between mb-4">
                             <span className="h5 fw-bold">Total hoy</span>
                             <span className="h5 fw-bold text-primary">{storage?.price}€</span>
+                        {/* // codigo añadido para lo de las fechas */}
                         </div>
+                        {isDateConflict() && (
+                            <div className="alert alert-danger mt-3">
+                                ⚠️ Las fechas seleccionadas coinciden con una reserva existente.
+                            </div>
+                        )}
                         <button className="btn btn-primary btn-lg w-100 py-3 fw-bold rounded-pill shadow" onClick={handleCompleteOrder}>Confirmar Reserva</button>
                     </div>
                 </div>
