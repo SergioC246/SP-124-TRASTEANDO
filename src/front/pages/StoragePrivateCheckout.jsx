@@ -43,15 +43,11 @@ export const StoragePrivateCheckout = () => {
 
             const newLease = await createClientLease(leaseData, store.tokenClient);
 
-            alert("Reserva temporal creada. Redirigiendo al pago...");
-            navigate(`/client/private/payment/${newLease.id}`);
-
-            //3️⃣ Añado llamada a Stripe
             const stripeResponse = await fetch(`${import.meta.env.VITE_BACKEND_URL}api/stripe/create-subscription-session`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    plan: storage.price.toString(), // O la lógica que use tu amigo para el plan
+                    plan: storage.price.toString(),
                     lease_id: newLease.id
                 })
             });

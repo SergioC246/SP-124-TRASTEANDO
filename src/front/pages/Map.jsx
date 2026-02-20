@@ -245,7 +245,7 @@ export const Map = () => {
                                     <small>A {storage.distance_km} km de tu búsqueda</small>
                                 </p>)}
                                 <p>Status: {storage.status}</p>
-                            <button className="btn btn-primary mt-2" onClick={() => navigate(`/client/private/storage/${storage.id}`)} >Ver detalles</button>
+                            <button className="btn btn-primary mt-2" onClick={() => navigate(`/client/private/storage/${storage.storage_id}`)} >Ver detalles</button>
                         </div>
                     ))}
                 </div>

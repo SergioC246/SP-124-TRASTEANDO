@@ -1013,7 +1013,6 @@ def get_my_leases():
 
 # crear un lease private para cliente
 
-# este endpoint de aqui abajo es el qeu funciona al 100%, arriba el nuevo para las fechas
 @api.route('/client/leases', methods=['POST'])
 @jwt_required()
 def create_client_lease():
