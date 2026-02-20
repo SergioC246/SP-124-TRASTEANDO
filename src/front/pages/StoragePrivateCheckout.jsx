@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import useGlobalReducer from "../hooks/useGlobalReducer";
 import { getStorageOverview } from "../utilsStorages";
-import { createLease } from "../utilsLeases";
+import { createLease, deleteClientLease } from "../utilsLeases";
 import { createClientLease } from "../utilsLeases";
 
 
@@ -16,29 +16,21 @@ export const StoragePrivateCheckout = () => {
     const [endDate, setEndDate] = useState("");
     const [loading, setLoading] = useState(true);
 
+
+    
     const handleCompleteOrder = async () => {
-        if (!startDate) return alert("Por favor, elige una fecha de inicio.");
-        if (!endDate) return alert("Por favor, elige una fecha de fin de contrato.");
+        if (!startDate || !endDate) return alert("Por favor, elige las fechas.");
 
         const start = new Date(startDate);
         const end = new Date(endDate);
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-
-        if (start < today) {
-            return alert("La fecha de inicio debe ser valida.");
-        }
-        if (end <= start) {
-            return alert("La fecha de fincalizacion debe ser posterior a la de inicio.")
-        }
+        if (end <= start) return alert("La fecha de fin debe ser posterior a la de inicio.");
 
         try {
             const leaseData = {
                 storage_id: parseInt(storageId),
                 start_date: startDate,
                 end_date: endDate,
-                status: "pending payment"  //1️⃣Cambio de true a"pending_payment"
-                // status: true
+                status: "pending payment"
             };
 
             const newLease = await createClientLease(leaseData, store.tokenClient);
@@ -47,22 +39,23 @@ export const StoragePrivateCheckout = () => {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    plan: storage.price.toString(),
+                    plan: "monthly",
                     lease_id: newLease.id
                 })
             });
 
             const stripeData = await stripeResponse.json();
 
-            if (stripeData.url) {
+            if (stripeResponse.ok && stripeData.url) {
                 window.location.href = stripeData.url;
             } else {
-                throw new Error("No se pudo generar la sesión de pago");
+                await deleteClientLease(newLease.id, store.tokenClient);
+                throw new Error(stripeData.error || "El plan de pago no es válido en el servidor.");
             }
 
         } catch (error) {
-            console.error("Error en el proceso:", error);
-            alert(error.message || "Error al procesar la reserva");
+            console.error("Error:", error);
+            alert(error.message);
         }
     };
 

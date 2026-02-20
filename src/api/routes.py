@@ -1026,17 +1026,14 @@ def create_client_lease():
         if not all([start_date, end_date, storage_id]):
             return jsonify({"message": "Faltan datos obligatorios"}), 400
 
-        # 1. Verificar si el trastero existe y si el dueño lo tiene activo
         storage = Storage.query.get(storage_id)
         if not storage or not storage.status:
             return jsonify({"message": "Trastero no disponible o no encontrado"}), 404
 
-        # 2. VALIDACIÓN DE FECHAS: Comprobar si ya hay un lease en esas fechas
-        # Esta es la parte "mágica" que evita solapamientos
         conflict_query = select(Leases).where(
             and_(
                 Leases.storage_id == storage_id,
-                Leases.status == "active", # o True según tu modelo
+                Leases.status.in_(["active", "pending payment"]),
                 Leases.start_date <= end_date,
                 Leases.end_date >= start_date
             )
@@ -1045,12 +1042,11 @@ def create_client_lease():
         
         if existing_conflict:
             return jsonify({"message": "El trastero ya está reservado en esas fechas"}), 400
-
-        # 3. Crear el nuevo lease
+        
         new_lease = Leases(
             start_date=start_date,
             end_date=end_date,
-            status="active", # Asegúrate de usar el string o bool que definiste en models
+            status="pending payment",
             client_id=current_client_id,
             storage_id=storage_id
         )
