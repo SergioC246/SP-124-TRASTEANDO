@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { getUserRole } from "../store";
 import useGlobalReducer from "../hooks/useGlobalReducer";
+import trasterandoPng from "../assets/img/logo_trasteando.jpg"
 
 export const Navbar = () => {
 
@@ -16,10 +17,10 @@ export const Navbar = () => {
 	};
 
 	return (
-		<nav className="navbar navbar-expand-lg navbar-light bg-light">
-			<div className="container-fluid">
+		<div className="container">
+			<nav className="navbar navbar-expand-lg bg-body-tertiary">
 				<Link className="navbar-brand" to="/">
-					<span className="navbar-brand mb-0 h1">Trasteando</span>
+					<img src="trasterandoPng" alt="Logo" width="30" height="24" class="d-inline-block align-text-top" />
 				</Link>
 				<div className="collapse navbar-collapse show">
 					<ul className="navbar-nav ms-auto mb-2 mb-lg-0">
@@ -71,7 +72,7 @@ export const Navbar = () => {
 							</Link>
 						</li> */}
 						<Link to="/chat" className="btn btn-outline-primary ms-2">
-    						<i className="fas fa-comments"></i> Chat
+							<i className="fas fa-comments"></i> Chat
 						</Link>
 
 						{/* ==== Solo Admin ==== */}
@@ -103,7 +104,7 @@ export const Navbar = () => {
 										My Profile
 									</Link>
 								</li>
-								
+
 							</>
 						)}
 
@@ -155,8 +156,8 @@ export const Navbar = () => {
 						)}
 					</ul>
 				</div>
-			</div>
-		</nav>
+			</nav>
+		</div>
 	);
 };
 
