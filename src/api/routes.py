@@ -7,7 +7,7 @@ import math
 from sqlalchemy import select, and_, not_, cast, Date
 from flask import Flask, request, jsonify, url_for, Blueprint
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
-from api.models import db, User, AdminUser, Client, Company, Leases, Storage, Location, Message
+from api.models import db, User, AdminUser, Client, Company, Leases, Storage, Location, Message, Category
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from api.socketio_instance import socketio
@@ -1558,3 +1558,24 @@ def stripe_webhook():
         # 👉 marcar lease CANCELLED
 
     return "OK", 200
+
+# # OpenAI
+
+# @api.route("/seed/categories", methods=["POST"])
+# def seed_categories():
+#     names = [
+#         "Ropa",
+#         "Deporte",
+#         "Herramientas",
+#         "Hogar",
+#         "Electrónica",
+#         "Otros"
+#     ]
+
+#     for name in names:
+#         if not Category.query.filter_by(name=name).first():
+#             db.session.add(Category(name=name))
+
+#     db.session.commit()
+
+#     return {"msg": "Categories created"}, 200
