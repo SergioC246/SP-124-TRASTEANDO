@@ -41,19 +41,26 @@ export const Chat = () => {
     const s = createSocket(token);
     setSocket(s);
 
-    s.on("message:new", (msg) => {
+    const handleNewMessage = (msg) => {
       const { targetId: tId, targetRole: tRole } = activeChatRef.current;
       const { id: mId, role: mRole } = myInfoRef.current;
 
-      // ¿El mensaje es para la conversación que tengo abierta ahora mismo?
       const isForActiveChat =
-        (msg.sender_id === tId && msg.sender_role === tRole) ||
-        (msg.sender_id === mId && msg.sender_role === mRole && msg.receiver_id === tId);
+        tId && tRole && (
+          (msg.sender_id === mId && msg.sender_role === mRole &&
+            msg.receiver_id === tId && msg.receiver_role === tRole) ||
+          (msg.sender_id === tId && msg.sender_role === tRole &&
+            msg.receiver_id === mId && msg.receiver_role === mRole)
+        );
 
       if (isForActiveChat) {
-        setMessages(prev => [...prev, msg]);
+        setMessages(prev => {
+          // Verificación extra: Si el mensaje ya existe en el estado por ID, no lo añadas
+          if (msg.id && prev.some(m => m.id === msg.id)) return prev;
+          return [...prev, msg];
+        });
       } else {
-        // Si no es el chat activo y yo soy el receptor, sumar a "no leídos"
+        // Si yo soy el receptor y NO es el chat activo, sumar al badge
         if (msg.receiver_id === mId && msg.receiver_role === mRole) {
           const key = `${msg.sender_id}-${msg.sender_role}`;
           setUnread(prev => ({
@@ -62,10 +69,19 @@ export const Chat = () => {
           }));
         }
       }
-    });
+    };
 
-    return () => s.disconnect();
-  }, [token]);
+    // 1. Limpiamos CUALQUIER listener previo de este evento
+    s.removeAllListeners("message:new");
+
+    // 2. Registramos el listener
+    s.on("message:new", handleNewMessage);
+
+    return () => {
+      s.off("message:new", handleNewMessage);
+      s.disconnect();
+    };
+  }, [token]); // Solo depende del token
 
   /* ===== LOADS ===== */
   const loadContacts = async () => {
@@ -98,23 +114,46 @@ export const Chat = () => {
       <div className="row" style={{ height: "80vh" }}>
 
         {/* PANEL IZQUIERDO */}
-        <div className="col-md-4 col-lg-3 border-end bg-light overflow-auto">
+        <div className="col-md-4 col-lg-3 border-end bg-light overflow-auto d-flex flex-column">
           <div className="p-3 border-bottom d-flex justify-content-between align-items-center">
             <h5 className="m-0">Mensajes</h5>
-            <button className="btn btn-primary btn-sm" onClick={async () => {
-              const endpoint = myRole === "client" ? "api/companies" : "api/clients";
-              const resp = await fetch(`${API_URL}${endpoint}`);
-              setDirectory(await resp.json());
-              setShowNewChat(true);
-            }}>Nuevo</button>
+            <button
+              className="btn btn-primary btn-sm"
+              onClick={async () => {
+                const endpoint = myRole === "client" ? "api/companies" : "api/clients";
+                const resp = await fetch(`${API_URL}${endpoint}`);
+                const all = await resp.json();
+                const filtered = all.filter(d => !contacts.find(c => c.id === d.id));
+                setDirectory(filtered);
+                setShowNewChat(true);
+              }}
+            >
+              Nuevo
+            </button>
           </div>
-          <div className="list-group list-group-flush">
+
+          <div className="list-group list-group-flush overflow-auto flex-grow-1">
             {contacts.map(c => {
               const key = `${c.id}-${c.role}`;
+              const avatarUrl = c.photo_url || c.photo || "https://via.placeholder.com/40";
               return (
-                <button key={key} onClick={() => { setTargetId(c.id); setTargetRole(c.role); }}
-                  className={`list-group-item list-group-item-action d-flex justify-content-between align-items-center ${targetId === c.id ? "active" : ""}`}>
-                  <div className="text-truncate">{c.name || c.email}</div>
+                <button
+                  key={key}
+                  onClick={() => { setTargetId(c.id); setTargetRole(c.role); }}
+                  className={`list-group-item list-group-item-action d-flex align-items-center justify-content-between ${targetId === c.id ? "active" : ""}`}
+                >
+                  <div className="d-flex align-items-center text-truncate">
+                    <img
+                      src={avatarUrl}
+                      alt="avatar"
+                      className="rounded-circle me-2"
+                      style={{ width: "35px", height: "35px", objectFit: "cover", border: "1px solid #ccc" }}
+                      onError={(e) => { e.target.src = "https://via.placeholder.com/40"; }}
+                    />
+                    <div className="text-truncate" style={{ maxWidth: "150px" }}>
+                      {c.name || c.email}
+                    </div>
+                  </div>
                   {unread[key] > 0 && (
                     <span className="badge bg-danger rounded-pill">{unread[key]}</span>
                   )}
@@ -126,36 +165,88 @@ export const Chat = () => {
 
         {/* PANEL DERECHO */}
         <div className="col-md-8 col-lg-9 d-flex flex-column bg-white border rounded">
+
+          {/* CABECERA con foto */}
           <div className="p-3 border-bottom bg-light d-flex justify-content-between align-items-center">
-            <span className="fw-bold">
-              {contacts.find(c => c.id === targetId)?.name || contacts.find(c => c.id === targetId)?.email || "Selecciona un chat"}
-            </span>
+            <div className="d-flex align-items-center">
+              {targetId && (() => {
+                const activeContact = contacts.find(c => c.id === targetId && c.role === targetRole);
+                const avatarUrl = activeContact?.photo_url || activeContact?.photo || "https://via.placeholder.com/40";
+                return (
+                  <img
+                    src={avatarUrl}
+                    alt="avatar"
+                    className="rounded-circle me-2"
+                    style={{ width: "35px", height: "35px", objectFit: "cover" }}
+                    onError={(e) => { e.target.src = "https://via.placeholder.com/40"; }}
+                  />
+                );
+              })()}
+              <span className="fw-bold">
+                {contacts.find(c => c.id === targetId && c.role === targetRole)?.name ||
+                 contacts.find(c => c.id === targetId && c.role === targetRole)?.email ||
+                 "Selecciona un chat"}
+              </span>
+            </div>
+
+            {/* BOTÓN BORRAR - Corregido con my_role en la URL */}
             {targetId && (
-              <button className="btn btn-link text-danger p-0" onClick={async () => {
-                if (window.confirm("¿Borrar chat?")) {
-                  await fetch(`${API_URL}api/messages/conversation/${myId}/${targetId}`, { method: "DELETE" });
-                  setMessages([]); setTargetId(null); loadContacts();
-                }
-              }}>
-                <i className="fas fa-trash-alt"></i>
+              <button
+                className="btn btn-link text-danger p-0"
+                onClick={async () => {
+                  if (window.confirm("¿Borrar chat?")) {
+                    await fetch(
+                      `${API_URL}api/messages/conversation/${myId}/${myRole}/${targetId}/${targetRole}`,
+                      { method: "DELETE" }
+                    );
+                    setMessages([]);
+                    setTargetId(null);
+                    setTargetRole(null);
+                    loadContacts();
+                  }
+                }}
+              >
+                <i className="fas fa-trash-alt"></i> Borrar
               </button>
             )}
           </div>
 
+          {/* MENSAJES */}
           <div className="flex-grow-1 overflow-auto p-3">
-            {messages.map((m, i) => (
-              <div key={i} className={`d-flex mb-3 ${m.sender_id === myId && m.sender_role === myRole ? "justify-content-end" : "justify-content-start"}`}>
-                <div className={`p-2 px-3 rounded-pill ${m.sender_id === myId && m.sender_role === myRole ? "bg-primary text-white" : "bg-light border"}`} style={{ maxWidth: "80%" }}>
-                  {m.content}
-                </div>
+            {!targetId ? (
+              <div className="h-100 d-flex align-items-center justify-content-center text-muted">
+                <p>Selecciona una conversación para empezar</p>
               </div>
-            ))}
+            ) : (
+              messages.map((m, i) => (
+                <div
+                  key={m.id || i}
+                  className={`d-flex mb-3 ${m.sender_id === myId && m.sender_role === myRole ? "justify-content-end" : "justify-content-start"}`}
+                >
+                  <div
+                    className={`p-2 px-3 rounded-pill ${m.sender_id === myId && m.sender_role === myRole ? "bg-primary text-white" : "bg-light border"}`}
+                    style={{ maxWidth: "80%" }}
+                  >
+                    {m.content}
+                  </div>
+                </div>
+              ))
+            )}
           </div>
 
+          {/* INPUT */}
           <div className="p-3 border-top">
             <div className="input-group">
-              <input type="text" className="form-control" value={text} onChange={e => setText(e.target.value)} placeholder="Escribe un mensaje..." onKeyDown={e => e.key === "Enter" && handleSend()} />
-              <button className="btn btn-primary" onClick={handleSend}>
+              <input
+                type="text"
+                className="form-control"
+                value={text}
+                onChange={e => setText(e.target.value)}
+                placeholder={targetId ? "Escribe un mensaje..." : "Selecciona un chat primero"}
+                disabled={!targetId}
+                onKeyDown={e => e.key === "Enter" && handleSend()}
+              />
+              <button className="btn btn-primary" onClick={handleSend} disabled={!targetId}>
                 <i className="fas fa-paper-plane"></i>
               </button>
             </div>
@@ -167,22 +258,44 @@ export const Chat = () => {
       {showNewChat && (
         <div className="modal d-block" style={{ backgroundColor: "rgba(0,0,0,0.5)" }}>
           <div className="modal-dialog modal-dialog-centered">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title">Nuevo Chat</h5>
-                <button className="btn-close" onClick={() => setShowNewChat(false)}></button>
+            <div className="modal-content shadow-lg border-0">
+              <div className="modal-header bg-primary text-white">
+                <h5 className="modal-title">Iniciar nueva conversación</h5>
+                <button className="btn-close btn-close-white" onClick={() => setShowNewChat(false)}></button>
               </div>
               <div className="modal-body overflow-auto" style={{ maxHeight: "400px" }}>
-                <div className="list-group">
-                  {directory.map(d => (
-                    <button key={d.id} className="list-group-item list-group-item-action" onClick={() => {
-                      const role = myRole === "client" ? "company" : "client";
-                      setTargetId(d.id); setTargetRole(role); setShowNewChat(false);
-                      if (!contacts.find(c => c.id === d.id)) setContacts(prev => [...prev, { ...d, role }]);
-                    }}>
-                      {d.name || d.email}
-                    </button>
-                  ))}
+                <div className="list-group list-group-flush">
+                  {directory.length > 0 ? directory.map(d => {
+                    const avatarUrl = d.photo_url || d.photo || "https://via.placeholder.com/40";
+                    return (
+                      <button
+                        key={d.id}
+                        className="list-group-item list-group-item-action d-flex align-items-center py-3"
+                        onClick={() => {
+                          const role = myRole === "client" ? "company" : "client";
+                          setTargetId(d.id);
+                          setTargetRole(role);
+                          setShowNewChat(false);
+                          if (!contacts.find(c => c.id === d.id && c.role === role)) {
+                            setContacts(prev => [...prev, { ...d, role, photo_url: avatarUrl }]);
+                          }
+                        }}
+                      >
+                        <img
+                          src={avatarUrl}
+                          alt="avatar"
+                          className="rounded-circle me-3"
+                          style={{ width: "40px", height: "40px", objectFit: "cover", border: "1px solid #eee" }}
+                          onError={(e) => { e.target.src = "https://via.placeholder.com/40"; }}
+                        />
+                        <div className="fw-bold">{d.name || d.email}</div>
+                      </button>
+                    );
+                  }) : (
+                    <div className="text-center p-4 text-muted">
+                      No hay nuevos contactos disponibles
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -191,4 +304,4 @@ export const Chat = () => {
       )}
     </div>
   );
-};
+}

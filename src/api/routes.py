@@ -1338,7 +1338,8 @@ def send_message():
     sender_id = int(body["sender_id"])
 
     socketio.emit("message:new", payload, room=f"user_{receiver_id}")
-    socketio.emit("message:new", payload, room=f"user_{sender_id}") 
+
+   # socketio.emit("message:new", payload, room=f"user_{sender_id}")
 
     return jsonify(payload), 201
 
@@ -1424,17 +1425,20 @@ def get_contacts(my_id, my_role):
                     "id": client.id,
                     "role": "client",
                     "email": client.email,
-                    "photo_url": getattr(client, "photo_url", None)
+                    "photo_url": client.photo_url
                 })
 
         elif role == "company":
             company = Company.query.get(contact_id)
             if company:
+
+                print(f"DEBUG: Company {company.name} photo is: {company.photo}")
+                
                 result.append({
                     "id": company.id,
                     "role": "company",
                     "name": company.name,
-                    "photo_url": getattr(company, "photo_url", None)
+                    "photo_url": company.photo
                 })
 
     return jsonify(result), 200
