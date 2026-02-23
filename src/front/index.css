@@ -9,3 +9,52 @@
     font-weight: bold;
     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
+
+/* boton de anfitrión del navbar */
+.anfitrion-btn {
+	background-color: #f2f2f2;
+	color: #333;
+	transition: all 0.2s ease-in-out;
+}
+
+.anfitrion-btn:hover {
+	background-color: #e0e0e0;
+	color: #000;
+	transform: translateY(-1px);
+}
+
+/* flechas del navbar */
+
+/* Quitamos flecha default */
+.navbar .dropdown-toggle::after {
+  display: none;
+}
+
+/* Aplicamos padding correcto a TODOS los toggles */
+.navbar .nav-link.dropdown-toggle,
+.navbar .btn.dropdown-toggle {
+  position: relative;
+  padding-right: 24px !important;
+}
+
+/* Flecha personalizada */
+.navbar .dropdown-toggle::before {
+  content: "";
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  width: 9px;
+  height: 9px;
+  border-right: 3px solid #5C73F2;
+  border-bottom: 3px solid #5C73F2;
+  transform: translateY(-50%) rotate(45deg);
+  transition: transform 0.25s ease, border-color 0.25s ease;
+}
+
+/* Cuando está abierto */
+.navbar .dropdown-toggle.show::before {
+  transform: translateY(-50%) rotate(-135deg);
+  border-color: #91BBF2;
+}
+
+

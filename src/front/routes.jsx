@@ -119,6 +119,7 @@ export const router = createBrowserRouter(
       
       <Route path="/location-create" element={<LocationCreate />} />
       <Route path="/location-details/:id" element={<LocationDetails />} />
+      <Route path="/client/private/locations" element={<ClientLocations />} />
       <Route path="/location-edit/:id" element={<LocationEdit />} />
       <Route path="/locations-public" element={<LocationPublic />} />
 
@@ -127,6 +128,7 @@ export const router = createBrowserRouter(
       <Route path="/storages/create" element={<StorageCreate />} />
       <Route path="/storages/:id/edit" element={<StorageEdit />} />
       <Route path="/storages/:id" element={<StorageDetails />} />
+      <Route path="/client/private/storages/:locationId" element={<StoragesPrivateList />} />
 
       {/* ==== Rutas Protegidas Solo Admin ==== */}
 
@@ -168,9 +170,8 @@ export const router = createBrowserRouter(
         <Route path="/clients/:id/edit" element={<ClientEdit />} />
         <Route path="/client/private" element={<ClientPrivate />} />
         <Route path="/client/private/leases" element={<ClientPrivateLeases />} />
-        <Route path="/client/private/checkout/:storageId" element={<StoragePrivateCheckout />} />
-        <Route path="/client/private/locations" element={<ClientLocations />} />
-        <Route path="/client/private/storages/:locationId" element={<StoragesPrivateList />} />
+        <Route path="/client/private/checkout/:storageId" element={<StoragePrivateCheckout />} />        
+        
         <Route path="/client/private/storage/:storageId" element={<StoragesPrivateDetails />} />
       </Route>
 

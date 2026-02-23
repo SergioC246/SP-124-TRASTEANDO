@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { getUserRole } from "../store";
 import useGlobalReducer from "../hooks/useGlobalReducer";
-import trasterandoPng from "../assets/img/logo_trasteando.jpg"
+import logo from "../assets/img/logo-trasteando.jpg"
 
 export const Navbar = () => {
 
@@ -17,65 +17,102 @@ export const Navbar = () => {
 	};
 
 	return (
-		<div className="container">
-			<nav className="navbar navbar-expand-lg bg-body-tertiary">
-				<Link className="navbar-brand" to="/">
-					<img src="trasterandoPng" alt="Logo" width="30" height="24" class="d-inline-block align-text-top" />
+		<div className="container px-2">
+			<nav className="navbar navbar-expand-lg bg-white py-2 mt-3">
+
+				<Link className="navbar-brand d-flex align-items-center me-4 ms-2" to="/">
+					<img src={logo} alt="Trasteando"
+						height="60"
+						className="me-2" />
+					<span className="fw-bold fs-5" style={{ color: "#5C73F2" }}>
+						Trasteando
+					</span>
 				</Link>
-				<div className="collapse navbar-collapse show">
-					<ul className="navbar-nav ms-auto mb-2 mb-lg-0">
 
-						{/* ==== Si no hay nadie logueado ==== */}
+				<button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+					<span className="navbar-toggler-icon"></span>
+				</button>
 
-						{!role && (
-							<>
-								<li className="nav-item ms-2">
-									<Link to="/client/login" className="btn btn-outline-primary">
-										Login as client
+				<div className="collapse navbar-collapse" id="navbarContent">
+
+					<ul className="navbar-nav me-auto gap-2">
+						<li className="nav-item dropdown">
+							<a className="nav-link dropdown-toggle text-dark fw-semibold"
+								role="button"
+								data-bs-toggle="dropdown">
+								Login
+							</a>
+
+							<ul className="dropdown-menu shadow border-0 rounded-3">
+								<li>
+									<Link className="dropdown-item d-flex align-items-center gap-2" to="/client/login">
+										<i className="fa-regular fa-user" style={{ color: "#5C73F2" }}></i>
+										Client
 									</Link>
 								</li>
-								<li className="nav-item ms-2">
-									<Link to="/companies/login" className="btn btn-outline-warning">
-										Login as Company
+								<li>
+									<Link className="dropdown-item d-flex align-items-center gap-2" to="/companies/login">
+										<i className="fa-regular fa-building" style={{ color: "#5C73F2" }}></i>
+										Company
 									</Link>
 								</li>
-								<li className="nav-item ms-2">
-									<Link to="/admin/login" className="btn btn-outline-danger" >
-										Login as Admin
-									</Link>
-								</li>
-								<li className="nav-item ms-2">
-									<Link to="/storages" className="btn btn-outline-success" >
-										Storages
-									</Link>
-								</li>
-								<li className="nav-item ms-2">
-									<Link to="/locations-public" className="btn btn-outline-success" >
+
+							</ul>
+						</li>
+
+						<li className="nav-item dropdown">
+							<a className="nav-link dropdown-toggle text-dark fw-semibold"
+								role="button"
+								data-bs-toggle="dropdown"
+							>
+								Services
+							</a>
+
+							<ul className="dropdown-menu shadow border-0 rounded-3">
+								<li>
+									<Link className="dropdown-item d-flex align-items-center gap-2" to="/client/private/locations">
+										<i className="fa-regular fa-map" style={{ color: "#5C73F2" }}></i>
 										Locations
 									</Link>
 								</li>
-							</>
-						)}
+								<li>
+									<Link className="dropdown-item d-flex align-items-center gap-2" to="/client/private/storages/:locationId">
+										<i className="fas fa-box-open" style={{ color: "#5C73F2" }}></i>
+										Storages
+									</Link>
+								</li>
+							</ul>
+						</li>
+					</ul>
 
-						{/* ==== Siempre visibles ==== */}
-
-						{/* <li className="nav-item ms-2">
-							<Link to="/location" className="btn btn-outline-success">
-						<li className="nav-item ms-2">
-							<Link to="/companies/private/locations" className="btn btn-outline-success">
-								Locations
-							</Link>
-						</li> */}
-						{/* <li className="nav-item ms-2">
-							<Link to="/client/login">
-								<button className="btn btn-outline-secondary">Login as client</button>
-							</Link>
-						</li> */}
-						<Link to="/chat" className="btn btn-outline-primary ms-2">
-							<i className="fas fa-comments"></i> Chat
+					<div className="d-flex align-items-center gap-2 me-2">
+						<Link to="/chat" className="btn btn-primary rounded-pill fw-semibold border">
+							<i className="fas fa-comments me-1"></i>
+							Chat
 						</Link>
 
-						{/* ==== Solo Admin ==== */}
+						<div className="dropdown">
+							<button
+								className="btn btn-link fw-semibold text-dark dropdown-toggle"
+								data-bs-toggle="dropdown"
+							> Contact us
+							</button>
+							<ul className="dropdown-menu dropdown-menu-end shadow-sm border-0 rounded">
+								<li className="dropdown-item">
+									<i className="fa-solid fa-phone" style={{ color: "#5C73F2" }}></i> +34 600 000 000
+								</li>
+							</ul>
+						</div>
+						<Link
+							to="#"
+							className="btn rounded-pill px-4 fw-semibold anfitrion-btn">
+							Hazte Anfitrión
+						</Link>
+					</div>
+
+
+
+					{/* ==== Solo Admin ====
 
 						{role === "admin" && (
 							<>
@@ -110,7 +147,7 @@ export const Navbar = () => {
 
 						{/* ==== Solo Company ==== */}
 
-						{role === "company" && (
+					{/*{role === "company" && (
 							<>
 								<li className="nav-item ms-2">
 									<Link to="/companies/private" className="btn btn-outline-warning">
@@ -120,9 +157,9 @@ export const Navbar = () => {
 							</>
 						)}
 
-						{/* ==== Solo CLient ==== */}
+						{/*{/* ==== Solo CLient ==== */}
 
-						{role === "client" && (
+					{/*{role === "client" && (
 							<>
 								<li className="nav-item ms-2">
 									<Link to="/client/private/leases" className="btn btn-outline-warning">
@@ -144,17 +181,15 @@ export const Navbar = () => {
 									</Link>
 								</li>
 							</>
-						)}
+						)} */}
 
-						{/* ==== Logout si hay alguien logueado ==== */}
-						{role && (
-							<li className="nav-item ms-2">
-								<button className="btn btn-danger"
-									onClick={handleLogout}>Logout</button>
-							</li>
-
-						)}
-					</ul>
+					{/* ==== Logout si hay alguien logueado ==== */}
+					{role && (
+						<li className="nav-item ms-2">
+							<button className="btn btn-danger"
+								onClick={handleLogout}>Logout</button>
+						</li>
+					)}
 				</div>
 			</nav>
 		</div>
