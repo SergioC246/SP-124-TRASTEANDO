@@ -614,23 +614,30 @@ def company_private_by_id(company_id):
 
 @api.route('/storage/overview', methods=["GET"])
 def get_all_storage_overview():
-
-    result = db.session.execute(select(Storage)).scalars().all()
+    from sqlalchemy.orm import joinedload
+    result = db.session.execute(
+        select(Storage).options(joinedload(Storage.location))
+    ).scalars().all()
 
     detailed_list = []
     for storage in result:
         storage_data = storage.serialize()
+        location = storage.location
+        if location:
+            storage_data["city"] = location.city
+            company = db.session.get(Company, location.company_id)
+            storage_data["company_name"] = company.name if company else "Empresa desconocida"
+        else:
+            storage_data["city"] = "Ciudad no disponible"
+            storage_data["company_name"] = "Empresa no disponible"
 
-        location = db.session.get(Location, storage.location_id)
-        company = db.session.get(Company, location.company_id)
-
-        storage_data["company_name"] = company.name
-        storage_data["city"] = location.city
+        # Aseguramos que "photo" existe en el diccionario final
+        # Si por alguna razón serialize() no lo trajo, esto lo garantiza:
+        storage_data["photo"] = storage.photo 
 
         detailed_list.append(storage_data)
 
     return jsonify(detailed_list), 200
-
 # Get Storage Overview
 
 
@@ -638,17 +645,19 @@ def get_all_storage_overview():
 
 @api.route("/storage/<int:storage_id>/overview", methods=["GET"])
 def get_storage_overview(storage_id):
-    storage = db.session.execute(select(Storage).where(Storage.id == storage_id)).scalar_one_or_none()
+    storage = db.session.execute(select(Storage).where(
+        Storage.id == storage_id)).scalar_one_or_none()
 
     if storage is None:
         return jsonify({"message": "Storage not found"}), 404
 
     storage_data = storage.serialize()
-    
+
     # Añadimos los leases actuales para que el frontend vea las fechas ocupadas
-    leases = Leases.query.filter_by(storage_id=storage_id, status="active").all()
+    leases = Leases.query.filter_by(
+        storage_id=storage_id, status="active").all()
     storage_data["occupied_dates"] = [
-        {"start": l.start_date.isoformat(), "end": l.end_date.isoformat()} 
+        {"start": l.start_date.isoformat(), "end": l.end_date.isoformat()}
         for l in leases
     ]
 
@@ -1039,10 +1048,10 @@ def create_client_lease():
             )
         )
         existing_conflict = db.session.execute(conflict_query).first()
-        
+
         if existing_conflict:
             return jsonify({"message": "El trastero ya está reservado en esas fechas"}), 400
-        
+
         new_lease = Leases(
             start_date=start_date,
             end_date=end_date,
@@ -1094,7 +1103,7 @@ def delete_client_lease(lease_id):
     # el JOIN entre Storage y Location para Haces 1 sola consulta a la base de datos en lugar de 50 o 100
 @api.route('/storage/map', methods=["GET"])
 def get_storages_for_map():
-    import math # Asegúrate de tener esto arriba o aquí
+    import math  # Asegúrate de tener esto arriba o aquí
     from sqlalchemy import and_, not_, select
 
     search_lat = request.args.get('lat')
@@ -1103,13 +1112,15 @@ def get_storages_for_map():
     checkout = request.args.get('checkout')
 
     # 1. Base de la consulta: Solo trasteros activos (status del dueño)
-    query = select(Storage, Location).join(Location).where(Storage.status == True)
+    query = select(Storage, Location).join(
+        Location).where(Storage.status == True)
 
     # 2. Filtro de disponibilidad por fechas
     if checkin and checkout and checkin != "" and checkout != "":
         occupied_subquery = select(Leases.storage_id).where(
             and_(
-                Leases.status.in_(["active", "pending payment"]), #bloquea ambos
+                # bloquea ambos
+                Leases.status.in_(["active", "pending payment"]),
                 Leases.start_date <= checkout,
                 Leases.end_date >= checkin
 
@@ -1133,23 +1144,27 @@ def get_storages_for_map():
             "storage_id": storage.id,
             "price": storage.price,
             "size": storage.size,
+            "photo": storage.photo,
             "latitude": float(location.latitude),
             "longitude": float(location.longitude),
             "city": location.city,
             "address": location.address,
-            "status": "available" # Para el frontend
+            "status": "available"  # Para el frontend
         }
 
         # 4. Filtro de distancia (Haversine)
         if search_lat and search_lng:
-            R = 6371 # Radio de la Tierra
-            s_lat, s_lng = math.radians(float(search_lat)), math.radians(float(search_lng))
-            t_lat, t_lng = math.radians(float(location.latitude)), math.radians(float(location.longitude))
+            R = 6371  # Radio de la Tierra
+            s_lat, s_lng = math.radians(
+                float(search_lat)), math.radians(float(search_lng))
+            t_lat, t_lng = math.radians(float(location.latitude)), math.radians(
+                float(location.longitude))
 
             dlat = t_lat - s_lat
             dlng = t_lng - s_lng
 
-            a = math.sin(dlat/2)**2 + math.cos(s_lat) * math.cos(t_lat) * math.sin(dlng/2)**2
+            a = math.sin(dlat/2)**2 + math.cos(s_lat) * \
+                math.cos(t_lat) * math.sin(dlng/2)**2
             c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
             distance = R * c
 
@@ -1506,15 +1521,57 @@ def stripe_create_subscription_session():
                 "quantity": 1,
             }],
 
-            success_url=os.getenv("FRONTEND_URL") + "payment/success",
+            success_url=os.getenv("FRONTEND_URL") +
+            f"payment/success?lease_id={lease_id}",
             cancel_url=os.getenv("FRONTEND_URL") + "payment/cancel",
             metadata={
                 "lease_id": str(lease_id)
             }
+
+            # success_url=os.getenv("FRONTEND_URL") + "payment/success",
+            # cancel_url=os.getenv("FRONTEND_URL") + "payment/cancel",
+            # metadata={
+            #     "lease_id": str(lease_id)
+            # }
         )
 
         return jsonify({"url": session.url})
 
     except Exception as e:
         print("ERROR STRIE:", e)
+        return jsonify({"error": str(e)}), 500
+
+
+# endpoint para el fetch de limpieza que va  a llamar Layout para borrar los leases que no se hayan pagado
+
+@api.route('/client/leases/clear-pending', methods=['DELETE'])
+@jwt_required()
+def clear_pending_leases():
+    try:
+        current_client_id = get_jwt_identity()
+        deleted = Leases.query.filter_by(
+            client_id=current_client_id, status="pending payment").delete()
+
+        db.session.commit()
+        return jsonify({"message": f"Se han limpiado {deleted} reservas pendientes"}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 500
+
+# endpoint para la cancelacion o aceptacion del pago
+
+
+@api.route('/client/leases/<int:lease_id>/confirm', methods=['PATCH'])
+@jwt_required()
+def confirm_lease(lease_id):
+    try:
+        lease = db.session.get(Leases, lease_id)
+        if not lease:
+            return jsonify({"message": "Reserva no encontrada"}), 404
+
+        lease.status = "active"  # <--- Aquí es donde se vuelve oficial
+        db.session.commit()
+        return jsonify({"message": "Reserva activada con éxito"}), 200
+    except Exception as e:
+        db.session.rollback()
         return jsonify({"error": str(e)}), 500

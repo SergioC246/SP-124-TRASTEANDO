@@ -105,7 +105,7 @@ export const Navbar = () => {
 									</Link>
 								</li>
 								<li className="nav-item ms-2">
-									<Link to="/locations-public" className="btn btn-outline-warning" >
+									<Link to="/location" className="btn btn-outline-warning" >
 										Locations
 									</Link>
 								</li>
