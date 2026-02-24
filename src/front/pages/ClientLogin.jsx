@@ -1,6 +1,9 @@
 import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import useGlobalReducer from "../hooks/useGlobalReducer.jsx";
+import clientLoginImg from "../assets/img/Login-client.png";
+import googleIcon from "../assets/img/googleIcon.png";
+import facebookIcon from "../assets/img/facebookIcon.png"
 
 
 export const ClientLogin = () => {
@@ -12,7 +15,7 @@ export const ClientLogin = () => {
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
- 
+
     useEffect(() => {
         if (store.tokenClient) {
             const timer = setTimeout(() => {
@@ -20,7 +23,7 @@ export const ClientLogin = () => {
             }, 1500);
             return () => clearTimeout(timer)
         }
-    }, [store.tokenClient, navigate]);    
+    }, [store.tokenClient, navigate]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -45,13 +48,13 @@ export const ClientLogin = () => {
 
             localStorage.setItem("tokenClient", data.token);
             localStorage.setItem("client_id", data.client_id)
-            
+
             dispatch({
                 type: "set_auth_client",
-                payload: { tokenClient: data.token},
+                payload: { tokenClient: data.token },
             });
 
-            setTimeout(()=> navigate("/search"), 1000);
+            setTimeout(() => navigate("/search"), 1000);
 
         } catch (err) {
             setError("Network error");
@@ -60,46 +63,65 @@ export const ClientLogin = () => {
         }
     };
 
-
     return (
-        <>
-            <div className="container d-flex justify-content-center align-items-center" style={{ minHeight: "80vh" }}>
-                <div className="card shadow-lg p-4" style={{ maxWidth: "400px", width: "100%", borderRadius: "15px" }}>
+        <div className="container my-5">
+            <div className="row shadow-lg" style={{ borderRadius: "15px", overflow: "hidden" }}>
+                <div className="col-md-6 d-none d-md-block" style={{
+                    backgroundImage: `url(${clientLoginImg})`,
+                    backgroundSize: "cover",
+                    backgroundPosition: "center"
+                }}>
+                </div>
 
-                    <div className="text-center mb-4">
-                        <h2 className="fw-bold text-primary">Welcome Back</h2>
-                        <div className={`badge ${store.authClient ? "bg-success-subtle text-success" : "bg-warning-subtle text-warning"} p-2 mt-2`}>
-                            {store.authClient ? "● Online" : "● Offline - Please log in"}
+                <div className="col-md bg-white p-5 d-flex flex-column justify-content-center">
+                    <div className="h-100 w-100 d-flex flex-column justify-content-end">
+                        <h2 className="text-black fw-bold">Welcome Back</h2>
+                        <div>
+                            <small className="text-secondary">New here? <span className="fw-bold" style={{ cursor: 'pointer', color: "#91BBF2" }} onClick={() => navigate("/client/signup")}>Register here</span></small>
                         </div>
                     </div>
 
+                    <h3 className="fw-bold  mb-4 text-center" style={{ color: "#5C73F2" }}>Client Login</h3>
+                    {error && (
+                        <div className="alert alert-danger d-flex align-items-center p-2 mb-3" style={{ fontSize: '0.85rem' }}>
+                            <i className="bi bi-exclamation-triangle-fill me-2"></i>
+                            <div>{error}</div>
+                        </div>
+                    )}
+
+
                     <form onSubmit={handleSubmit}>
-
-                        <div className="form-floating mb-3 text-start">
-                            <input type="email" className="form-control" id="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="name@example.com" disabled={loading} required />
-                            <label htmlFor="email">Email address</label>
-                            <div className="form-text ps-1" style={{ fontSize: '0.7rem' }}>We'll never share your email with anyone else.</div>
+                        <div className="mb-3">
+                            <label className="mb-1" htmlFor="email">Email address</label>
+                            <input type="email" className="form-control" id="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="name@example.com" disabled={loading} required />                            
                         </div>
-                        <div className="form-floating mb-3 text-start">
+                        <div className="mb-3">
+                            <label className="mb-1" htmlFor="password">Password</label>
                             <input type="password" className="form-control" id="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" disabled={loading} required />
-                            <label htmlFor="password">Password</label>
+                            
+                            
                         </div>
-                        {error && (
-                            <div className="alert alert-danger d-flex align-items-center p-2 mb-3" style={{ fontSize: '0.85rem' }}>
-                                <i className="bi bi-exclamation-triangle-fill me-2"></i>
-                                <div>{error}</div>
-                            </div>
-                        )}
 
-                        <button type="submit" className="btn btn-primary w-100 py-2 fw-bold" disabled={loading} style={{ borderRadius: "8px" }} >
+
+                        <button type="submit" className="btn w-100 py-2 fw-bold mb-3" disabled={loading} style={{
+                            backgroundColor: "#5C73F2",
+                            color: "white",
+                            borderRadius: "8px"
+                        }}>
                             {loading ? <><span className="spinner-border spinner-border-sm me-2"></span>Logging in...</> : "Login"}
                         </button>
-                        <div className="text-center mt-3">
-                            <small className="text-muted">Don't have an account? <span className="text-primary fw-bold" style={{ cursor: 'pointer' }} onClick={() => navigate("/client/signup")}>Register here</span></small>
+
+                        <div className="d-flex flex-column gap-2">
+                            <button className="btn d-flex align-items-center justify-content-center gap-2 border" style={{ backgroundColor: "#fff", color: "#333", borderRadius: "8px" }}>
+                                <img src={googleIcon} alt="Google" style={{ width: "20px" }} /> Continue with Google
+                            </button>
+                            <button className="btn d-flex align-items-center justify-content-center gap-2 border" style={{ backgroundColor: "#1877F2", color: "#fff", borderRadius: "8px" }}>
+                                <img src={facebookIcon} alt="Facebook" style={{ width: "20px" }} /> Continue with Facebook
+                            </button>
                         </div>
                     </form>
                 </div>
             </div>
-        </>
+        </div>
     )
 }
