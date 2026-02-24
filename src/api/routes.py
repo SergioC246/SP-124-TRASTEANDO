@@ -14,6 +14,7 @@ from api.socketio_instance import socketio
 from api.realtime_rooms import conversation_room
 from dotenv import load_dotenv
 from pathlib import Path
+from api.services.vision_category import suggest_category_from_image
 import os
 import stripe
 
@@ -1646,3 +1647,22 @@ def delete_product(product_id):
     db.session.delete(product)
     db.session.commit()
     return jsonify({"msg": "Deleted"}), 200
+
+
+@api.route("/products/suggest-category", methods=["POST"])
+@jwt_required()
+def suggest_product_category():
+
+    body = request.get_json(silent=True) or {}
+    image_url = body.get("image_url")
+
+    if not image_url or not isinstance(image_url, str):
+        return jsonify({"msg": "image_url is required"}), 400
+
+    categories = Category.query.order_by(Category.id.asc()).all()
+    if not categories:
+        return jsonify({"msg": "No categories available"}), 400
+    
+    result = suggest_category_from_image(image_url, categories)
+
+    return jsonify(result), 200

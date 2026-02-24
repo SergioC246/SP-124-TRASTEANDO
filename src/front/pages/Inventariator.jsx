@@ -3,7 +3,6 @@ import useGlobalReducer from "../hooks/useGlobalReducer";
 
 const API_URL = import.meta.env.VITE_BACKEND_URL;
 
-
 export const Inventariator = () => {
 
     const { store } = useGlobalReducer();
@@ -16,7 +15,11 @@ export const Inventariator = () => {
     const [categoryId, setCategoryId] = useState("");
 
     const [imageFile, setImageFile] = useState(null);
+    const [imageUrl, setImageUrl] = useState(null); //
+
     const [uploading, setUploading] = useState(false);
+    const [isAnalyzing, setIsAnalyzing] = useState(false);
+    const [suggestionMeta, setSuggestionMeta] = useState(null);
 
 
     // Cargar categorías
@@ -57,14 +60,14 @@ export const Inventariator = () => {
         }
     }, [store.tokenClient]);
 
-    const uploadImage = async () => {
+    const uploadImage = async (file) => {
 
-        if (!imageFile) return null;
+        if (!file) return null;
 
         setUploading(true);
 
         const formData = new FormData();
-        formData.append("file", imageFile);
+        formData.append("file", file);
         formData.append("upload_preset", "topydai");
 
         const resp = await fetch(
@@ -81,17 +84,29 @@ export const Inventariator = () => {
         return data.secure_url;
     };
 
+    const suggestCategory = async (secureUrl, token) => {
+
+        const resp = await fetch(`${API_URL}api/products/suggest-category`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            },
+            body: JSON.stringify({ image_url: secureUrl })
+        });
+
+        if (!resp.ok) return null;
+
+        return await resp.json();
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
-
-        if (!name || !categoryId) return alert("Faltan campos");
 
         const token = store.tokenClient;
         if (!token) return alert("No autenticado");
 
-        const imageUrl = imageFile ? await uploadImage() : null;
-        console.log("IMAGE URL:", imageUrl);
-
+        if (!name) return alert("Faltan campos");
 
         const resp = await fetch(`${API_URL}/api/products`, {
             method: "POST",
@@ -103,7 +118,7 @@ export const Inventariator = () => {
                 name,
                 description,
                 category_id: parseInt(categoryId),
-                image_url: imageUrl 
+                image_url: imageUrl
             })
         });
 
@@ -115,20 +130,87 @@ export const Inventariator = () => {
         setName("");
         setDescription("");
         setCategoryId("");
+        setImageFile(null);
+        setImageUrl(null);
+        setSuggestionMeta(null);
 
         loadProducts();
     };
+
+    const handleImageSelect = async (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        setImageFile(file);
+
+        const token = store.tokenClient;
+        if (!token) return;
+
+        setIsAnalyzing(true);
+
+        try {
+            const secureUrl = await uploadImage(file);
+            if (!secureUrl) return;
+
+            setImageUrl(secureUrl);
+
+            const suggestion = await suggestCategory(secureUrl, token);
+
+            console.log("IA response:", suggestion);
+
+            if (!suggestion) return;
+
+            setSuggestionMeta(suggestion);
+
+            if (suggestion.suggested_category_id != null) {
+                setCategoryId(String(suggestion.suggested_category_id));
+            }
+
+            setName(prev => prev?.trim() ? prev : (suggestion.suggested_title ?? ""));
+            setDescription(prev => prev?.trim() ? prev : (suggestion.suggested_description ?? ""));
+
+        } finally {
+            setIsAnalyzing(false);
+        }
+    };
+
+
 
     return (
         <div className="container mt-5">
             <h2>Inventariator V1</h2>
 
             <form onSubmit={handleSubmit} className="mb-4">
+                {/* 1) PRIMERO: imagen */}
+                <input
+                    type="file"
+                    className="form-control mb-2"
+                    accept="image/*"
+                    onChange={handleImageSelect}
+                    disabled={isAnalyzing}
+                />
+
+                {/* loader */}
+                {isAnalyzing && <p className="mb-2">🔎 Analizando imagen...</p>}
+
+                {/* meta sugerencia */}
+                {suggestionMeta && (
+                    <small className="d-block mb-2">
+                        Sugerido: {suggestionMeta.suggested_category_name}
+                        {" "}
+                        ({(suggestionMeta.confidence * 100).toFixed(0)}%)
+                    </small>
+                )}
+
+                <hr />
+
+                {/* 2) DESPUÉS: campos (IA debería rellenar, pero el user puede editar) */}
                 <input
                     className="form-control mb-2"
                     placeholder="Nombre"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
+                    disabled={isAnalyzing}
                 />
 
                 <input
@@ -136,28 +218,28 @@ export const Inventariator = () => {
                     placeholder="Descripción"
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
+                    disabled={isAnalyzing}
                 />
 
                 <select
                     className="form-select mb-2"
-                    value={categoryId}
+                    value={String(categoryId ?? "")}          // 👈 importante: coherencia
                     onChange={(e) => setCategoryId(e.target.value)}
+                    disabled={isAnalyzing}
                 >
                     <option value="">Selecciona categoría</option>
                     {categories.map(cat => (
-                        <option key={cat.id} value={cat.id}>
+                        <option key={cat.id} value={String(cat.id)}>
                             {cat.name}
                         </option>
                     ))}
                 </select>
-                <input
-                    type="file"
-                    className="form-control mb-2"
-                    accept="image/*"
-                    onChange={(e) => setImageFile(e.target.files[0])}
-                />
 
-                <button className="btn btn-primary">
+                {/* 3) botón */}
+                <button
+                    className="btn btn-primary"
+                    disabled={isAnalyzing}
+                >
                     Crear Producto
                 </button>
             </form>
