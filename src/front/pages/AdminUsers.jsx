@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react"
-import { deleteAdminUsers, getAdminUser, getAdminUsers } from "./utilsAdministrator"
+import { deleteAdminUsers, getAdminUsers } from "./utilsAdministrator"
 import { useNavigate } from "react-router-dom"
 import { AdminUserEdit } from "./AdminUserEdit"
 
 export const AdminUsers = () => {
-
     const [adminUsers, setAdminUsers] = useState([])
     const [editAdmin, setEditAdmin] = useState(null)
+    const [loading, setLoading] = useState(true)
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -14,12 +14,14 @@ export const AdminUsers = () => {
     }, [])
 
     const showAdmins = async () => {
+        setLoading(true)
         const data = await getAdminUsers()
         setAdminUsers(data)
+        setLoading(false)
     }
 
     const handleDelete = async (id) => {
-        const confirmed = window.confirm("Are you sure you want to delete this admin?")
+        const confirmed = window.confirm("¿Estás seguro de que deseas eliminar este administrador?")
         if (!confirmed) return
 
         const success = await deleteAdminUsers(id)
@@ -28,49 +30,97 @@ export const AdminUsers = () => {
         }
     }
 
+    if (loading && !editAdmin) return (
+        <div className="container py-5 text-center text-muted">
+            <div className="spinner-border spinner-border-sm me-2" role="status"></div>
+            Cargando administradores...
+        </div>
+    )
+
     return (
-        <div className="container py-4">
-            <div>
+        <div className="container py-5">
+            <div className="row justify-content-center">
+                <div className="col-12 col-lg-9">
+                    
+                    {editAdmin ? (
+                        <AdminUserEdit
+                            admin={editAdmin}
+                            onUpdate={(updatedUser) => {
+                                const newList = adminUsers.map(u =>
+                                    u.id === updatedUser.id ? updatedUser : u
+                                )
+                                setAdminUsers(newList)
+                                setEditAdmin(null)
+                            }}
+                            onBack={() => setEditAdmin(null)}
+                        />
+                    ) : (
+                        <>
+                            {/* --- HEADER --- */}
+                            <div className="d-flex justify-content-between align-items-center mb-4">
+                                <div>
+                                    <h2 className="fw-bold text-dark m-0">Administradores</h2>
+                                    <p className="text-muted small m-0">Gestión de usuarios con acceso al panel</p>
+                                </div>
+                                <button className="btn btn-primary shadow-sm px-4 fw-bold" onClick={() => navigate("/admin-create")}>
+                                    + Nuevo Admin
+                                </button>
+                            </div>
 
-                {editAdmin ? (
-                    <AdminUserEdit
-                        admin={editAdmin}
-                        onUpdate={(updatedUser) => {
-                            const newList = adminUsers.map(u =>
-                                u.id === updatedUser.id ? updatedUser : u
-                            )
-                            setAdminUsers(newList)
-                            setEditAdmin(null)
-                        }}
-                        onBack={() => setEditAdmin(null)}
-                    />
-                ) : (
-                    <>
-                        <div className="d-flex justify-content-between align-items-center mb-3">
-                            <h2 className="mb-0">Admins</h2>
-                            <button className="btn btn-success" onClick={() => navigate("/admin-create")}>
-                                Create Admin
-                            </button>
-                        </div>
+                            {/* --- LISTADO --- */}
+                            <div className="card border-0 shadow-sm overflow-hidden">
+                                <div className="card-body p-0">
+                                    <ul className="list-group list-group-flush">
+                                        {adminUsers.length === 0 ? (
+                                            <li className="list-group-item text-center py-5 text-muted">
+                                                No hay administradores registrados.
+                                            </li>
+                                        ) : (
+                                            adminUsers.map((admin) => (
+                                                <li key={admin.id} className="list-group-item p-4 d-flex justify-content-between align-items-center">
+                                                    <div>
+                                                        <h6 className="fw-bold text-dark mb-2" style={{ fontSize: '1.1rem' }}>
+                                                            {admin.name}
+                                                        </h6>
+                                                        <div className="text-muted small">
+                                                            <div className="mb-1">
+                                                                <span className="fw-bold text-uppercase" style={{ fontSize: '0.7rem' }}>Email:</span> {admin.email}
+                                                            </div>
+                                                            <div>
+                                                                <span className="fw-bold text-uppercase" style={{ fontSize: '0.7rem' }}>ID:</span> {admin.id}
+                                                            </div>
+                                                        </div>
+                                                    </div>
 
-                        {adminUsers.map((admin) => (
-                            <div key={admin.id} className="card mb-2">
-                                <div className="card-body d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center">
-                                    <div>
-                                        <h5 className="card-title">{admin.name}</h5>
-                                        <p className="mb-0">{admin.email}</p>
-                                        <p className="mb-0">ID: {admin.id}</p>
-                                    </div>
-                                    <div className="d-flex flex-column flex-sm-row gap-1 mt-3 mt-sm-0">
-                                        <button className="btn btn-success" onClick={() => navigate(`/admin-details/${admin.id}`)}>Details</button>
-                                        <button className="btn btn-primary" onClick={() => setEditAdmin(admin)}>Edit</button>
-                                        <button className="btn btn-danger" onClick={() => handleDelete(admin.id)}>Delete</button>
-                                    </div>
+                                                    <div className="d-flex gap-2">
+                                                        <button 
+                                                            className="btn btn-light btn-sm border px-3" 
+                                                            onClick={() => navigate(`/admin-details/${admin.id}`)}
+                                                        >
+                                                            Detalles
+                                                        </button>
+                                                        <button 
+                                                            className="btn btn-outline-primary btn-sm px-3" 
+                                                            onClick={() => setEditAdmin(admin)}
+                                                        >
+                                                            Editar
+                                                        </button>
+                                                        <button 
+                                                            className="btn btn-outline-danger btn-sm px-3" 
+                                                            onClick={() => handleDelete(admin.id)}
+                                                        >
+                                                            Borrar
+                                                        </button>
+                                                    </div>
+                                                </li>
+                                            ))
+                                        )}
+                                    </ul>
                                 </div>
                             </div>
-                        ))}
-                    </>
-                )}
+                        </>
+                    )}
+                </div>
             </div>
         </div>
     )

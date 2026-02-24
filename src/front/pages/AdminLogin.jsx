@@ -22,12 +22,10 @@ export const AdminLogin = () => {
 
     const handleSubmit = async (a) => {
         a.preventDefault();
-        console.log("1 - Botón pulsado..")
         setLoading(true);
         setError(null);
 
         try {
-            console.log("2 - Enviando a back..")
             const resp = await fetch(
                 `${import.meta.env.VITE_BACKEND_URL}/api/login/admin`,
                 {
@@ -35,15 +33,11 @@ export const AdminLogin = () => {
                     headers: {
                         "Content-Type": "application/json"
                     },
-                    body: JSON.stringify({
-                        email,
-                        password
-                    })
+                    body: JSON.stringify({ email, password })
                 }
             );
 
             const data = await resp.json();
-            console.log("3 - Respuesta recibida", data)
 
             if (!resp.ok) {
                 throw new Error(data.message || "Login failed");
@@ -72,63 +66,64 @@ export const AdminLogin = () => {
 
     return (
         <div className="container d-flex justify-content-center align-items-center" style={{ minHeight: "80vh" }}>
-            <div className="card shadow-lg p-4" style={{ maxWidth: "400px", width: "100%", borderRadius: "15px" }}>
+            <div className="card border-0 shadow-lg p-4" style={{ maxWidth: "400px", width: "100%", borderRadius: "15px" }}>
 
                 <div className="text-center mb-4">
                     <h2 className="fw-bold text-primary">Welcome Back</h2>
+                    <p className="text-muted small">Admin Control Panel</p>
                 </div>
-                <div className="text-center mb-3">
+
+                <div className="text-center mb-2">
                     <div className={`badge ${store.admin_token ?
                         "bg-success-subtle text-success" : "bg-warning-subtle text-warning"} p-2`}>
                         {store.admin_token ? "● Online" : "● Offline - Please log in"}
                     </div>
                 </div>
+
                 {!store.admin_token ? (
-                    <form onSubmit={handleSubmit}>
-                        <div className="mb-3">
-                            <label className="form-label"></label>
-                            <input
-                                type="email"
-                                className="form-control"
-                                value={email}
-                                onChange={(a) => setEmail(a.target.value)}
-                                placeholder="Email address"
-                                disabled={loading}
-                                required
-                            />
-                        </div>
-
-                        <div className="mb-3">
-                            <label className="form-label"></label>
-                            <input
-                                type="password"
-                                className="form-control"
-                                value={password}
-                                onChange={(a) => setPassword(a.target.value)}
-                                placeholder="Password"
-                                disabled={loading}
-                                required
-                            />
-                            <div className="form-text ps-1" style={{ fontSize: '0.7rem' }}>
-                                We'll never share your email or password with anyone else
+                    <>
+                        <form onSubmit={handleSubmit}>
+                            <div className="mb-3">
+                                <label className="small fw-bold text-uppercase text-muted mb-1">Email Address</label>
+                                <input
+                                    type="email"
+                                    className="form-control bg-light border-0"
+                                    value={email}
+                                    onChange={(a) => setEmail(a.target.value)}
+                                    placeholder="admin@example.com"
+                                    disabled={loading}
+                                    required
+                                />
                             </div>
 
-                        </div>
-
-                        {error && (
-                            <div className="alert alert-danger">
-                                {error}
+                            <div className="mb-3">
+                                <label className="small fw-bold text-uppercase text-muted mb-1">Password</label>
+                                <input
+                                    type="password"
+                                    className="form-control bg-light border-0"
+                                    value={password}
+                                    onChange={(a) => setPassword(a.target.value)}
+                                    placeholder="Password"
+                                    disabled={loading}
+                                    required
+                                />
                             </div>
-                        )}
 
-                        <button
-                            type="submit"
-                            className="btn btn-primary w-100 mt-2"
-                            disabled={loading}
-                        >
-                            {loading ? "Loging in..." : "Login"}
-                        </button>
-                    </form>
+                            {error && (
+                                <div className="alert alert-danger border-0 small py-2">
+                                    <i className="fas fa-exclamation-circle me-2"></i>{error}
+                                </div>
+                            )}
+
+                            <button
+                                type="submit"
+                                className="btn btn-primary w-100 fw-bold py-2 mt-2 shadow-sm"
+                                disabled={loading}
+                            >
+                                {loading ? "Logging in..." : "Login"}
+                            </button>
+                        </form>
+                    </>
                 ) : (
                     <div className="text-center py-4">
                         <div className="spinner-border text-success mb-3" role="status">
@@ -136,7 +131,6 @@ export const AdminLogin = () => {
                         </div>
                         <p className="text-muted">Redirecting to admin panel...</p>
                     </div>
-
                 )}
             </div>
         </div>

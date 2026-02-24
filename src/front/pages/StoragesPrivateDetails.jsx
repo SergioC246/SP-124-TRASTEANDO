@@ -15,28 +15,19 @@ export const StoragesPrivateDetails = () => {
     useEffect(() => {
         const fetchDetail = async () => {
             try {
-                const token = store.tokenClient;
-                const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}api/storage/${storageId}/overview`, {
-                    headers: {
-                        "Authorization": `Bearer ${token}`,
-                        "Content-Type": "application/json"
-                    }
-                });
-                if (!response.ok) throw new Error("Error storage");
-                const data = await response.json();
-
+                const data = await getStorageOverview(storageId);
                 setStorage(data);
-                console.log("data es:", data)
                 setIsAvailable(data.status === "available" && !data.occupied);
-
             } catch (error) {
                 console.error("Error al cargar los detalles del trastero.", error);
             } finally {
                 setLoading(false);
             }
         };
+
         if (storageId && store.tokenClient) fetchDetail();
     }, [storageId, store.tokenClient]);
+
 
     if (loading) return (
         <div className="container py-5 text-center">
@@ -73,7 +64,7 @@ export const StoragesPrivateDetails = () => {
                                     <div className="d-flex justify-content-between align-items-center mb-4">
                                         <h2 className="fw-bold mb-0">Especificaciones</h2>
                                         <span className={`badge rounded-pill px-3 py-2 ${isAvailable ? 'bg-success-subtle text-success' : 'bg-danger-subtle text-danger'}`}>
-                                            {isAvailable ? 'Disponible' : 'Ocupado'}
+                                            {isAvailable === true ? 'Disponible' : 'Ocupado'}
                                         </span>
 
                                     </div>

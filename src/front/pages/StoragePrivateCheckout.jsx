@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import useGlobalReducer from "../hooks/useGlobalReducer";
 import { getStorageOverview } from "../utilsStorages";
-import { createLease } from "../utilsLeases";
+import { createLease, deleteClientLease } from "../utilsLeases";
 import { createClientLease } from "../utilsLeases";
 
 
@@ -16,65 +16,62 @@ export const StoragePrivateCheckout = () => {
     const [endDate, setEndDate] = useState("");
     const [loading, setLoading] = useState(true);
 
+
+    
     const handleCompleteOrder = async () => {
-        if (!startDate) return alert("Por favor, elige una fecha de inicio.");
-        if (!endDate) return alert("Por favor, elige una fecha de fin de contrato.");
+        if (!startDate || !endDate) return alert("Por favor, elige las fechas.");
 
         const start = new Date(startDate);
         const end = new Date(endDate);
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-
-        if (start < today) {
-            return alert("La fecha de inicio debe ser valida.");
-        }
-        if (end <= start) {
-            return alert("La fecha de fincalizacion debe ser posterior a la de inicio.")
-        }
+        if (end <= start) return alert("La fecha de fin debe ser posterior a la de inicio.");
 
         try {
             const leaseData = {
                 storage_id: parseInt(storageId),
-                start_date: startDate, 
-                end_date: endDate,     
-                status: "pending_payment"  //1️⃣Cambio de true a"pending_payment"
+                start_date: startDate,
+                end_date: endDate,
+                status: "pending payment"
             };
 
-            const lease = await createClientLease(leaseData, store.tokenClient); //2️⃣Modifico para guardar el lease creado
+            const newLease = await createClientLease(leaseData, store.tokenClient);
 
-            if (!lease || !lease.id) {
-                alert("Error creando el contrato.");
-                return;
-            }
-            
-            //3️⃣ Añado llamada a Stripe
-            const response = await fetch(
-                `${import.meta.env.VITE_BACKEND_URL}api/stripe/create-subscription-session`,
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        plan: "monthly",
-                        lease_id: lease.id
-                    })
-                }
-            );
+            const stripeResponse = await fetch(`${import.meta.env.VITE_BACKEND_URL}api/stripe/create-subscription-session`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    plan: "monthly",
+                    lease_id: newLease.id
+                })
+            });
 
-            const data = await response.json();
+            const stripeData = await stripeResponse.json();
 
-            if (data.url) {
-                window.location.href = data.url;
+            if (stripeResponse.ok && stripeData.url) {
+                window.location.href = stripeData.url;
             } else {
-                alert("Error iniciando el pago");
+                await deleteClientLease(newLease.id, store.tokenClient);
+                throw new Error(stripeData.error || "El plan de pago no es válido en el servidor.");
             }
 
         } catch (error) {
-            console.error("Error detallado:", error);
-            alert("Error al procesar el arrendamiento. Revisa la consola.");
+            console.error("Error:", error);
+            alert(error.message);
         }
-    }
+    };
+
+    // codigo añadido para lo de las fechas
+    const isDateConflict = () => {
+        if (!startDate || !endDate || !storage?.occupied_dates) return false;
+
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+
+        return storage.occupied_dates.some(lease => {
+            const leaseStart = new Date(lease.start);
+            const leaseEnd = new Date(lease.end);
+            return start <= leaseEnd && end >= leaseStart;
+        });
+    };
 
     useEffect(() => {
         const loadInfo = async () => {
@@ -108,17 +105,6 @@ export const StoragePrivateCheckout = () => {
                         <label className="text-muted small fw-bold mb-2 text-uppercase">Fecha de salida</label>
                         <input type="date" className="form-control form-control-lg border-2" style={{ borderRadius: "12px" }} value={endDate} min={startDate} onChange={(e) => setEndDate(e.target.value)} />
                     </div>
-                    {/* <div className="card shadow-sm border-0 p-4" style={{ borderRadius: "20px" }}>
-                        <h5 className="fw-bold mb-3">Método de pago</h5>
-                        <div className="mb-3">
-                            <input type="text" className="form-control mb-2" placeholder="Número de tarjeta" />
-                            <div className="row">
-                                <div className="col-6"><input type="text" className="form-control" placeholder="MM/YY" /></div>
-                                <div className="col-6"><input type="text" className="form-control" placeholder="CVV" /></div>
-                            </div>
-                        </div>
-                    </div> */}
-
                 </div>
                 <div className="col-md-5">
                     <div className="card shadow-lg border-0 p-4 bg-light sticky-top" style={{ borderRadius: "25px", top: "20px" }}>
@@ -136,7 +122,13 @@ export const StoragePrivateCheckout = () => {
                         <div className="d-flex justify-content-between mb-4">
                             <span className="h5 fw-bold">Total hoy</span>
                             <span className="h5 fw-bold text-primary">{storage?.price}€</span>
+                            {/* // codigo añadido para lo de las fechas */}
                         </div>
+                        {isDateConflict() && (
+                            <div className="alert alert-danger mt-3">
+                                ⚠️ Las fechas seleccionadas coinciden con una reserva existente.
+                            </div>
+                        )}
                         <button className="btn btn-primary btn-lg w-100 py-3 fw-bold rounded-pill shadow" onClick={handleCompleteOrder}>Confirmar Reserva</button>
                     </div>
                 </div>

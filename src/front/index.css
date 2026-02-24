@@ -1,11 +1,10 @@
 
-
-/* marcador para el mapa */
+/* marcador para el mapa SOLO MAPA */
 .marker-nube {
     background: white;
     padding: 5px 10px;
     border-radius: 20px;
     border: 1px solid #ccc;
     font-weight: bold;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-}
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2)
+/* fin css SOLO MAPA */

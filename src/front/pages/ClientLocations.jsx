@@ -38,8 +38,6 @@ export const ClientLocations = () => {
     }, [store.tokenClient]);
 
     if (loading) return <div>cargando ubicaciones...</div>
-
-    console.log("locations:", locations)
     return (
         <div className="container py-5">
             <div className="text-center mb-5">
@@ -55,7 +53,6 @@ export const ClientLocations = () => {
                                     src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d12143.7635645366!2d-3.882962!3d40.473663!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xd41903698000001%3A0x6b865664a7538c20!2sMajadahonda%2C%20Madrid!5e0!3m2!1ses!2ses!4v1700000000000"
                                     width="100%" height="100%" allowFullScreen="" loading="lazy">
                                 </iframe>
-                                console.log(locations)
                             </div>
                             <div className="card-body d-flex flex-column justify-content-between p-4" style={{ minHeight: "250px" }}>
                                 <div>
