@@ -64,6 +64,7 @@ import { Chat } from "./pages/Chat";
 import { SubscriptionCheckout } from "./pages/SubscriptionCheckout";
 import { PaymentSuccess } from "./pages/PaymentSucess";
 import { PaymentCancel } from "./pages/PaymentCancel";
+import { Inventeriator } from "./pages/Inventariator";
 
 
 
@@ -92,6 +93,7 @@ export const router = createBrowserRouter(
 
       <Route path="/client/login" element={<ClientLogin />} />
       <Route path="/client/signup" element={<ClientSignup />} />
+      <Route path="/inventeriator" element={<Inventeriator />} />
 
       {/* Rutas messages */}
       <Route path="/chat" element={<Chat />} />

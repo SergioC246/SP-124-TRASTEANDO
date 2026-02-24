@@ -7,7 +7,7 @@ import math
 from sqlalchemy import select, and_, not_, cast, Date
 from flask import Flask, request, jsonify, url_for, Blueprint
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
-from api.models import db, User, AdminUser, Client, Company, Leases, Storage, Location, Message, Category
+from api.models import db, User, AdminUser, Client, Company, Leases, Storage, Location, Message, Category, Product
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from api.socketio_instance import socketio
@@ -1579,3 +1579,63 @@ def stripe_webhook():
 #     db.session.commit()
 
 #     return {"msg": "Categories created"}, 200
+
+# Open AI Productos
+
+@api.route("/products", methods=["POST"])
+def create_product():
+    body = request.get_json() or {}
+
+    name = body.get("name")
+    if not name:
+        return jsonify({"msg": "Missing name"}), 400
+
+    category_id = body.get("category_id")
+    user_id = body.get("user_id")  # V1: lo pasas directo (luego será JWT)
+
+    if not category_id or not user_id:
+        return jsonify({"msg": "Missing category_id or user_id"}), 400
+
+    category = Category.query.get(category_id)
+    if not category:
+        return jsonify({"msg": "Category not found"}), 404
+
+    product = Product(
+        name=name.strip(),
+        description=body.get("description"),
+        category_id=category_id,
+        user_id=user_id
+    )
+    db.session.add(product)
+    db.session.commit()
+
+    return jsonify(product.serialize()), 201
+
+
+@api.route("/products", methods=["GET"])
+def get_products():
+    user_id = request.args.get("user_id", type=int)
+
+    query = Product.query
+    if user_id:
+        query = query.filter(Product.user_id == user_id)
+
+    products = query.order_by(Product.created_at.desc()).all()
+    return jsonify([p.serialize() for p in products]), 200
+
+
+@api.route("/categories", methods=["GET"])
+def get_categories():
+    categories = Category.query.order_by(Category.id.asc()).all()
+    return jsonify([c.serialize() for c in categories]), 200
+
+
+@api.route("/products/<int:product_id>", methods=["DELETE"])
+def delete_product(product_id):
+    product = Product.query.get(product_id)
+    if not product:
+        return jsonify({"msg": "Product not found"}), 404
+
+    db.session.delete(product)
+    db.session.commit()
+    return jsonify({"msg": "Deleted"}), 200
