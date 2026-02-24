@@ -39,7 +39,7 @@
 
 /* Flecha personalizada */
 .navbar .dropdown-toggle::before {
-  content: "";
+  content:"";
   position: absolute;
   right: 8px;
   top: 50%;
@@ -51,10 +51,122 @@
   transition: transform 0.25s ease, border-color 0.25s ease;
 }
 
+/* Elimina cualquier marcador extraño en navbar */
+.navbar .nav-item::before,
+.navbar .nav-item::after,
+.navbar .nav-item::marker {
+  content: none !important;
+  display: none !important;
+}
+
+.navbar .navbar-nav {
+  list-style: none !important;
+}
+
 /* Cuando está abierto */
 .navbar .dropdown-toggle.show::before {
   transform: translateY(-50%) rotate(-135deg);
   border-color: #91BBF2;
 }
 
+/* animaciones del navbar */
+
+/* Animación suave general */
+.navbar .nav-link,
+.navbar .nav-toggle-btn {
+  transition: all 0.2s ease;
+}
+
+/* Efecto hover */
+.navbar .nav-link:hover,
+.navbar .nav-toggle-btn:hover {
+  color: #5C73F2 !important;
+  transform: translateY(-1px);
+}
+
+/* Iconos */
+.nav-icon {
+  font-size: 0.9rem;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+/* Icono crece al hover */
+.navbar .nav-link:hover .nav-icon,
+.navbar .nav-toggle-btn:hover .nav-icon {
+  transform: scale(1.15);
+  color: #5C73F2;
+}
+
+/* Cuando dropdown está abierto */
+.navbar .dropdown-toggle.show {
+  color: #5C73F2 !important;
+}
+
+
+
+/* CENTRAR LOGIN Y SERVICES ABSOLUTO */
+.center-nav {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* Links centrales más grandes */
+.center-link {
+  font-size: 1.1rem;
+  color: #333 !important;
+  transition: all 0.2s ease;
+}
+
+/* Hover elegante Airbnb */
+.center-link:hover {
+  color: #5C73F2 !important;
+  transform: scale(1.05);
+}
+
+/* Botón host */
+.anfitrion-btn {
+  background-color: lightgray;
+  color: white;
+  transition: all 0.2s ease;
+}
+
+.anfitrion-btn:hover {
+  background-color: #4a5fd1;
+  transform: scale(1.05);
+}
+
+/* Botón hamburguesa */
+.menu-btn {
+  background: white;  
+  transition: all 0.2s ease;
+}
+
+.menu-btn:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+
+/* ===== MICRO BOUNCE ICONOS ===== */
+
+.nav-icon {
+  transition: color 0.2s ease;
+}
+
+/* Hover activa bounce */
+.navbar .nav-link:hover .nav-icon,
+.navbar .dropdown-item:hover .nav-icon,
+.navbar .menu-btn:hover .nav-icon {
+  animation: microBounce 0.45s ease;
+  color: #5C73F2;
+}
+
+/* Animación suave tipo "vida" */
+@keyframes microBounce {
+  0%   { transform: translateY(0); }
+  40%  { transform: translateY(-5px); }
+  65%  { transform: translateY(1px); }
+  85%  { transform: translateY(-1px); }
+  100% { transform: translateY(0); }
+}
 
