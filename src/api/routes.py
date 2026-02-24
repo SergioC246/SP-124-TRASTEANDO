@@ -1334,14 +1334,12 @@ def send_message():
 
     payload = new_msg.serialize()
 
-    room = conversation_room(
-        body["sender_id"],
-        body["sender_role"],
-        body["receiver_id"],
-        body["receiver_role"]
-    )
+    receiver_id = int(body["receiver_id"])
+    sender_id = int(body["sender_id"])
 
-    socketio.emit("message:new", payload, room=room)
+    socketio.emit("message:new", payload, room=f"user_{receiver_id}")
+
+   # socketio.emit("message:new", payload, room=f"user_{sender_id}")
 
     return jsonify(payload), 201
 
@@ -1433,11 +1431,14 @@ def get_contacts(my_id, my_role):
         elif role == "company":
             company = Company.query.get(contact_id)
             if company:
+
+                print(f"DEBUG: Company {company.name} photo is: {company.photo}")
+                
                 result.append({
                     "id": company.id,
                     "role": "company",
                     "name": company.name,
-                    "photo_url": company.photo_url
+                    "photo_url": company.photo
                 })
 
     return jsonify(result), 200
