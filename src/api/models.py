@@ -249,7 +249,8 @@ class Product(db.Model):
     name: Mapped[str] = mapped_column(db.String(255), nullable=False)
     description: Mapped[str] = mapped_column(db.String(1000), nullable=True)
     image_url: Mapped[str] = mapped_column(db.String(500), nullable=True)
-
+    placement: Mapped[str] = mapped_column(db.String(255), nullable=True)
+    
     category_id: Mapped[int] = mapped_column(ForeignKey("categories.id"), nullable=False)
     user_id: Mapped[int] = mapped_column(db.Integer, nullable=False)  # V1 simple (sin FK aún)
 
@@ -262,6 +263,7 @@ class Product(db.Model):
             "id": self.id,
             "name": self.name,
             "description": self.description,
+            "placement": self.placement,
             "category_id": self.category_id,
             "category": self.category.serialize() if self.category else None,
             "user_id": self.user_id,

@@ -1581,6 +1581,7 @@ def stripe_webhook():
 
 #     return {"msg": "Categories created"}, 200
 
+
 # Open AI Productos
 
 @api.route("/products", methods=["POST"])
@@ -1602,10 +1603,13 @@ def create_product():
     category = Category.query.get(category_id)
     if not category:
         return jsonify({"msg": "Category not found"}), 404
+        
+    placement = body.get("placement")
 
     product = Product(
         name=name.strip(),
         description=body.get("description"),
+        placement=placement,
         category_id=category_id,
         image_url=body.get("image_url"),
         user_id=current_user_id
@@ -1639,10 +1643,16 @@ def get_categories():
 
 
 @api.route("/products/<int:product_id>", methods=["DELETE"])
+@jwt_required()
 def delete_product(product_id):
+    current_user_id = get_jwt_identity()
+
     product = Product.query.get(product_id)
     if not product:
         return jsonify({"msg": "Product not found"}), 404
+
+    if str(product.user_id) != str(current_user_id):
+        return jsonify({"msg": "Forbidden"}), 403
 
     db.session.delete(product)
     db.session.commit()
