@@ -5,7 +5,7 @@ This module takes care of starting the API Server, Loading the DB and Adding the
 from datetime import datetime
 import math
 from sqlalchemy import select, and_, not_, cast, Date
-from flask import Flask, request, jsonify, url_for, Blueprint
+from flask import Flask, request, jsonify, url_for, Blueprint, Response
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 from api.models import db, User, AdminUser, Client, Company, Leases, Storage, Location, Message, Category, Product
 from api.utils import generate_sitemap, APIException
@@ -17,6 +17,8 @@ from pathlib import Path
 from api.services.vision_category import suggest_category_from_image
 import os
 import stripe
+import io
+import csv
 
 
 api = Blueprint('api', __name__)
@@ -1676,3 +1678,78 @@ def suggest_product_category():
     result = suggest_category_from_image(image_url, categories)
 
     return jsonify(result), 200
+
+@api.route("/products/export", methods=["GET"])
+@jwt_required()
+def export_products_csv():
+
+    current_user_id = get_jwt_identity()
+
+    products = Product.query.filter(
+        Product.user_id == current_user_id
+    ).order_by(Product.created_at.desc()).all()
+
+    output = io.StringIO()
+    writer = csv.writer(output, delimiter=",", quoting=csv.QUOTE_MINIMAL)
+
+    # Cabecera
+    writer.writerow([
+        "ID",
+        "Name",
+        "Description",
+        "Category",
+        "Placement",
+        "Image URL",
+        "Created At"
+    ])
+
+    # Filas
+    for p in products:
+        writer.writerow([
+            p.id,
+            p.name,
+            p.description or "",
+            p.category.name if p.category else "",
+            p.placement or "",
+            p.image_url or "",
+            p.created_at.isoformat() if p.created_at else ""
+        ])
+
+    output.seek(0)
+
+    csv_content = output.getvalue()
+
+
+    response = Response(
+        "\ufeff" + csv_content,  # 👈 BOM para Excel UTF-8
+        mimetype="text/csv; charset=utf-8",
+        headers={
+           "Content-Disposition": "attachment; filename=products.csv"
+        }
+    )
+
+    return response
+
+@api.route("/products/<int:product_id>", methods=["PUT"])
+@jwt_required()
+def update_product(product_id):
+
+    current_user_id = get_jwt_identity()
+    product = Product.query.get(product_id)
+
+    if not product:
+        return jsonify({"msg": "Product not found"}), 404
+
+    if str(product.user_id) != str(current_user_id):
+        return jsonify({"msg": "Forbidden"}), 403
+
+    body = request.get_json() or {}
+
+    # Solo actualizamos placement por ahora
+    if "placement" in body:
+        product.placement = body.get("placement")
+
+    db.session.commit()
+
+    return jsonify(product.serialize()), 200
+

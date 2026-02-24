@@ -14,6 +14,8 @@ export const Inventariator = () => {
     const [description, setDescription] = useState("");
     const [categoryId, setCategoryId] = useState("");
     const [placement, setPlacement] = useState("");
+    const [editingId, setEditingId] = useState(null);
+    const [editingPlacement, setEditingPlacement] = useState("");
 
     const [imageFile, setImageFile] = useState(null);
     const [imageUrl, setImageUrl] = useState(null); 
@@ -280,6 +282,32 @@ export const Inventariator = () => {
 
         <hr />
 
+            <button
+                className="btn btn-outline-success mb-3"
+                onClick={async () => {
+                    const token = store.tokenClient;
+                    if (!token) return;
+
+                    const resp = await fetch(`${API_URL}api/products/export`, {
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        }
+                    });
+
+                    const blob = await resp.blob();
+                    const url = window.URL.createObjectURL(blob);
+
+                    const a = document.createElement("a");
+                    a.href = url;
+                    a.download = "mis_productos.csv";
+                    a.click();
+
+                    window.URL.revokeObjectURL(url);
+                }}
+            >
+                📥 Exportar CSV
+            </button>
+
         <h4>Mis Productos</h4>
 
         {products.length === 0 && <p>No hay productos</p>}
@@ -287,42 +315,96 @@ export const Inventariator = () => {
         <ul className="list-group">
             {products.map((prod) => (
                 <li key={prod.id} className="list-group-item">
-                    {prod.image_url && (
-                        <img
-                            src={prod.image_url}
-                            alt="product"
-                            style={{
-                                width: "100px",
-                                borderRadius: "8px",
-                                marginBottom: "8px",
-                                display: "block",
-                            }}
-                        />
-                    )}
+                    <div className="d-flex align-items-start gap-3">
 
-                    <strong>{prod.name}</strong> — {prod.category?.name}
-                    <br />
-                    <small>{prod.description}</small>
-                    {prod.placement && (
-                        <div>
-                            <small>📍 {prod.placement}</small>
+                        {/* Imagen */}
+                        {prod.image_url && (
+                            <img
+                                src={prod.image_url}
+                                alt="product"
+                                style={{
+                                    width: "100px",
+                                    borderRadius: "8px",
+                                }}
+                            />
+                        )}
+
+                        {/* Contenido */}
+                        <div className="flex-grow-1">
+                            <strong>{prod.name}</strong> — {prod.category?.name}
+                            <br />
+                            <small>{prod.description}</small>
+
+                            {editingId === prod.id ? (
+                                <div className="mt-2 d-flex gap-2 align-items-center">
+                                    <input
+                                        className="form-control form-control-sm"
+                                        value={editingPlacement}
+                                        onChange={(e) => setEditingPlacement(e.target.value)}
+                                    />
+                                    <button
+                                        className="btn btn-sm btn-success"
+                                        onClick={async () => {
+                                            const token = store.tokenClient;
+                                            if (!token) return;
+
+                                            await fetch(`${API_URL}api/products/${prod.id}`, {
+                                                method: "PUT",
+                                                headers: {
+                                                    "Content-Type": "application/json",
+                                                    Authorization: `Bearer ${token}`,
+                                                },
+                                                body: JSON.stringify({ placement: editingPlacement }),
+                                            });
+
+                                            setEditingId(null);
+                                            loadProducts();
+                                        }}
+                                    >
+                                        ✔
+                                    </button>
+                                </div>
+                            ) : (
+                                prod.placement && (
+                                    <div className="mt-2">
+                                        <small>📍 {prod.placement}</small>
+                                    </div>
+                                )
+                            )}
                         </div>
-                    )}
-                    <button
-                        className="btn btn-sm btn btn-danger float-end"
-                        onClick={async () => {
-                            const token = store.tokenClient;
-                            if (!token) return;
 
-                            await fetch(`${API_URL}api/products/${prod.id}`, {
-                                method: "DELETE",
-                                headers: { Authorization: `Bearer ${token}` },
-                            });
-                            loadProducts();
-                        }}
-                    >
-                        X
-                    </button>
+                        {/* Botones */}
+                        <div className="d-flex flex-column gap-2">
+                            <button
+                                className="btn btn-sm btn-outline-primary"
+                                onClick={() => {
+                                    setEditingId(prod.id);
+                                    setEditingPlacement(prod.placement || "");
+                                }}
+                            >
+                                <i className="bi bi-pencil-fill"></i>
+                            </button>
+
+                            <button
+                                className="btn btn-sm btn-outline-danger"
+                                onClick={async () => {
+                                    if (!window.confirm("¿Eliminar producto?")) return;
+
+                                    const token = store.tokenClient;
+                                    if (!token) return;
+
+                                    await fetch(`${API_URL}api/products/${prod.id}`, {
+                                        method: "DELETE",
+                                        headers: { Authorization: `Bearer ${token}` },
+                                    });
+                                    loadProducts();
+                                }}
+                            >
+                                <i className="bi bi-trash-fill"></i>
+                            </button>
+                        </div>
+
+                    </div>
                 </li>
             ))}
         </ul>
