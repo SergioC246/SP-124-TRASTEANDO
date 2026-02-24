@@ -1583,18 +1583,20 @@ def stripe_webhook():
 # Open AI Productos
 
 @api.route("/products", methods=["POST"])
+@jwt_required()
 def create_product():
+
+    current_user_id = get_jwt_identity()
     body = request.get_json() or {}
+    print("BODY:", body)
 
     name = body.get("name")
     if not name:
         return jsonify({"msg": "Missing name"}), 400
 
     category_id = body.get("category_id")
-    user_id = body.get("user_id")  # V1: lo pasas directo (luego será JWT)
-
-    if not category_id or not user_id:
-        return jsonify({"msg": "Missing category_id or user_id"}), 400
+    if not category_id:
+        return jsonify({"msg": "Missing category_id"}), 400
 
     category = Category.query.get(category_id)
     if not category:
@@ -1604,8 +1606,10 @@ def create_product():
         name=name.strip(),
         description=body.get("description"),
         category_id=category_id,
-        user_id=user_id
+        image_url=body.get("image_url"),
+        user_id=current_user_id
     )
+
     db.session.add(product)
     db.session.commit()
 
@@ -1613,15 +1617,18 @@ def create_product():
 
 
 @api.route("/products", methods=["GET"])
+@jwt_required()
 def get_products():
-    user_id = request.args.get("user_id", type=int)
 
-    query = Product.query
-    if user_id:
-        query = query.filter(Product.user_id == user_id)
+    current_user_id = get_jwt_identity()
+    print("IDENTITY:", current_user_id, type(current_user_id))
 
-    products = query.order_by(Product.created_at.desc()).all()
+    products = Product.query.filter(
+        Product.user_id == current_user_id
+    ).order_by(Product.created_at.desc()).all()
+
     return jsonify([p.serialize() for p in products]), 200
+
 
 
 @api.route("/categories", methods=["GET"])

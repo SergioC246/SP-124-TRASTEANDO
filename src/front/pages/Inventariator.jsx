@@ -1,8 +1,12 @@
 import { useEffect, useState } from "react";
+import useGlobalReducer from "../hooks/useGlobalReducer";
 
 const API_URL = import.meta.env.VITE_BACKEND_URL;
 
-export const Inventeriator = () => {
+
+export const Inventariator = () => {
+
+    const { store } = useGlobalReducer();
 
     const [products, setProducts] = useState([]);
     const [categories, setCategories] = useState([]);
@@ -11,7 +15,9 @@ export const Inventeriator = () => {
     const [description, setDescription] = useState("");
     const [categoryId, setCategoryId] = useState("");
 
-    const userId = 1; // V1 fijo, luego vendrá JWT
+    const [imageFile, setImageFile] = useState(null);
+    const [uploading, setUploading] = useState(false);
+
 
     // Cargar categorías
     const loadCategories = async () => {
@@ -22,31 +28,82 @@ export const Inventeriator = () => {
 
     // Cargar productos
     const loadProducts = async () => {
-        const resp = await fetch(`${API_URL}/api/products?user_id=${userId}`);
+
+        const token = store.tokenClient || localStorage.getItem("tokenClient");
+        if (!token) return;
+
+        const resp = await fetch(`${API_URL}/api/products`, {
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        });
+
+        if (!resp.ok) {
+            console.log("Error loading products", resp.status);
+            return;
+        }
+
         const data = await resp.json();
         setProducts(data);
     };
 
     useEffect(() => {
         loadCategories();
-        loadProducts();
     }, []);
+
+    useEffect(() => {
+        if (store.tokenClient || localStorage.getItem("tokenClient")) {
+            loadProducts();
+        }
+    }, [store.tokenClient]);
+
+    const uploadImage = async () => {
+
+        if (!imageFile) return null;
+
+        setUploading(true);
+
+        const formData = new FormData();
+        formData.append("file", imageFile);
+        formData.append("upload_preset", "topydai");
+
+        const resp = await fetch(
+            "https://api.cloudinary.com/v1_1/dofzpindm/image/upload",
+            {
+                method: "POST",
+                body: formData
+            }
+        );
+
+        const data = await resp.json();
+        setUploading(false);
+
+        return data.secure_url;
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
         if (!name || !categoryId) return alert("Faltan campos");
 
-        await fetch(`${API_URL}/api/products`, {
+        const token = store.tokenClient;
+        if (!token) return alert("No autenticado");
+
+        const imageUrl = imageFile ? await uploadImage() : null;
+        console.log("IMAGE URL:", imageUrl);
+
+
+        const resp = await fetch(`${API_URL}/api/products`, {
             method: "POST",
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
             },
             body: JSON.stringify({
                 name,
                 description,
                 category_id: parseInt(categoryId),
-                user_id: userId
+                image_url: imageUrl 
             })
         });
 
@@ -64,7 +121,7 @@ export const Inventeriator = () => {
 
     return (
         <div className="container mt-5">
-            <h2>Inventeriator V1</h2>
+            <h2>Inventariator V1</h2>
 
             <form onSubmit={handleSubmit} className="mb-4">
                 <input
@@ -93,6 +150,12 @@ export const Inventeriator = () => {
                         </option>
                     ))}
                 </select>
+                <input
+                    type="file"
+                    className="form-control mb-2"
+                    accept="image/*"
+                    onChange={(e) => setImageFile(e.target.files[0])}
+                />
 
                 <button className="btn btn-primary">
                     Crear Producto
@@ -108,14 +171,33 @@ export const Inventeriator = () => {
             <ul className="list-group">
                 {products.map(prod => (
                     <li key={prod.id} className="list-group-item">
+                        {prod.image_url && (
+                            <img
+                                src={prod.image_url}
+                                alt="product"
+                                style={{
+                                    width: "100px",
+                                    borderRadius: "8px",
+                                    marginBottom: "8px",
+                                    display: "block"
+                                }}
+                            />
+                        )}
+
                         <strong>{prod.name}</strong> — {prod.category?.name}
                         <br />
                         <small>{prod.description}</small>
                         <button
                             className="btn btn-sm btn btn-success btn-danger float-end"
                             onClick={async () => {
+                                const token = store.tokenClient;
+                                if (!token) return;
+
                                 await fetch(`${API_URL}/api/products/${prod.id}`, {
-                                    method: "DELETE"
+                                    method: "DELETE",
+                                    headers: {
+                                        "Authorization": `Bearer ${token}`
+                                    }
                                 });
                                 loadProducts();
                             }}
