@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import useGlobalReducer from "../hooks/useGlobalReducer";
 import { chatAPI } from "./utilsChat";
 import { jwtDecode } from "jwt-decode";
@@ -6,407 +6,302 @@ import { createSocket } from "../../socket";
 
 const API_URL = import.meta.env.VITE_BACKEND_URL;
 
-
 export const Chat = () => {
-    const { store } = useGlobalReducer();
+  const { store } = useGlobalReducer();
+  const [messages, setMessages] = useState([]);
+  const [contacts, setContacts] = useState([]);
+  const [directory, setDirectory] = useState([]);
+  const [targetId, setTargetId] = useState(null);
+  const [targetRole, setTargetRole] = useState(null);
+  const [text, setText] = useState("");
+  const [showNewChat, setShowNewChat] = useState(false);
+  const [socket, setSocket] = useState(null);
+  const [unread, setUnread] = useState({});
 
-    const [messages, setMessages] = useState([]);
+  // Referencias para que el socket siempre vea el chat activo actual
+  const activeChatRef = useRef({ targetId: null, targetRole: null });
+  const myInfoRef = useRef({ id: null, role: null });
 
-    const [contacts, setContacts] = useState([]);
-    const [directory, setDirectory] = useState([]);
-    
-    const [targetId, setTargetId] = useState(null);
-    const [targetRole, setTargetRole] = useState(null);
+  /* ===== USER DATA ===== */
+  const decodedClient = store.tokenClient ? jwtDecode(store.tokenClient) : null;
+  const decodedCompany = store.company_token ? jwtDecode(store.company_token) : null;
+  const myId = decodedClient ? parseInt(decodedClient.sub) : decodedCompany ? parseInt(decodedCompany.sub) : null;
+  const myRole = decodedClient ? "client" : decodedCompany ? "company" : null;
+  const token = store.tokenClient || store.company_token;
 
-    const [text, setText] = useState("");
-    const currentRoomRef = useRef(null);
-    const [showNewChat, setShowNewChat] = useState(false);
+  // Actualizar referencias
+  useEffect(() => {
+    activeChatRef.current = { targetId, targetRole };
+    myInfoRef.current = { id: myId, role: myRole };
+  }, [targetId, targetRole, myId, myRole]);
 
-    /* ===== USER ===== */
+  /* ===== SOCKET INIT ===== */
+  useEffect(() => {
+    if (!token) return;
+    const s = createSocket(token);
+    setSocket(s);
 
-    const decodedClient = store.tokenClient
-        ? jwtDecode(store.tokenClient)
-        : null;
+    const handleNewMessage = (msg) => {
+      const { targetId: tId, targetRole: tRole } = activeChatRef.current;
+      const { id: mId, role: mRole } = myInfoRef.current;
 
-    const decodedCompany = store.company_token
-        ? jwtDecode(store.company_token)
-        : null;
-
-    const myId = decodedClient
-        ? parseInt(decodedClient.sub)
-        : decodedCompany
-            ? parseInt(decodedCompany.sub)
-            : null;
-
-    const myRole = decodedClient
-        ? "client"
-        : decodedCompany
-            ? "company"
-            : null;
-
-    const token = store.tokenClient || store.company_token;
-
-    const socket = useMemo(() => {
-        if (!token) return null;
-        return createSocket(token);
-    }, [token]);
-
-    /* ===== LOAD CONTACTS ===== */
-
-    const loadContacts = async () => {
-
-        if (!myId || !myRole) return;
-
-        const data = await chatAPI.getContacts(myId, myRole); 
-
-            setContacts(data);
-
-            if (data.length > 0 && !targetId) {
-                setTargetId(data[0].id);
-                setTargetRole(data[0].role);
-            }
-
-        };
-    
-    /* ===== LOAD DIRECTORY (AGENDA) ===== */
-
-    const loadDirectory = async () => {
-
-        if (!myRole) return;
-
-        if (myRole === "client") {
-
-            const resp = await fetch(`${API_URL}/api/companies`); // ✅ FIX (barra)
-            const data = resp.ok ? await resp.json() : [];
-
-            setDirectory(data.map(c => ({ ...c, role: "company" })));
-
-        } else {
-
-            const resp = await fetch(`${API_URL}/api/clients`);
-            const data = resp.ok ? await resp.json() : [];
-
-            setDirectory(data.map(c => ({ ...c, role: "client" })));
-        }
-    };
-
-    /* ===== LOAD CHAT  ===== */
-
-    const loadChat = async () => {
-        if (!myId || !targetId || !targetRole) return;
-
-        const history = await chatAPI.getConversation(
-            myId,
-            myRole,
-            targetId,
-            targetRole
+      const isForActiveChat =
+        tId && tRole && (
+          (msg.sender_id === mId && msg.sender_role === mRole &&
+            msg.receiver_id === tId && msg.receiver_role === tRole) ||
+          (msg.sender_id === tId && msg.sender_role === tRole &&
+            msg.receiver_id === mId && msg.receiver_role === mRole)
         );
 
-        setMessages(history);
-    };
-
-    useEffect(() => {
-        loadContacts();
-    }, [myId]);
-
-    useEffect(() => {
-        setMessages([]);
-        loadChat();
-    }, [targetId, targetRole]);
-
-
-    useEffect(() => {
-        if (!socket || !myId || !targetId) return;
-
-        const handler = (msg) => {
-
-            const isForThisChat =
-                (msg.sender_id === myId &&
-                    msg.sender_role === myRole &&
-                    msg.receiver_id === targetId &&
-                    msg.receiver_role === targetRole
-                ) ||
-                (msg.sender_id === targetId &&
-                    msg.sender_role === targetRole &&
-                    msg.receiver_id === myId &&
-                    msg.receiver_role === myRole
-                );
-
-            if (isForThisChat) {
-                setMessages(prev => [...prev, msg]);
-            }
-        };
-
-        socket.on("message:new", handler);
-
-        return () => {
-            socket.off("message:new", handler);
-        };
-    }, [socket, myId, targetId, myRole, targetRole]);
-
-    useEffect(() => {
-        if (!socket || !targetId) return;
-
-        const roomKey = `${targetId}-${targetRole}`;
-
-
-        if (currentRoomRef.current === roomKey) {
-            return;
+      if (isForActiveChat) {
+        setMessages(prev => {
+          // Verificación extra: Si el mensaje ya existe en el estado por ID, no lo añadas
+          if (msg.id && prev.some(m => m.id === msg.id)) return prev;
+          return [...prev, msg];
+        });
+      } else {
+        // Si yo soy el receptor y NO es el chat activo, sumar al badge
+        if (msg.receiver_id === mId && msg.receiver_role === mRole) {
+          const key = `${msg.sender_id}-${msg.sender_role}`;
+          setUnread(prev => ({
+            ...prev,
+            [key]: (prev[key] || 0) + 1
+          }));
         }
-
-        const doJoin = () => {
-
-            socket.emit("room:join", {
-                myRole,
-                targetId,
-                targetRole
-            });
-
-            currentRoomRef.current = roomKey;
-        };
-
-        // Esperar un momento para que el socket conecte
-        const timer = setTimeout(() => {
-            if (socket.connected) {
-                doJoin();
-            } else {
-                // Si no está conectado, esperar al evento connect
-                const handleConnect = () => {
-                    doJoin();
-                };
-
-                socket.once("connect", handleConnect);
-            }
-        }, 100);
-
-        // Cleanup
-        return () => {
-            clearTimeout(timer);
-
-            // Solo hacer leave si realmente cambiamos de room
-            const newRoomKey = `${targetId}-${targetRole}`;
-            if (currentRoomRef.current && currentRoomRef.current !== newRoomKey) {
-
-                if (socket.connected) {
-                    socket.emit("room:leave", {
-                        myRole,
-                        targetId,
-                        targetRole
-                    });
-                }
-            }
-        };
-    }, [socket, targetId, myRole, targetRole]);
-
-
-
-    /* ===== SEND ===== */
-
-    const handleSend = async () => {
-        if (!text.trim() || !targetId) return;
-
-        const payload = {
-            sender_id: myId,
-            sender_role: myRole,
-            receiver_id: targetId,
-            receiver_role: targetRole,
-            content: text
-        };
-
-        const sent = await chatAPI.send(payload);
-
-        if (sent) {
-            setText("");
-        }
+      }
     };
 
-    /* ===== DELETE ===== */
+    // 1. Limpiamos CUALQUIER listener previo de este evento
+    s.removeAllListeners("message:new");
 
-    const handleDeleteConversation = async () => {
+    // 2. Registramos el listener
+    s.on("message:new", handleNewMessage);
 
-        const confirmDelete = window.confirm("¿Seguro que quieres borrar esta conversación?");
-        if (!confirmDelete) return;
-
-        await fetch(
-            `${import.meta.env.VITE_BACKEND_URL}/api/messages/conversation/${myId}/${myRole}/${targetId}/${targetRole}`,
-            {
-                method: "DELETE"
-            }
-        );
-
-        setMessages([]);
-
-        setContacts(prev =>
-            prev.filter(c => c.id !== targetId)
-        );
-
-        setTargetId(null);
-        setTargetRole(null);
+    return () => {
+      s.off("message:new", handleNewMessage);
+      s.disconnect();
     };
+  }, [token]); // Solo depende del token
 
-    /* ===== DELETE ===== */
+  /* ===== LOADS ===== */
+  const loadContacts = async () => {
+    if (!myId || !myRole) return;
+    const data = await chatAPI.getContacts(myId, myRole);
+    setContacts(data);
+  };
 
-    const handleNewChat = async () => {
-    console.log("NEW CHAT CLICKED");
-        await loadDirectory();
-        setShowNewChat(true);
-};
-    /* ===== RENDER ===== */
+  const loadChat = async () => {
+    if (!myId || !targetId || !targetRole) return;
+    const history = await chatAPI.getConversation(myId, myRole, targetId, targetRole);
+    setMessages(history);
+    // Limpiar no leídos al entrar
+    setUnread(prev => ({ ...prev, [`${targetId}-${targetRole}`]: 0 }));
+  };
 
-    return (
-        <div className="container-fluid mt-3">
-            <div className="row vh-75" style={{ height: "80vh" }}>
+  useEffect(() => { loadContacts(); }, [myId, myRole]);
+  useEffect(() => { loadChat(); }, [targetId, targetRole]);
 
-                {/* LEFT PANEL - ROOMS */}
-                <div className="col-md-4 col-lg-3 border-end bg-light d-none d-md-block">
-                    <div className="p-3 border-bottom fw-bold">
-                        Conversaciones
+  const handleSend = async () => {
+    if (!text.trim() || !targetId) return;
+    const payload = { sender_id: myId, sender_role: myRole, receiver_id: targetId, receiver_role: targetRole, content: text };
+    await chatAPI.send(payload);
+    setText("");
+  };
+
+  /* ===== RENDER ===== */
+  return (
+    <div className="container-fluid mt-3">
+      <div className="row" style={{ height: "80vh" }}>
+
+        {/* PANEL IZQUIERDO */}
+        <div className="col-md-4 col-lg-3 border-end bg-light overflow-auto d-flex flex-column">
+          <div className="p-3 border-bottom d-flex justify-content-between align-items-center">
+            <h5 className="m-0">Mensajes</h5>
+            <button
+              className="btn btn-primary btn-sm"
+              onClick={async () => {
+                const endpoint = myRole === "client" ? "api/companies" : "api/clients";
+                const resp = await fetch(`${API_URL}${endpoint}`);
+                const all = await resp.json();
+                const filtered = all.filter(d => !contacts.find(c => c.id === d.id));
+                setDirectory(filtered);
+                setShowNewChat(true);
+              }}
+            >
+              Nuevo
+            </button>
+          </div>
+
+          <div className="list-group list-group-flush overflow-auto flex-grow-1">
+            {contacts.map(c => {
+              const key = `${c.id}-${c.role}`;
+              const avatarUrl = c.photo_url || c.photo || "https://via.placeholder.com/40";
+              return (
+                <button
+                  key={key}
+                  onClick={() => { setTargetId(c.id); setTargetRole(c.role); }}
+                  className={`list-group-item list-group-item-action d-flex align-items-center justify-content-between ${targetId === c.id ? "active" : ""}`}
+                >
+                  <div className="d-flex align-items-center text-truncate">
+                    <img
+                      src={avatarUrl}
+                      alt="avatar"
+                      className="rounded-circle me-2"
+                      style={{ width: "35px", height: "35px", objectFit: "cover", border: "1px solid #ccc" }}
+                      onError={(e) => { e.target.src = "https://via.placeholder.com/40"; }}
+                    />
+                    <div className="text-truncate" style={{ maxWidth: "150px" }}>
+                      {c.name || c.email}
                     </div>
-                    <div className="p-2 border-bottom">
-                        <button
-                            className="btn btn-primary w-100"
-                            onClick={handleNewChat}
-                        >
-                            Nuevo chat
-                        </button>
-                    </div>
-                    {showNewChat && (
-                        <div className="modal fade show d-block" style={{ backgroundColor: "rgba(0,0,0,0.5)" }}>
-                            <div className="modal-dialog">
-                                <div className="modal-content">
-
-                                    <div className="modal-header">
-                                        <h5>Nuevo chat</h5>
-                                        <button className="btn-close" onClick={() => setShowNewChat(false)} />
-                                    </div>
-
-                                    <div className="modal-body">
-
-                                        {directory.length === 0 ? (
-                                            <div className="text-muted">No hay contactos disponibles</div>
-                                        ) : (
-                                            directory.map(c => (
-                                                <button
-                                                    key={`${c.id}-${c.role}`}
-                                                    className="list-group-item list-group-item-action"
-                                                    onClick={() => {
-                                                        setTargetId(c.id);
-                                                        setTargetRole(c.role);
-                                                        setContacts(prev => {
-
-                                                            const exists = prev.some(p => p.id === c.id);
-
-                                                            if (exists) return prev;
-
-                                                            return [...prev, c];
-                                                        });
-
-                                                        setShowNewChat(false);
-                                                    }}
-                                                >
-                                                    {c.name || c.email}
-                                                </button>
-                                            ))
-                                        )}
-
-                                    </div>
-
-                                </div>
-                            </div>
-                        </div>
-                    )}
-
-                    <div className="list-group list-group-flush rounded p-2">
-                        {contacts.map(c => (
-                            <button
-                                key={`${c.id}-${c.role}`}
-                                onClick={() => setTargetId(c.id)}
-                                className={`list-group-item-info list-group-item-action rounded p-2 mb-1 ${targetId === c.id ? "active" : ""
-                                    }`}
-                            >
-
-                                <div className="d-flex align-items-center">   
-
-                                    <img
-                                        src={c.photo_url || c.photo || "https://via.placeholder.com/32"}
-                                        alt="avatar"
-                                        width="32"
-                                        height="32"
-                                        className="rounded-circle me-3"
-                                        style={{ objectFit: "cover" }}
-                                    />
-
-                                    <div className="text-truncate align-items-center p-1">
-                                        { c.name }
-                                    </div>
-                                </div>
-                            </button>
-                        ))}
-                    </div>
-                </div>
-
-                {/* RIGHT PANEL - CHAT */}
-                <div className="col-md-8 col-lg-9 d-flex flex-column">
-
-                    {/* HEADER */}
-                    <div className="border-bottom p-3 fw-bold">
-                        <span>{contacts.find(c => c.id === targetId)?.email ||
-                            contacts.find(c => c.id === targetId)?.name ||
-                            "Selecciona conversación"}
-                        </span>
-                        {targetId && (
-                            <button
-                                className="btn btn-sm btn-outline-danger"
-                                onClick={handleDeleteConversation}
-                            >
-                                🗑
-                            </button>
-                        )}
-                    </div>
-
-                    {/* MESSAGES */}
-                    <div className="flex-grow-1 overflow-auto p-3 bg-white">
-                        {messages.map((m, i) => (
-                            <div
-                                key={i}
-                                className={`d-flex mb-2 ${m.sender_role === myRole
-                                    ? "justify-content-end"
-                                    : "justify-content-start"
-                                    }`}
-                            >
-                                <div
-                                    className={`p-2 rounded ${m.sender_role === myRole
-                                        ? "bg-primary text-white"
-                                        : "bg-light border"
-                                        }`}
-                                    style={{ maxWidth: "70%" }}
-                                >
-                                    {m.content}
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-
-                    {/* INPUT */}
-                    <div className="border-top p-2">
-                        <div className="input-group">
-                            <input
-                                type="text"
-                                className="form-control"
-                                value={text}
-                                onChange={e => setText(e.target.value)}
-                                placeholder="Escribe mensaje..."
-                            />
-                            <button
-                                className="btn btn-primary"
-                                onClick={handleSend}
-                            >
-                                Enviar
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                  </div>
+                  {unread[key] > 0 && (
+                    <span className="badge bg-danger rounded-pill">{unread[key]}</span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
         </div>
-    );
-};
+
+        {/* PANEL DERECHO */}
+        <div className="col-md-8 col-lg-9 d-flex flex-column bg-white border rounded">
+
+          {/* CABECERA con foto */}
+          <div className="p-3 border-bottom bg-light d-flex justify-content-between align-items-center">
+            <div className="d-flex align-items-center">
+              {targetId && (() => {
+                const activeContact = contacts.find(c => c.id === targetId && c.role === targetRole);
+                const avatarUrl = activeContact?.photo_url || activeContact?.photo || "https://via.placeholder.com/40";
+                return (
+                  <img
+                    src={avatarUrl}
+                    alt="avatar"
+                    className="rounded-circle me-2"
+                    style={{ width: "35px", height: "35px", objectFit: "cover" }}
+                    onError={(e) => { e.target.src = "https://via.placeholder.com/40"; }}
+                  />
+                );
+              })()}
+              <span className="fw-bold">
+                {contacts.find(c => c.id === targetId && c.role === targetRole)?.name ||
+                 contacts.find(c => c.id === targetId && c.role === targetRole)?.email ||
+                 "Selecciona un chat"}
+              </span>
+            </div>
+
+            {/* BOTÓN BORRAR - Corregido con my_role en la URL */}
+            {targetId && (
+              <button
+                className="btn btn-link text-danger p-0"
+                onClick={async () => {
+                  if (window.confirm("¿Borrar chat?")) {
+                    await fetch(
+                      `${API_URL}api/messages/conversation/${myId}/${myRole}/${targetId}/${targetRole}`,
+                      { method: "DELETE" }
+                    );
+                    setMessages([]);
+                    setTargetId(null);
+                    setTargetRole(null);
+                    loadContacts();
+                  }
+                }}
+              >
+                <i className="fas fa-trash-alt"></i> Borrar
+              </button>
+            )}
+          </div>
+
+          {/* MENSAJES */}
+          <div className="flex-grow-1 overflow-auto p-3">
+            {!targetId ? (
+              <div className="h-100 d-flex align-items-center justify-content-center text-muted">
+                <p>Selecciona una conversación para empezar</p>
+              </div>
+            ) : (
+              messages.map((m, i) => (
+                <div
+                  key={m.id || i}
+                  className={`d-flex mb-3 ${m.sender_id === myId && m.sender_role === myRole ? "justify-content-end" : "justify-content-start"}`}
+                >
+                  <div
+                    className={`p-2 px-3 rounded-pill ${m.sender_id === myId && m.sender_role === myRole ? "bg-primary text-white" : "bg-light border"}`}
+                    style={{ maxWidth: "80%" }}
+                  >
+                    {m.content}
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+
+          {/* INPUT */}
+          <div className="p-3 border-top">
+            <div className="input-group">
+              <input
+                type="text"
+                className="form-control"
+                value={text}
+                onChange={e => setText(e.target.value)}
+                placeholder={targetId ? "Escribe un mensaje..." : "Selecciona un chat primero"}
+                disabled={!targetId}
+                onKeyDown={e => e.key === "Enter" && handleSend()}
+              />
+              <button className="btn btn-primary" onClick={handleSend} disabled={!targetId}>
+                <i className="fas fa-paper-plane"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* MODAL DIRECTORIO */}
+      {showNewChat && (
+        <div className="modal d-block" style={{ backgroundColor: "rgba(0,0,0,0.5)" }}>
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content shadow-lg border-0">
+              <div className="modal-header bg-primary text-white">
+                <h5 className="modal-title">Iniciar nueva conversación</h5>
+                <button className="btn-close btn-close-white" onClick={() => setShowNewChat(false)}></button>
+              </div>
+              <div className="modal-body overflow-auto" style={{ maxHeight: "400px" }}>
+                <div className="list-group list-group-flush">
+                  {directory.length > 0 ? directory.map(d => {
+                    const avatarUrl = d.photo_url || d.photo || "https://via.placeholder.com/40";
+                    return (
+                      <button
+                        key={d.id}
+                        className="list-group-item list-group-item-action d-flex align-items-center py-3"
+                        onClick={() => {
+                          const role = myRole === "client" ? "company" : "client";
+                          setTargetId(d.id);
+                          setTargetRole(role);
+                          setShowNewChat(false);
+                          if (!contacts.find(c => c.id === d.id && c.role === role)) {
+                            setContacts(prev => [...prev, { ...d, role, photo_url: avatarUrl }]);
+                          }
+                        }}
+                      >
+                        <img
+                          src={avatarUrl}
+                          alt="avatar"
+                          className="rounded-circle me-3"
+                          style={{ width: "40px", height: "40px", objectFit: "cover", border: "1px solid #eee" }}
+                          onError={(e) => { e.target.src = "https://via.placeholder.com/40"; }}
+                        />
+                        <div className="fw-bold">{d.name || d.email}</div>
+                      </button>
+                    );
+                  }) : (
+                    <div className="text-center p-4 text-muted">
+                      No hay nuevos contactos disponibles
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
