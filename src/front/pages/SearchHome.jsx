@@ -17,8 +17,6 @@ export const SearchHome = () => {
         checkout: ""
     });
 
-    const defaultImage = "https://images.unsplash.com/photo-1581404917829-5a5d096770db?auto=format&fit=crop&q=80&w=400";
-
     useEffect(() => {
         //  para inicializar el autocomplete
         const initAutocomplete = () => {
