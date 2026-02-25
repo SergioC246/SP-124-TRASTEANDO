@@ -6,8 +6,161 @@
     border-radius: 20px;
     border: 1px solid #ccc;
     font-weight: bold;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2)
 }
+/* fin css SOLO MAPA */
+
+/* inicio css HOME por irene */
+
+:root {
+
+  --primary-color: #5C73F2;  
+  --secondary-color: #91BBF2; 
+  --accent-pink: #F24171;   
+  --text-dark: #111111;
+}
+.highlight-container {
+  position: relative;
+  display: inline-block;
+}
+
+.underline-svg path {
+  fill: var(--primary-color);
+}
+
+/* marcador para el mapa SOLO MAPA */
+.marker-nube {
+  background: white;
+  padding: 5px 10px;
+  border-radius: 20px;
+  border: 1px solid #ccc;
+  font-weight: bold;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+/* home */
+.hero-section {
+  padding: 0 5% !important;
+  background-color: #ffffff;
+  position: relative;
+}
+
+/* imagen*/
+.image-side {
+  background-image: url('https://images.unsplash.com/photo-1551313158-73d016a829ae?q=80&w=2037&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'); 
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;  
+  min-height: 100vh; 
+  border-radius: 50px !important; 
+  margin-top: 40px;
+  position: relative;
+  
+}
+
+
+/* badge transparente */
+.support-badge {
+  background: rgba(255, 255, 255, 0.7) !important; 
+  backdrop-filter: blur(10px);
+  border-radius: 20px !important;
+  border: 1px solid rgba(255,255,255,0.3) !important;
+  padding: 12px 20px !important;
+  top: 30px !important;
+  right: 30px !important;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+}
+
+/* buscador */
+.search-bar-container {
+  margin-top: -120px ;
+  max-width: 1100px;
+  z-index: 100;
+  position: relative;
+}
+
+.search-bar-inner {
+  border-radius: 100px !important;
+  padding: 8px 12px !important;
+  background: white;
+}
+
+.search-field {
+  padding: 0 20px !important;
+}
+
+.search-field label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  font-weight: 800;
+  color: #999;
+  margin-bottom: -2px;
+}
+
+.search-field input {
+  font-size: 0.9rem;
+  color: var(--text-dark);
+}
+
+.search-btn {
+  width: 48px !important;
+  height: 48px !important;
+  background-color: var(--primary-color) !important;
+  border: none !important;
+  border-radius: 50% !important;
+  color: white !important;
+  transition: transform 0.2s ease;
+}
+
+.search-btn:hover {
+  transform: scale(1.1);
+  background-color: var(--accent-pink) !important; 
+}
+
+/* cards */
+.location-card {
+  border-radius: 25px !important;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  border: none !important;
+}
+
+.location-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.12) !important;
+}
+
+.card-img-wrapper {
+  height: 280px; /* Un poco más estilizadas */
+  overflow: hidden;
+}
+
+.location-tag {
+  font-size: 0.75rem;
+  font-weight: 600;
+  backdrop-filter: blur(4px);
+  background-color: rgba(0, 0, 0, 0.5) !important;
+  color: white !important;
+}
+
+.btn-primary-custom {
+  background-color: var(--primary-color) !important; /* Forzamos el azul */
+  color: white !important; /* Texto siempre blanco */
+  border: none !important;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(92, 115, 242, 0.3); /* Sombra azulada */
+}
+
+.btn-primary-custom:hover {
+  background-color: #455bc4 !important; /* Un azul un poco más oscuro al pasar el ratón */
+  color: white !important;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(92, 115, 242, 0.4);
+}
+/* fin css HOME por irene */
+
+/* INICIO NAVBAR SERGIO */
 
 /* boton de anfitrión del navbar */
 .anfitrion-btn {
@@ -242,5 +395,4 @@
   box-shadow: 0 3px 10px rgba(0,0,0,0.06);
 }
 
-/* Fin Navbar de Sergio */
-
+/* FIN NAVBAR SERGIO */
