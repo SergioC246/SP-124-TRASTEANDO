@@ -24,6 +24,7 @@ eventlet = "*"
 flask-socketio = "*"
 stripe = "*"
 python-dotenv = "*"
+openai = "*"
 
 [requires]
 python_version = "3.13"

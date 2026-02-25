@@ -64,6 +64,9 @@ import { Chat } from "./pages/Chat";
 import { SubscriptionCheckout } from "./pages/SubscriptionCheckout";
 import { PaymentSuccess } from "./pages/PaymentSucess";
 import { PaymentCancel } from "./pages/PaymentCancel";
+import { Inventariator } from "./pages/Inventariator";
+
+
 
 
 export const router = createBrowserRouter(
@@ -71,8 +74,8 @@ export const router = createBrowserRouter(
     <Route path="/" element={<Layout />} errorElement={<h1>Not found!</h1>} >
       <Route path="/" element={<Home />} />
       {/* ruta para el search de home */}
-      <Route path="/search" element={<SearchHome/>}/>
-      <Route path="/search/map" element={<Map/>}/>
+      <Route path="/search" element={<SearchHome />} />
+      <Route path="/search/map" element={<Map />} />
 
       {/* Rutas adminUser */}
 
@@ -83,6 +86,7 @@ export const router = createBrowserRouter(
       <Route path="/clients-edit/:id/edit" element={<ClientEdit />} />  
       <Route path="/client/login" element={<ClientLogin />} />
       <Route path="/client/signup" element={<ClientSignup />} />
+
 
       {/* Rutas messages */}
       <Route path="/chat" element={<Chat />} />
@@ -103,11 +107,11 @@ export const router = createBrowserRouter(
       <Route path="/companies/private/locations/storages/:id" element={<CompanyLocationStorages />} />
       <Route path="/companies/private/storages" element={<CompanyStorages />} />
       <Route path="/companies/private/storages/create" element={<CompanyStoragesCreate />} />
-      <Route path="/companies/private/storages/edit/:storage_id" element={<CompanyStoragesEdit />}/>
+      <Route path="/companies/private/storages/edit/:storage_id" element={<CompanyStoragesEdit />} />
       <Route path="/companies/private/storages/:id" element={<CompanyStoragesDetails />} />
 
       {/* Rutas location */}
-      
+
       <Route path="/location-create" element={<LocationCreate />} />
       <Route path="/location-details/:id" element={<LocationDetails />} />
       <Route path="/location-edit/:id" element={<LocationEdit />} />
@@ -141,7 +145,7 @@ export const router = createBrowserRouter(
       {/* Clients - Solo Admin puede ver la lista completa */}
 
       <Route element={<AdminProtectedRoute />}>
-        
+
         <Route path="/clients" element={<ClientList />} />
         <Route path="/clients/new" element={<ClientCreate />} />
         <Route path="/clients/:id" element={<ClientDetails />} />
@@ -163,6 +167,7 @@ export const router = createBrowserRouter(
         <Route path="/client/private/locations" element={<ClientLocations />} />
         <Route path="/client/private/storages/:locationId" element={<StoragesPrivateList />} />
         <Route path="/client/private/storage/:storageId" element={<StoragesPrivateDetails />} />
+        <Route path="/inventariator" element={<Inventariator />} />
       </Route>
 
       {/* ==== Rutas Stripe ==== */}

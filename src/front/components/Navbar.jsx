@@ -148,9 +148,15 @@ export const Navbar = () => {
 									<Link to="/client/private/locations" className="btn btn-outline-warning">
 										Locations available
 									</Link>
-								</li><li className="nav-item ms-2">
+								</li>
+								<li className="nav-item ms-2">
 									<Link to="/client/private" className="btn btn-outline-warning">
 										My Profile
+									</Link>
+								</li>
+								<li className="nav-item ms-2">
+									<Link to="/inventariator" className="btn btn-outline-warning">
+										My Inventory
 									</Link>
 								</li>
 							</>
