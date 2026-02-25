@@ -34,8 +34,7 @@ export const CreateCompanies = () => {
         <div className="container py-5">
             <div className="row justify-content-center">
                 <div className="col-12 col-lg-6">
-                    
-                    {/* Botón Volver */}
+                
                     <button className="btn btn-link text-muted text-decoration-none mb-3 p-0" onClick={() => navigate("/companies")}>
                         ← Volver al listado
                     </button>

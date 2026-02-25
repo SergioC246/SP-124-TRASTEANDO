@@ -18,7 +18,7 @@ export const Navbar = () => {
 	return (
 		<nav className="navbar navbar-expand-lg navbar-light bg-light">
 			<div className="container-fluid">
-				<Link className="navbar-brand" to="/search">
+				<Link className="navbar-brand" to="/">
 					<span className="navbar-brand mb-0 h1">Trasteando</span>
 				</Link>
 				<div className="collapse navbar-collapse show">
