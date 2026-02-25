@@ -20,11 +20,11 @@ wtforms = "==3.1.2"
 sqlalchemy = "*"
 bcrypt = "*"
 flask-jwt-extended = "*"
-eventlet = "*"
-flask-socketio = "*"
 stripe = "*"
 python-dotenv = "*"
 openai = "*"
+flask-socketio = "*"
+eventlet = "*"
 
 [requires]
 python_version = "3.13"

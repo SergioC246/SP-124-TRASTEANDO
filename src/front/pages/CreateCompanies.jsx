@@ -12,6 +12,7 @@ export const CreateCompanies = () => {
         if (error) setError(null) // Limpiar error mientras el usuario escribe
     }
 
+
     const handleCreateCompany = async (e) => {
         e.preventDefault()
         try {

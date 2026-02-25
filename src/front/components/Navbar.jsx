@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { getUserRole } from "../store";
 import useGlobalReducer from "../hooks/useGlobalReducer";
+import logo from "../assets/img/logo-trasteando.png";
 
 export const Navbar = () => {
 
@@ -16,76 +17,102 @@ export const Navbar = () => {
 	};
 
 	return (
-		<nav className="navbar navbar-expand-lg navbar-light bg-light">
-			<div className="container-fluid">
-				<Link className="navbar-brand" to="/">
-					<span className="navbar-brand mb-0 h1">Trasteando</span>
-				</Link>
-				<div className="collapse navbar-collapse show">
-					<ul className="navbar-nav ms-auto mb-2 mb-lg-0">
+		<header className="navbar-light header-sticky">
+			<nav className="navbar navbar-expand-xl navbar-light">
+				<div className="container px-2">
 
-						{/* ==== Si no hay nadie logueado ==== */}
+					<a className="navbar-brand" href="/">
+						<img src={logo} alt="logo"
+							height="70"
+							className="light-mode-item navbar-brand-item" />
+						<span className="fw-bold fs-5" style={{ color: "#5C73F2" }}>
+							Trasteando
+						</span>
+					</a>
 
-						{!role && (
-							<>
-								<li className="nav-item ms-2">
-									<Link to="/search/map" className="btn btn-outline-primary">
-										Buscar trasteros
-									</Link>
-								</li>
-								<li className="nav-item ms-2">
-									<Link to="/client/login" className="btn btn-outline-primary">
-										Login as client
-									</Link>
-								</li>
-								<li className="nav-item ms-2">
-									<Link to="/companies/login" className="btn btn-outline-warning">
-										Login as Company
-									</Link>
-								</li>
-								<li className="nav-item ms-2">
-									<Link to="/admin/login" className="btn btn-outline-danger" >
-										Login as Admin
-									</Link>
-								</li>
-								<li className="nav-item ms-2">
-									<Link to="/storages" className="btn btn-outline-success" >
-										Storages
-									</Link>
-								</li>
-								<li className="nav-item ms-2">
-									<Link to="/locations-public" className="btn btn-outline-success" >
-										Locations
-									</Link>
-								</li>
-							</>
-						)}
+					{!role && (
+						<>
+							<div className="nav-brand d-flex align-items-start gap-4">
+								<div className="nav-item dropdown">
+									<a className="nav-link dropdown-toggle center-link fw-bold"
+										role="button"
+										data-bs-toggle="dropdown">
+										<i className="fa-regular fa-circle-user me-2 nav-icon"></i>
+										Login
+									</a>
 
-						{/* ==== Siempre visibles ==== */}
+									<ul className="dropdown-menu shadow border-0 rounded-3">
+										<li>
+											<Link className="dropdown-item d-flex gap-2 align-items-center" to="/client/login">
+												<i className="fa-regular fa-user nav-icon" style={{ color: "#5C73F2" }}></i>
+												Client
+											</Link>
+										</li>
+										<li>
+											<Link className="dropdown-item d-flex  gap-2 align-items-center" to="/companies/login">
+												<i className="fa-regular fa-building nav-icon" style={{ color: "#5C73F2" }}></i>
+												Company
+											</Link>
+										</li>
+									</ul>
+								</div>
 
-						{/* <li className="nav-item ms-2">
-							<Link to="/location" className="btn btn-outline-success">
-						<li className="nav-item ms-2">
-							<Link to="/search/map" className="btn btn-outline-primary">
-								Buscar trasteros
-							</Link>
-						</li>
-						<li className="nav-item ms-2">
-							<Link to="/companies/private/locations" className="btn btn-outline-success">
-								Locations
-							</Link>
-						</li> */}
-						{/* <li className="nav-item ms-2">
-							<Link to="/client/login">
-								<button className="btn btn-outline-secondary">Login as client</button>
-							</Link>
-						</li> */}
+								<li className="nav-item dropdown">
+									<a className="nav-link dropdown-toggle center-link fw-bold"
+										role="button"
+										data-bs-toggle="dropdown"
+									>
+										<i className="fa-solid fa-house me-2 nav-icon"></i>
+										Services
+									</a>
 
-						<Link to="/chat" className="btn btn-outline-primary ms-2">
-    						<i className="fas fa-comments"></i> Chat
-						</Link>
+									<ul className="dropdown-menu shadow border-0 rounded-3">
+										<li>
+											<Link className="dropdown-item d-flex gap-2 align-items-center" to="/client/private/locations">
+												<i className="fa-regular fa-map nav-icon" style={{ color: "#5C73F2" }}></i>
+												Locations
+											</Link>
+										</li>
+										<li>
+											<Link className="dropdown-item d-flex gap-2 align-items-center" to="/client/private/storages/:locationId">
+												<i className="fas fa-box-open nav-icon" style={{ color: "#5C73F2" }}></i>
+												Storages
+											</Link>
+										</li>
+									</ul>
+								</li>
+							</div>
 
-						{/* ==== Solo Admin ==== */}
+							<div className="d-flex align-items-center gap-2">
+								<Link
+									to="/chat"
+									className="btn rounded-pill px-3 fw-semibold anfitrion-btn">
+									Become a host
+								</Link>
+
+								<div className="dropdown">
+									<button
+										className="btn menu-btn"
+										data-bs-toggle="dropdown">
+										<i className="fa-solid fa-circle-question nav-icon" style={{ color: "#5C73F2" }}></i>
+									</button>
+									<ul className="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-4 p-2">
+										<li className="dropdown-item">
+											<i className="fa-solid fa-phone nav-icon" style={{ color: "#5C73F2" }}></i> +34 600 000 000
+										</li>
+										<Link to="/chat" className="dropdown-item d-flex justify-content-center align-items-center">
+											<i className="fas fa-comments me-2 nav-icon" style={{ color: "#5C73F2" }}></i>
+											Chat
+										</Link>
+									</ul>
+								</div>
+							</div>
+						</>
+					)}
+
+
+
+					{/* ==== Solo Admin ====
 
 						{role === "admin" && (
 							<>
@@ -105,7 +132,7 @@ export const Navbar = () => {
 									</Link>
 								</li>
 								<li className="nav-item ms-2">
-									<Link to="/location" className="btn btn-outline-warning" >
+									<Link to="/locations-public" className="btn btn-outline-warning" >
 										Locations
 									</Link>
 								</li>
@@ -120,23 +147,24 @@ export const Navbar = () => {
 
 						{/* ==== Solo Company ==== */}
 
-						{role === "company" && (
-							<>
-								<li className="nav-item ms-2">
-									<Link to="/companies/private" className="btn btn-outline-warning">
-										Company Private
-									</Link>
-								</li>
-							</>
-						)}
+					{role === "company" && (
+						<>
+							<li className="nav-item ms-2">
+								<Link to="/companies/private" className="btn btn-outline-warning">
+									Company Private
+								</Link>
+							</li>
+						</>
+					)}
 
-						{/* ==== Solo CLient ==== */}
+					{/*{/* ==== Solo CLient ==== */}
 
-						{role === "client" && (
-							<>
+					{role === "client" && (
+						<>
+							<div className="center-nav d-flex align-items-center gap-1">
 								<li className="nav-item ms-2">
 									<Link to="/client/private/leases" className="btn btn-outline-warning">
-										My leases
+										<i className="fa-solid fa-file-contract"></i>My leases
 									</Link>
 								</li>
 								<li className="nav-item ms-2">
@@ -148,32 +176,25 @@ export const Navbar = () => {
 									<Link to="/client/private/locations" className="btn btn-outline-warning">
 										Locations available
 									</Link>
-								</li>
-								<li className="nav-item ms-2">
+								</li><li className="nav-item ms-2">
 									<Link to="/client/private" className="btn btn-outline-warning">
 										My Profile
 									</Link>
 								</li>
-								<li className="nav-item ms-2">
-									<Link to="/inventariator" className="btn btn-outline-warning">
-										My Inventory
-									</Link>
-								</li>
-							</>
-						)}
+							</div>
+						</>
+					)}
 
-						{/* ==== Logout si hay alguien logueado ==== */}
-						{role && (
-							<li className="nav-item ms-2">
-								<button className="btn btn-danger"
-									onClick={handleLogout}>Logout</button>
-							</li>
-
-						)}
-					</ul>
+					{/* ==== Logout si hay alguien logueado ==== */}
+					{role && (
+						<li className="nav-item ms-2">
+							<button className="btn btn-danger"
+								onClick={handleLogout}>Logout</button>
+						</li>
+					)}
 				</div>
-			</div>
-		</nav>
+			</nav>
+		</header>
 	);
 };
 
