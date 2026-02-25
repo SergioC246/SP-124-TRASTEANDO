@@ -1,6 +1,5 @@
 
-
-/* marcador para el mapa */
+/* marcador para el mapa SOLO MAPA */
 .marker-nube {
     background: white;
     padding: 5px 10px;
@@ -240,5 +239,4 @@
   transform: translateY(0);
   box-shadow: 0 3px 10px rgba(0,0,0,0.06);
 }
-
 

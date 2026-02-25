@@ -106,3 +106,14 @@ export const deleteClientLease = async (leaseId, token) => {
   return await response.json();
 };
 
+// fetch de limpieza que va  a llamar Layout para borrar los leases que no se hayan pagado
+
+export const clearPendingLeases = async (token) => {
+  const response = await fetch (BACKEND_URL+ '/api/client/leases/clear-pending', {
+    method: 'DELETE',
+    headers:{
+      "Authorization": `Bearer ${token}`
+    }
+  });
+  return response.ok
+}

@@ -1,21 +1,25 @@
 """
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
-
-from datetime import datetime
+import sqlalchemy as sa
+from datetime import date, datetime
+from sqlalchemy import select
 import math
 from sqlalchemy import select, and_, not_, cast, Date
-from flask import Flask, request, jsonify, url_for, Blueprint
+from flask import Flask, request, jsonify, url_for, Blueprint, Response
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
-from api.models import db, User, AdminUser, Client, Company, Leases, Storage, Location, Message
+from api.models import db, User, AdminUser, Client, Company, Leases, Storage, Location, Message, Category, Product
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from api.socketio_instance import socketio
 from api.realtime_rooms import conversation_room
 from dotenv import load_dotenv
 from pathlib import Path
+from api.services.vision_category import suggest_category_from_image
 import os
 import stripe
+import io
+import csv
 
 
 api = Blueprint('api', __name__)
@@ -613,25 +617,34 @@ def company_private_by_id(company_id):
 
 @api.route('/storage/overview', methods=["GET"])
 def get_all_storage_overview():
-
-    result = db.session.execute(select(Storage)).scalars().all()
+    from sqlalchemy.orm import joinedload
+    result = db.session.execute(
+        select(Storage).options(joinedload(Storage.location))
+    ).scalars().all()
 
     detailed_list = []
     for storage in result:
         storage_data = storage.serialize()
+        location = storage.location
+        if location:
+            storage_data["city"] = location.city
+            company = db.session.get(Company, location.company_id)
+            storage_data["company_name"] = company.name if company else "Empresa desconocida"
+        else:
+            storage_data["city"] = "Ciudad no disponible"
+            storage_data["company_name"] = "Empresa no disponible"
 
-        location = db.session.get(Location, storage.location_id)
-        company = db.session.get(Company, location.company_id)
-
-        storage_data["company_name"] = company.name
-        storage_data["city"] = location.city
+        # Aseguramos que "photo" existe en el diccionario final
+        # Si por alguna razón serialize() no lo trajo, esto lo garantiza:
+        storage_data["photo"] = storage.photo 
 
         detailed_list.append(storage_data)
 
     return jsonify(detailed_list), 200
-
 # Get Storage Overview
 
+
+# endpoint 100% funcional, el de las fecahs cambiado abajo
 
 @api.route("/storage/<int:storage_id>/overview", methods=["GET"])
 def get_storage_overview(storage_id):
@@ -643,14 +656,23 @@ def get_storage_overview(storage_id):
 
     storage_data = storage.serialize()
 
+    # Añadimos los leases actuales para que el frontend vea las fechas ocupadas
+    leases = Leases.query.filter_by(
+        storage_id=storage_id, status="active").all()
+    storage_data["occupied_dates"] = [
+        {"start": l.start_date.isoformat(), "end": l.end_date.isoformat()}
+        for l in leases
+    ]
+
     location = db.session.get(Location, storage.location_id)
     company = db.session.get(Company, location.company_id)
 
     storage_data["company_name"] = company.name
     storage_data["city"] = location.city
-    storage_data["status"] = "available" if storage.status else "occupied"
+    storage_data["status"] = "available" if storage.status else "not_operating"
 
     return jsonify(storage_data), 200
+
 
 # Login admin
 
@@ -1003,15 +1025,12 @@ def get_my_leases():
 
 # crear un lease private para cliente
 
-
 @api.route('/client/leases', methods=['POST'])
 @jwt_required()
 def create_client_lease():
     try:
         data = request.get_json()
-        # cambio ----------------- get_jwt_identity()
         current_client_id = int(get_jwt_identity())
-
         start_date = data.get("start_date")
         end_date = data.get("end_date")
         storage_id = data.get("storage_id")
@@ -1020,23 +1039,31 @@ def create_client_lease():
             return jsonify({"message": "Faltan datos obligatorios"}), 400
 
         storage = Storage.query.get(storage_id)
+        if not storage or not storage.status:
+            return jsonify({"message": "Trastero no disponible o no encontrado"}), 404
 
-        if not storage:
-            return jsonify({"message": "Trastero no encontrado"}), 404
+        conflict_query = select(Leases).where(
+            and_(
+                Leases.storage_id == storage_id,
+                Leases.status.in_(["active", "pending payment"]),
+                Leases.start_date <= end_date,
+                Leases.end_date >= start_date
+            )
+        )
+        existing_conflict = db.session.execute(conflict_query).first()
 
-        if not storage.status:
-            return jsonify({"message": "El trastero ya está ocupado"}), 400
+        if existing_conflict:
+            return jsonify({"message": "El trastero ya está reservado en esas fechas"}), 400
 
         new_lease = Leases(
             start_date=start_date,
             end_date=end_date,
-            status=True,
+            status="pending payment",
             client_id=current_client_id,
             storage_id=storage_id
         )
 
-        storage.status = False
-
+        # IMPORTANTE: NO hacemos storage.status = False
         db.session.add(new_lease)
         db.session.commit()
 
@@ -1044,12 +1071,7 @@ def create_client_lease():
 
     except Exception as e:
         db.session.rollback()
-        print("ERROR INTERNO:", e)
         return jsonify({"error": str(e)}), 500
-
-# borrar un lease de cliente
-
-# obsoleto
 
 
 @api.route('/client/leases/<int:lease_id>', methods=['DELETE'])
@@ -1084,39 +1106,40 @@ def delete_client_lease(lease_id):
     # el JOIN entre Storage y Location para Haces 1 sola consulta a la base de datos en lugar de 50 o 100
 @api.route('/storage/map', methods=["GET"])
 def get_storages_for_map():
-
-    from datetime import datetime
+    import math  # Asegúrate de tener esto arriba o aquí
+    from sqlalchemy import and_, not_, select
 
     search_lat = request.args.get('lat')
     search_lng = request.args.get('lng')
     checkin = request.args.get('checkin')
     checkout = request.args.get('checkout')
 
+    # 1. Base de la consulta: Solo trasteros activos (status del dueño)
     query = select(Storage, Location).join(
         Location).where(Storage.status == True)
 
-    if checkin and checkout:
-        # Buscamos los trasteros que tienen un alquiler que CHOCA con las fechas pedidas
+    # 2. Filtro de disponibilidad por fechas
+    if checkin and checkout and checkin != "" and checkout != "":
         occupied_subquery = select(Leases.storage_id).where(
             and_(
-                Leases.status == True,
+                # bloquea ambos
+                Leases.status.in_(["active", "pending payment"]),
                 Leases.start_date <= checkout,
                 Leases.end_date >= checkin
+
             )
         )
-        # Excluimos esos IDs de la consulta principal
-        print(occupied_subquery)
-        print("despues de print occupied-subquery")
+        # Excluimos los trasteros ocupados
         query = query.where(not_(Storage.id.in_(occupied_subquery)))
 
-    results = db.session.execute(query).all()
-
+    # 3. Ejecutar la consulta (UNA SOLA VEZ)
     results = db.session.execute(query).all()
 
     final_result = []
     seen_ids = set()
 
     for storage, location in results:
+        # Evitar duplicados por el join
         if storage.id in seen_ids:
             continue
 
@@ -1124,15 +1147,17 @@ def get_storages_for_map():
             "storage_id": storage.id,
             "price": storage.price,
             "size": storage.size,
+            "photo": storage.photo,
             "latitude": float(location.latitude),
             "longitude": float(location.longitude),
             "city": location.city,
-            "address": location.address
+            "address": location.address,
+            "status": "available"  # Para el frontend
         }
 
+        # 4. Filtro de distancia (Haversine)
         if search_lat and search_lng:
-
-            R = 6371
+            R = 6371  # Radio de la Tierra
             s_lat, s_lng = math.radians(
                 float(search_lat)), math.radians(float(search_lng))
             t_lat, t_lng = math.radians(float(location.latitude)), math.radians(
@@ -1146,6 +1171,7 @@ def get_storages_for_map():
             c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
             distance = R * c
 
+            # Si está a más de 20km, lo ignoramos
             if distance > 20:
                 continue
             data["distance_km"] = round(distance, 1)
@@ -1154,6 +1180,7 @@ def get_storages_for_map():
         seen_ids.add(storage.id)
 
     return jsonify(final_result), 200
+
 
 # Get occupancy of storages from location
 
@@ -1334,14 +1361,12 @@ def send_message():
 
     payload = new_msg.serialize()
 
-    room = conversation_room(
-        body["sender_id"],
-        body["sender_role"],
-        body["receiver_id"],
-        body["receiver_role"]
-    )
+    receiver_id = int(body["receiver_id"])
+    sender_id = int(body["sender_id"])
 
-    socketio.emit("message:new", payload, room=room)
+    socketio.emit("message:new", payload, room=f"user_{receiver_id}")
+
+   # socketio.emit("message:new", payload, room=f"user_{sender_id}")
 
     return jsonify(payload), 201
 
@@ -1433,11 +1458,14 @@ def get_contacts(my_id, my_role):
         elif role == "company":
             company = Company.query.get(contact_id)
             if company:
+
+                print(f"DEBUG: Company {company.name} photo is: {company.photo}")
+                
                 result.append({
                     "id": company.id,
                     "role": "company",
                     "name": company.name,
-                    "photo_url": company.photo_url
+                    "photo_url": company.photo
                 })
 
     return jsonify(result), 200
@@ -1497,11 +1525,18 @@ def stripe_create_subscription_session():
                 "quantity": 1,
             }],
 
-            success_url=os.getenv("FRONTEND_URL") + "payment/success",
+            success_url=os.getenv("FRONTEND_URL") +
+            f"payment/success?lease_id={lease_id}",
             cancel_url=os.getenv("FRONTEND_URL") + "payment/cancel",
             metadata={
                 "lease_id": str(lease_id)
             }
+
+            # success_url=os.getenv("FRONTEND_URL") + "payment/success",
+            # cancel_url=os.getenv("FRONTEND_URL") + "payment/cancel",
+            # metadata={
+            #     "lease_id": str(lease_id)
+            # }
         )
 
         return jsonify({"url": session.url})
@@ -1511,49 +1546,229 @@ def stripe_create_subscription_session():
         return jsonify({"error": str(e)}), 500
 
 
-# @api.route("/stripe/create-subscription-session", methods=["POST"])
-# def stripe_create_subscription_session():
-#     print("ENTRANDO EN ENDPOINT STRIPE")
+# endpoint para el fetch de limpieza que va  a llamar Layout para borrar los leases que no se hayan pagado
 
-#     return jsonify({
-#         "url": "https://checkout.stripe.com/test"
-#     }), 200
-
-# Stripe pagos
-
-
-@api.route("/stripe/webhook", methods=["post"])
-def stripe_webhook():
-    payload = request.data
-    sig_header = request.headers.get("Stripe-Signature")
-    webhook_secret = os.getenvet("STRIPE_WEBHOOK_SECRET")
-
+@api.route('/client/leases/clear-pending', methods=['DELETE'])
+@jwt_required()
+def clear_pending_leases():
     try:
-        event = stripe.Webhook.construct_event(
-            payload, sig_header, webhook_secret)
-    except Exception:
-        return "Invalid webhook", 400
+        current_client_id = get_jwt_identity()
+        deleted = Leases.query.filter_by(
+            client_id=current_client_id, status="pending payment").delete()
 
-    # Checkout completo
-    if event["type"] == "checkout.session.completed":
-        session = event["data"]["object"]
-        # session.get("subscription"), session.get("customer"), session.get("metadata")
-        # 👉 aquí normalmente guardas subscription_id/customer_id en tu DB (Lease)
+        db.session.commit()
+        return jsonify({"message": f"Se han limpiado {deleted} reservas pendientes"}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 500
 
-    # Factura pagada
-    if event["type"] == "invoice.paid":
-        invoice = event["data"]["object"]
-        # invoice["subscription"] -> subscription_id
-        # 👉 marcar lease ACTIVE + actualizar current_period_end
+# endpoint para la cancelacion o aceptacion del pago
 
-    # Fallo de pago
-    if event["type"] == "invoice.payment_failed":
-        invoice = event["data"]["object"]
-        # 👉 marcar lease PAST_DUE
 
-    # Cancelción subscripción
-    if event["type"] == "customer.subscription.deleted":
-        sub = event["data"]["object"]
-        # 👉 marcar lease CANCELLED
+@api.route('/client/leases/<int:lease_id>/confirm', methods=['PATCH'])
+@jwt_required()
+def confirm_lease(lease_id):
+    try:
+        lease = db.session.get(Leases, lease_id)
+        if not lease:
+            return jsonify({"message": "Reserva no encontrada"}), 404
 
-    return "OK", 200
+        lease.status = "active"  # <--- Aquí es donde se vuelve oficial
+        db.session.commit()
+
+        return jsonify({"message": "Reserva activada con éxito"}), 200
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 500
+
+# # OpenAI
+
+# @api.route("/seed/categories", methods=["POST"])
+# def seed_categories():
+#     names = [
+#         "Ropa",
+#         "Deporte",
+#         "Herramientas",
+#         "Hogar",
+#         "Electrónica",
+#         "Otros"
+#     ]
+
+#     for name in names:
+#         if not Category.query.filter_by(name=name).first():
+#             db.session.add(Category(name=name))
+
+#     db.session.commit()
+
+#     return {"msg": "Categories created"}, 200
+
+
+# Open AI Productos
+
+@api.route("/products", methods=["POST"])
+@jwt_required()
+def create_product():
+
+    current_user_id = get_jwt_identity()
+    body = request.get_json() or {}
+    print("BODY:", body)
+
+    name = body.get("name")
+    if not name:
+        return jsonify({"msg": "Missing name"}), 400
+
+    category_id = body.get("category_id")
+    if not category_id:
+        return jsonify({"msg": "Missing category_id"}), 400
+
+    category = Category.query.get(category_id)
+    if not category:
+        return jsonify({"msg": "Category not found"}), 404
+        
+    placement = body.get("placement")
+
+    product = Product(
+        name=name.strip(),
+        description=body.get("description"),
+        placement=placement,
+        category_id=category_id,
+        image_url=body.get("image_url"),
+        user_id=current_user_id
+    )
+
+    db.session.add(product)
+    db.session.commit()
+
+    return jsonify(product.serialize()), 201
+
+
+@api.route("/products", methods=["GET"])
+@jwt_required()
+def get_products():
+
+    current_user_id = get_jwt_identity()
+    print("IDENTITY:", current_user_id, type(current_user_id))
+
+    products = Product.query.filter(
+        Product.user_id == current_user_id
+    ).order_by(Product.created_at.desc()).all()
+
+    return jsonify([p.serialize() for p in products]), 200
+
+
+
+@api.route("/categories", methods=["GET"])
+def get_categories():
+    categories = Category.query.order_by(Category.id.asc()).all()
+    return jsonify([c.serialize() for c in categories]), 200
+
+
+@api.route("/products/<int:product_id>", methods=["DELETE"])
+@jwt_required()
+def delete_product(product_id):
+    current_user_id = get_jwt_identity()
+
+    product = Product.query.get(product_id)
+    if not product:
+        return jsonify({"msg": "Product not found"}), 404
+
+    if str(product.user_id) != str(current_user_id):
+        return jsonify({"msg": "Forbidden"}), 403
+
+    db.session.delete(product)
+    db.session.commit()
+    return jsonify({"msg": "Deleted"}), 200
+
+
+@api.route("/products/suggest-category", methods=["POST"])
+@jwt_required()
+def suggest_product_category():
+
+    body = request.get_json(silent=True) or {}
+    image_url = body.get("image_url")
+
+    if not image_url or not isinstance(image_url, str):
+        return jsonify({"msg": "image_url is required"}), 400
+
+    categories = Category.query.order_by(Category.id.asc()).all()
+    if not categories:
+        return jsonify({"msg": "No categories available"}), 400
+    
+    result = suggest_category_from_image(image_url, categories)
+
+    return jsonify(result), 200
+
+@api.route("/products/export", methods=["GET"])
+@jwt_required()
+def export_products_csv():
+
+    current_user_id = get_jwt_identity()
+
+    products = Product.query.filter(
+        Product.user_id == current_user_id
+    ).order_by(Product.created_at.desc()).all()
+
+    output = io.StringIO()
+    writer = csv.writer(output, delimiter=",", quoting=csv.QUOTE_MINIMAL)
+
+    # Cabecera
+    writer.writerow([
+        "ID",
+        "Name",
+        "Description",
+        "Category",
+        "Placement",
+        "Image URL",
+        "Created At"
+    ])
+
+    # Filas
+    for p in products:
+        writer.writerow([
+            p.id,
+            p.name,
+            p.description or "",
+            p.category.name if p.category else "",
+            p.placement or "",
+            p.image_url or "",
+            p.created_at.isoformat() if p.created_at else ""
+        ])
+
+    output.seek(0)
+
+    csv_content = output.getvalue()
+
+
+    response = Response(
+        "\ufeff" + csv_content,  # 👈 BOM para Excel UTF-8
+        mimetype="text/csv; charset=utf-8",
+        headers={
+           "Content-Disposition": "attachment; filename=products.csv"
+        }
+    )
+
+    return response
+
+@api.route("/products/<int:product_id>", methods=["PUT"])
+@jwt_required()
+def update_product(product_id):
+
+    current_user_id = get_jwt_identity()
+    product = Product.query.get(product_id)
+
+    if not product:
+        return jsonify({"msg": "Product not found"}), 404
+
+    if str(product.user_id) != str(current_user_id):
+        return jsonify({"msg": "Forbidden"}), 403
+
+    body = request.get_json() or {}
+
+    # Solo actualizamos placement por ahora
+    if "placement" in body:
+        product.placement = body.get("placement")
+
+    db.session.commit()
+
+    return jsonify(product.serialize()), 200

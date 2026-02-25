@@ -17,8 +17,10 @@ export const SearchHome = () => {
         checkout: ""
     });
 
+    const defaultImage = "https://images.unsplash.com/photo-1581404917829-5a5d096770db?auto=format&fit=crop&q=80&w=400";
+
     useEffect(() => {
-        // Función para inicializar el Autocomplete
+        //  para inicializar el autocomplete
         const initAutocomplete = () => {
             if (!inputRef.current || autocompleteRef.current) return;
 
@@ -52,7 +54,6 @@ export const SearchHome = () => {
                 };
                 document.head.appendChild(script);
             } else {
-                // Si el script ya existe pero Google aún no está listo esperamos al onload del script existente
                 existingScript.addEventListener("load", initAutocomplete);
             }
         }
@@ -71,7 +72,7 @@ export const SearchHome = () => {
             loc: searchData.location,
             lat: searchData.lat,
             lng: searchData.lng,
-            checkin: searchData.checkin, 
+            checkin: searchData.checkin,
             checkout: searchData.checkout
         }).toString();
 
@@ -91,6 +92,7 @@ export const SearchHome = () => {
 
 
     return (
+        // search bar
         <div style={{ minHeight: "100vh", backgroundColor: "#f8f9fa" }}>
             <div className="container pt-4">
                 <div className="mx-auto" style={{ maxWidth: "900px" }}>
@@ -113,20 +115,30 @@ export const SearchHome = () => {
                     </div>
                 </div>
             </div>
-
-            {/* SECCIÓN DE TRASTEROS */}
+            {/* trasteros */}
             <div className="container py-5">
                 <h3 className="fw-bold mb-4">Trasteros disponibles</h3>
                 <div className="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
                     {storages.map(storage => (
                         <div key={storage.id} className="col">
-                            <div className="card h-100 border-0 shadow-sm rounded-3 p-3">
-                                <div className="bg-light rounded mb-3" style={{ height: "150px" }}></div>
+                            <div className="card h-100 border-0 shadow-sm rounded-3 p-3 bg-white">
+                                {/* CONTENEDOR DE IMAGEN ACTUALIZADO */}
+                                <div className="rounded mb-3" style={{ height: "150px", overflow: "hidden", backgroundColor: "#eee" }}>
+                                    <img
+                                        src={storage.photo || "https://images.unsplash.com/photo-1581404917829-5a5d096770db?auto=format&fit=crop&q=80&w=400"}
+                                        alt={storage.city}
+                                        style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                                        onError={(e) => { e.target.src = "https://images.unsplash.com/photo-1581404917829-5a5d096770db?auto=format&fit=crop&q=80&w=400"; }}
+                                    />
+                                </div>
+
                                 <h4 className="fw-bold mb-1 text-capitalize pb-1">{storage.city}</h4>
-                                <h5 className="mb-1 text-capitalize">{storage.company_name}</h5>
+                                <h5 className="mb-1 text-capitalize" style={{ fontSize: "1rem" }}>{storage.company_name}</h5>
                                 <p className="text-muted small mb-1">{storage.size} m²</p>
                                 <p className="fw-bold mt-auto mb-0">{storage.price}€ / mes</p>
-                                <button className="btn btn-primary mt-2" onClick={() => navigate(`/client/private/storage/${storage.id}`)} >Ver detalles</button>
+                                <button className="btn btn-primary mt-2 w-100" onClick={() => navigate(`/client/private/storage/${storage.id}`)} >
+                                    Ver detalles
+                                </button>
                             </div>
                         </div>
                     ))}
