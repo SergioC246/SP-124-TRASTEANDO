@@ -6,5 +6,237 @@
     border-radius: 20px;
     border: 1px solid #ccc;
     font-weight: bold;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2)
-/* fin css SOLO MAPA */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+/* boton de anfitrión del navbar */
+.anfitrion-btn {
+	background-color: #f2f2f2;
+	color: #333;
+	transition: all 0.2s ease-in-out;
+}
+
+.anfitrion-btn:hover {
+	background-color: #e0e0e0;
+	color: #000;
+	transform: translateY(-1px);
+}
+
+/* flechas del navbar */
+
+/* Quitamos flecha default */
+.navbar .dropdown-toggle::after {
+  display: none;
+}
+
+/* Aplicamos padding correcto a TODOS los toggles */
+.navbar .nav-link.dropdown-toggle,
+.navbar .btn.dropdown-toggle {  
+  padding-right: 24px !important;
+}
+
+/* Flecha personalizada */
+.navbar .dropdown-toggle::before {
+  content:"";
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  width: 9px;
+  height: 9px;
+  border-right: 3px solid #5C73F2;
+  border-bottom: 3px solid #5C73F2;
+  transform: translateY(-50%) rotate(45deg);
+  transition: transform 0.25s ease, border-color 0.25s ease;
+}
+
+/* Elimina cualquier marcador extraño en navbar */
+.navbar .nav-item::before,
+.navbar .nav-item::after,
+.navbar .nav-item::marker {
+  content: none !important;
+  display: none !important;
+}
+
+.navbar .navbar-nav {
+  list-style: none !important;
+}
+
+/* Cuando está abierto */
+.navbar .dropdown-toggle.show::before {
+  transform: translateY(-50%) rotate(-135deg);
+  border-color: #91BBF2;
+}
+
+/* animaciones del navbar */
+
+/* Animación suave general */
+.navbar .nav-link,
+.navbar .nav-toggle-btn {
+  transition: all 0.2s ease;
+}
+
+/* Efecto hover */
+.navbar .nav-link:hover,
+.navbar .nav-toggle-btn:hover {
+  color: #5C73F2 !important;
+  transform: translateY(-1px);
+}
+
+/* Iconos */
+.nav-icon {
+  font-size: 0.9rem;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+/* Icono crece al hover */
+.navbar .nav-link:hover .nav-icon,
+.navbar .nav-toggle-btn:hover .nav-icon {
+  transform: scale(1.15);
+  color: #5C73F2;
+}
+
+/* Cuando dropdown está abierto */
+.navbar .dropdown-toggle.show {
+  color: #5C73F2 !important;
+}
+
+
+
+/* CENTRAR LOGIN Y SERVICES ABSOLUTO */
+.center-nav {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* Links centrales más grandes */
+.center-link {
+  font-size: 1.1rem;
+  color: #333 !important;
+  transition: all 0.2s ease;
+}
+
+/* Hover elegante Airbnb */
+.center-link:hover {
+  color: #5C73F2 !important;
+  transform: scale(1.05);
+}
+
+/* Botón host */
+.anfitrion-btn {
+  background-color: lightgray;
+  color: white;
+  transition: all 0.2s ease;
+}
+
+.anfitrion-btn:hover {
+  background-color: #4a5fd1;
+  transform: scale(1.05);
+}
+
+/* Botón hamburguesa */
+.menu-btn {
+  background: white;  
+  transition: all 0.2s ease;
+}
+
+.menu-btn:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+
+/* ===== MICRO BOUNCE ICONOS ===== */
+
+.nav-icon {
+  transition: color 0.2s ease;
+}
+
+/* Hover activa bounce */
+.navbar .nav-link:hover .nav-icon,
+.navbar .dropdown-item:hover .nav-icon,
+.navbar .menu-btn:hover .nav-icon {
+  animation: microBounce 0.45s ease;
+  color: #5C73F2;
+}
+
+/* Animación suave tipo "vida" */
+@keyframes microBounce {
+  0%   { transform: translateY(0); }
+  40%  { transform: translateY(-5px); }
+  65%  { transform: translateY(1px); }
+  85%  { transform: translateY(-1px); }
+  100% { transform: translateY(0); }
+}
+
+.password-eye {
+  position: absolute;
+  top: 50%;
+  right: 15px;
+  transform: translate(-50%);
+  cursor: pointer;
+  color: #91BBF2;
+  transition: all 0.25s ease;
+}
+
+.password-eye:hover {
+  transform: translateY(-50%) scale(1.15);
+  color: #5C73F2;
+}
+
+.password-eye:active {
+  transform: translate(-50%) scale(0.95);
+}
+
+.password-eye {
+  position: absolute;
+  top: 50%;
+  right: 15px;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #91BBF2;
+  transition: all 0.25s ease;
+}
+
+.password-eye:hover {
+  transform: translateY(-50%) scale(1.15);
+  color: #5C73F2;
+}
+
+/* Login principal */
+.login-btn {
+  background-color: #5C73F2;
+  color: white;
+  border-radius: 10px;
+  transition: all 0.25s ease;
+}
+
+.login-btn:hover {
+  background-color: #4a5fe0;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(92, 115, 242, 0.25);
+}
+
+.login-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 10px rgba(92, 115, 242, 0.2);
+}
+
+
+/* Botones sociales */
+.social-btn {
+  background-color: #ffffff;
+  border-radius: 10px;
+  transition: all 0.25s ease;
+}
+
+.social-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+  background-color: #f9faff;
+}
+
+.social-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 3px 10px rgba(0,0,0,0.06);
+}
+
