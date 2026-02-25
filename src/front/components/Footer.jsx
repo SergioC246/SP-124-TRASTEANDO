@@ -2,80 +2,74 @@ import { Link } from "react-router-dom";
 import logo from "../assets/img/logo-trasteando.png";
 
 export const Footer = () => {
-	return (
-		<footer
-      className="mt-auto border-top"
-      style={{
-        backgroundColor: "#f8f9fa",
-        borderColor: "#eee",
-      }}
-    >
-      <div className="container py-4">
+  return (
+    <footer className="bg-black text-white pt-4">
 
+      <div className="container">
         {/* 🔹 Top row: Logo + 4 columns */}
-        <div className="row align-items-start">
+        <div className="row align-items-center">
 
           {/* Logo + Slogan */}
-          <div className="col-lg-3 col-md-6 mb-4 mb-lg-0">
-            <Link to="/" className="d-flex align-items-center text-decoration-none">
+          <div className="col-lg-3">
+            <Link to="/" className="d-flex align-items-center text-decoration-none text-white">
               <img src={logo} alt="Trasteando" height="70" className="me-2" />
-              <span className="fw-bold fs-5" style={{ color: "#5C73F2" }}>
+              <h5 className="fw-bold fs-5" style={{ color: "#5C73F2" }}>
                 Trasteando
-              </span>
+              </h5>
             </Link>
-            <p className="mt-1 text-muted" style={{ fontSize: "0.9rem" }}>
+            <p className="text-white" style={{ fontSize: "0.9rem" }}>
               Haz espacio para vivir.
             </p>
-            <p className="mb-2 text-muted">
+            <p className="mb-2 text-white">
               <i className="fa-solid fa-phone me-2"></i> +34 600 000 000
             </p>
-            <Link to="/chat" className="text-muted text-decoration-none">
+            <Link to="/chat" className="text-white text-decoration-none">
               <i className="fas fa-comments me-2"></i>Chat
             </Link>
           </div>
 
           {/* Page */}
           <div className="col-lg-2 col-md-6 mb-4 mb-md-0">
-            <h6 className="fw-bold mb-3">Page</h6>
+            <h5 className="fw-bold mb-3">Page</h5>
             <ul className="list-unstyled small">
               <li className="mb-2">
-                <Link to="/client/login" className="text-muted text-decoration-none">Login Client</Link>
+                <Link to="/client/login" className="text-white text-decoration-none">Login Client</Link>
               </li>
               <li className="mb-2">
-                <Link to="/companies/login" className="text-muted text-decoration-none">Login Company</Link>
+                <Link to="/companies/login" className="text-white text-decoration-none">Login Company</Link>
               </li>
               <li className="mb-2">
-                <Link to="/client/private/locations" className="text-muted text-decoration-none">Locations</Link>
+                <Link to="/client/private/locations" className="text-white text-decoration-none">Locations</Link>
               </li>
               <li>
-                <Link to="/client/private/storages/:locationId" className="text-muted text-decoration-none">Storages</Link>
+                <Link to="/client/private/storages/:locationId" className="text-white text-decoration-none">Storages</Link>
               </li>
             </ul>
           </div>
 
           {/* Legal */}
           <div className="col-lg-2 col-md-6 mb-4 mb-md-0">
-            <h6 className="fw-bold mb-3">Legal</h6>
+            <h5 className="fw-bold mb-3">Legal</h5>
             <ul className="list-unstyled small">
               <li className="mb-2">
-                <a href="#" className="text-muted text-decoration-none">Terms & Conditions</a>
+                <a href="#" className="text-white text-decoration-none">Terms & Conditions</a>
               </li>
               <li className="mb-2">
-                <a href="#" className="text-muted text-decoration-none">Privacy Policy</a>
+                <a href="#" className="text-white text-decoration-none">Privacy Policy</a>
               </li>
               <li className="mb-2">
-                <a href="#" className="text-muted text-decoration-none">Cookies Policy</a>
+                <a href="#" className="text-white text-decoration-none">Cookies Policy</a>
               </li>
               <li>
-                <a href="#" className="text-muted text-decoration-none">Refund Policy</a>
+                <a href="#" className="text-white text-decoration-none">Refund Policy</a>
               </li>
             </ul>
           </div>
 
           {/* Payments */}
           <div className="col-lg-2 col-md-6 mb-4 mb-md-0">
-            <h6 className="fw-bold mb-3">Payment Methods</h6>
-            <ul className="list-unstyled small text-muted">
+            <h5 className="fw-bold mb-3">Payment Methods</h5>
+            <ul className="list-unstyled small text-white">
               <li className="mb-2"><i className="fa-brands fa-cc-visa me-2"></i>Visa</li>
               <li className="mb-2"><i className="fa-brands fa-cc-mastercard me-2"></i>Mastercard</li>
               <li className="mb-2"><i class="fa-brands fa-paypal me-2"></i>PayPal</li>
@@ -85,19 +79,19 @@ export const Footer = () => {
 
           {/* Social */}
           <div className="col-lg-3 col-md-6 mb-4 mb-md-0">
-            <h6 className="fw-bold mb-3">Social</h6>
+            <h5 className="fw-bold mb-3">Social</h5>
             <ul className="list-unstyled small">
               <li className="mb-2">
-                <a href="#" className="text-muted text-decoration-none"><i className="fa-brands fa-instagram me-2"></i>Instagram</a>
+                <a href="#" className="text-white text-decoration-none"><i className="fa-brands fa-instagram me-2"></i>Instagram</a>
               </li>
               <li className="mb-2">
-                <a href="#" className="text-muted text-decoration-none"><i className="fa-brands fa-facebook me-2"></i>Facebook</a>
+                <a href="#" className="text-white text-decoration-none"><i className="fa-brands fa-facebook me-2"></i>Facebook</a>
               </li>
               <li className="mb-2">
-                <a href="#" className="text-muted text-decoration-none"><i className="fa-brands fa-linkedin me-2"></i>LinkedIn</a>
+                <a href="#" className="text-white text-decoration-none"><i className="fa-brands fa-linkedin me-2"></i>LinkedIn</a>
               </li>
               <li>
-                <a href="#" className="text-muted text-decoration-none"><i className="fa-brands fa-twitter me-2"></i>X</a>
+                <a href="#" className="text-white text-decoration-none"><i className="fa-brands fa-twitter me-2"></i>X</a>
               </li>
             </ul>
           </div>
@@ -107,17 +101,22 @@ export const Footer = () => {
         <hr />
 
         {/* 🔹 Bottom */}
-        <div className="d-flex flex-column flex-md-row justify-content-between small text-muted">
-          <div>
+        <div className="d-lg-flex justify-content-between align-items-center py-3 text-center text-lg-start">
+          <div className="text-white text-primary-hover">
             © {new Date().getFullYear()} Trasteando. All rights reserved.
           </div>
 
-          <div>
-            <a href="#" className="me-3 text-muted text-decoration-none">English (US)</a>
-            <a href="#" className="text-muted text-decoration-none">Spain</a>
+          <div className="nav mt-2 mt-lg-0 nav">
+            <ul className="list-inline text-primary-hover mx-auto mb-0">
+              <li className="list-inline-item me-0">
+                <a href="#" className="me-3 text-white text-decoration-none">English (US)</a>
+              </li>
+              <ul className="list-inline text-primary-hover mx-auto mb-0">
+                <a href="#" className="text-white text-decoration-none">Spain</a>
+              </ul>
+            </ul>
           </div>
         </div>
-
       </div>
     </footer>
   );

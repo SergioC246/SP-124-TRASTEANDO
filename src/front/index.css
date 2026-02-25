@@ -32,8 +32,7 @@
 
 /* Aplicamos padding correcto a TODOS los toggles */
 .navbar .nav-link.dropdown-toggle,
-.navbar .btn.dropdown-toggle {
-  position: relative;
+.navbar .btn.dropdown-toggle {  
   padding-right: 24px !important;
 }
 
