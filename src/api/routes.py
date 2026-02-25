@@ -1570,7 +1570,7 @@ def confirm_lease(lease_id):
         if not lease:
             return jsonify({"message": "Reserva no encontrada"}), 404
 
-        lease.status = "active"  # <--- Aquí es donde se vuelve oficial
+        lease.status = "active" 
         db.session.commit()
         return jsonify({"message": "Reserva activada con éxito"}), 200
     except Exception as e:
