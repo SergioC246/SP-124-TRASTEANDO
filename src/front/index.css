@@ -170,5 +170,76 @@
   100% { transform: translateY(0); }
 }
 
+.password-eye {
+  position: absolute;
+  top: 50%;
+  right: 15px;
+  transform: translate(-50%);
+  cursor: pointer;
+  color: #91BBF2;
+  transition: all 0.25s ease;
+}
+
+.password-eye:hover {
+  transform: translateY(-50%) scale(1.15);
+  color: #5C73F2;
+}
+
+.password-eye:active {
+  transform: translate(-50%) scale(0.95);
+}
+
+.password-eye {
+  position: absolute;
+  top: 50%;
+  right: 15px;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #91BBF2;
+  transition: all 0.25s ease;
+}
+
+.password-eye:hover {
+  transform: translateY(-50%) scale(1.15);
+  color: #5C73F2;
+}
+
+/* Login principal */
+.login-btn {
+  background-color: #5C73F2;
+  color: white;
+  border-radius: 10px;
+  transition: all 0.25s ease;
+}
+
+.login-btn:hover {
+  background-color: #4a5fe0;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(92, 115, 242, 0.25);
+}
+
+.login-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 10px rgba(92, 115, 242, 0.2);
+}
+
+
+/* Botones sociales */
+.social-btn {
+  background-color: #ffffff;
+  border-radius: 10px;
+  transition: all 0.25s ease;
+}
+
+.social-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+  background-color: #f9faff;
+}
+
+.social-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 3px 10px rgba(0,0,0,0.06);
+}
 
 

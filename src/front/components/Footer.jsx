@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import logo from "../assets/img/logo-trasteando.jpg"
+import logo from "../assets/img/logo-trasteando.png";
 
 export const Footer = () => {
 	return (
@@ -18,7 +18,7 @@ export const Footer = () => {
           {/* Logo + Slogan */}
           <div className="col-lg-3 col-md-6 mb-4 mb-lg-0">
             <Link to="/" className="d-flex align-items-center text-decoration-none">
-              <img src={logo} alt="Trasteando" height="60" className="me-2" />
+              <img src={logo} alt="Trasteando" height="70" className="me-2" />
               <span className="fw-bold fs-5" style={{ color: "#5C73F2" }}>
                 Trasteando
               </span>

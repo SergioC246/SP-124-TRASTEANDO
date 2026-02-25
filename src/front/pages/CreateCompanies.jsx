@@ -14,7 +14,7 @@ export const CreateCompanies = () => {
         })
     }
 
-    
+
     const handleCreateCompany = async (e) => {
         e.preventDefault()
         try {
@@ -26,34 +26,65 @@ export const CreateCompanies = () => {
     }
 
     return (
-        <>
-                <div className="container mt-5" >
-                    <h1>New Company</h1>
-                    <form onSubmit={handleCreateCompany}>
-                        <div className="container mt-5">
-                            <div className="mb-3">
-                                <label className="form-label d-block text-start">Company Name</label><input type="text" className="form-control" placeholder="Enter company name" name="name" value={formData.name || ""} onChange={handleChange} required />
-                            </div>
-                            <div className="mb-3">
-                                <label className="form-label d-block text-start">CIF</label><input type="text" className="form-control" placeholder="Enter CIF" name="cif" value={formData.cif || ""} onChange={handleChange} required />
-                            </div>
-                            <div className="mb-3">
-                                <label className="form-label d-block text-start">Address</label><input type="text" className="form-control" placeholder="Enter address" name="address" value={formData.address || ""} onChange={handleChange} required />
-                            </div>
-                            <div className="mb-3">
-                                <label className="form-label d-block text-start">Email</label><input type="email" className="form-control" placeholder="company@example.com" name="email" value={formData.email || ""} onChange={handleChange} required />
-                            </div>
-                            <div className="mb-3">
-                                <label className="form-label d-block text-start">Password</label><input type="password" className="form-control" placeholder="Enter password" name="password" value={formData.password || ""} onChange={handleChange} required />
-                            </div>
-                        </div>
-                        <div className="d-flex gap-2 mt-3">
-                            <button type="button" className="btn btn-secondary" onClick={() => navigate("/companies")}>Cancel</button>
-                            <button type="submit" className="btn btn-primary">Create</button>
-                        </div>
-                    </form>
-                </div>
+        <div className="container py-5">
+            <div className="row justify-content-center">
+                <div className="col-12 col-md-8 col-lg-5">
+                    <div className="card shadow-lg border-0">
 
-        </>
+                        <div className="card-header bg-info-subtle text-info-emphasis text-center py-4">
+                            <h3 className="mb-0">
+                                Create New Company
+                            </h3>
+                        </div>
+
+                        <div className="card-body py-4">
+                            <div className="row">
+                                <form onSubmit={handleCreateCompany}>
+
+                                    <div className="row">
+
+                                        <div className="col-md-6 mb-3">
+                                            <label className="form-label fw-semibold">Company Name</label>
+                                            <input type="text" className="form-control" placeholder="Enter company name" name="name" value={formData.name || ""} onChange={handleChange} required />
+                                        </div>
+
+                                        <div className="col-md-6 mb-3">
+                                            <label className="form-label fw-semibold">CIF</label>
+                                            <input type="text" className="form-control" placeholder="Enter CIF" name="cif" value={formData.cif || ""} onChange={handleChange} required />
+                                        </div>
+                                    </div>
+
+                                    <div className="mb-3">
+                                        <label className="form-label fw-semibold">Address</label>
+                                        <input type="text" className="form-control" placeholder="Enter address" name="address" value={formData.address || ""} onChange={handleChange} required />
+                                    </div>
+
+                                    <div className="mb-3">
+                                        <label className="form-label fw-semibold">Email</label>
+                                        <input type="email" className="form-control" placeholder="company@example.com" name="email" value={formData.email || ""} onChange={handleChange} required />
+                                    </div>
+
+                                    <div className="form-label fw-semibold">
+                                        <label className="form-label d-block text-start">Password</label>
+                                        <input type="password" className="form-control" placeholder="Enter password" name="password" value={formData.password || ""} onChange={handleChange} required />
+                                    </div>
+
+                                    <div className="card-footer bg-white border-0 py-2">
+                                        <div className="d-flex flex-column align-items-center gap-3">
+                                            <button type="submit" className="btn btn-outline-success shadow">
+                                                Create
+                                            </button>
+                                            <button type="submit" className="btn btn-outline-secondary shadow" onClick={() => navigate("/companies")}>
+                                                Cancel
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     )
 }
