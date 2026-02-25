@@ -89,7 +89,7 @@ export const CompanyLocations = () => {
 
   return (
     <div className="container-fluid py-5 px-5">
-      <div className="row">
+      <div className="row mb-5">
         <div className="col-12 col-xl-10 mx-auto">
           <div className="card shadow-lg border-0">
 

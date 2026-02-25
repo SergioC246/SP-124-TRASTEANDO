@@ -458,4 +458,75 @@
   color: #5C73F2;
 }
 
+.nav-pill {
+  white-space: nowrap;
+}
+
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 18px; /* más aire */
+  white-space: nowrap;
+}
+
+.nav-main-link {
+  position: relative;
+  color: #333 !important;
+  transition: all 0.25s ease;
+  padding: 8px 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+/* Hover */
+.nav-main-link:hover {
+  color: #5C73F2 !important;
+  transform: translateY(-1px);
+}
+
+/* Iconos animados */
+.nav-main-link i {
+  transition: transform 0.25s ease;
+}
+
+.nav-main-link:hover i {
+  transform: translateY(-3px);
+}
+
+/* NAVBAR SIEMPRE POR ENCIMA */
+header,
+.navbar {
+  position: relative;
+  z-index: 1100;
+}
+
+/* Dropdown aún más arriba */
+.dropdown-menu {
+  z-index: 1200 !important;
+}
+
+.company-link .nav-link {
+  font-weight: 600;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+/* Subrayado elegante animado */
+.company-link .nav-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 4px;
+  width: 0%;
+  height: 2px;  
+  transition: width 0.3s ease;
+}
+
+.company-link .nav-link:hover::after {
+  width: 100%;
+}
+
+
 /* FIN NAVBAR SERGIO */

@@ -25,7 +25,7 @@ export const Navbar = () => {
 						<img src={logo} alt="logo"
 							height="70"
 							className="light-mode-item navbar-brand-item" />
-						<span className="fw-bold fs-5 " style={{ color: "#5C73F2" }}>
+						<span className="fw-bold fs-5 me-3" style={{ color: "#5C73F2" }}>
 							Trasteando
 						</span>
 					</a>
@@ -87,25 +87,21 @@ export const Navbar = () => {
 
 							<div className="navbar-right d-flex align-items-center gap-2">
 
-								<Link to="#" className="nav-pill">
-									<i className="fa-solid fa-users me-2"></i>
+								<Link to="/aboutUs" className="nav-link fw-bold nav-main-link">
+									<i className="fa-solid fa-users nav-icon"></i>
 									About us
 								</Link>
 
-								<Link to="#" className="nav-pill">
-									<i className="fa-solid fa-magnifying-glass me-2"></i>
-									Fetures
+								<Link to="#" className="nav-link fw-bold nav-main-link">
+									<i className="fa-solid fa-magnifying-glass nav-icon"></i>
+									Features
 								</Link>
 
-								<Link to="/chat" className="nav-pill active-pill">
-									Become a host
-								</Link>
-
-								<div className="nav-item dropdown">
+								<div className="nav-link fw-bold nav-main-link dropdown">
 									<a className="nav-link dropdown-toggle fw-bold"
 										role="button"
 										data-bs-toggle="dropdown">
-										<i className="fa-solid fa-paper-plane"></i> Contact
+										<i className="fa-solid fa-paper-plane nav-icon"></i> Contact
 									</a>
 									<ul className="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-4 p-2">
 										<li className="dropdown-item">
@@ -117,11 +113,12 @@ export const Navbar = () => {
 										</Link>
 									</ul>
 								</div>
+								<Link to="/chat" className="nav-pill active-pill">
+									Become a host
+								</Link>
 							</div>
 						</>
 					)}
-
-
 
 					{/* ==== Solo Admin ====
 
@@ -160,8 +157,9 @@ export const Navbar = () => {
 
 					{role === "company" && (
 						<>
-							<li className="nav-item ms-2">
-								<Link to="/companies/private" className="btn btn-outline-warning">
+							<li className="nav-item ms-auto company-link me-2">
+								<Link to="/companies/private" className="nav-link">
+									<i className="fa-solid fa-building-lock me-2 nav-icon"></i>
 									Company Private
 								</Link>
 							</li>
@@ -172,41 +170,56 @@ export const Navbar = () => {
 
 					{role === "client" && (
 						<>
-							<div className="d-flex align-items-center gap-1">
+							<ul className="navbar-nav ms-auto align-items-center">
+
 								<li className="nav-item ms-2">
-									<Link to="/client/private/leases" className="btn btn-outline-warning">
-										<i className="fa-solid fa-file-contract"></i>My leases
+									<Link to="/client/private/leases" className="nav-link">
+										<i className="fa-solid fa-file-contract me-2 nav-icon"></i>
+										My leases
 									</Link>
 								</li>
+
 								<li className="nav-item ms-2">
-									<Link to="/search" className="btn btn-outline-warning">
+									<Link to="/search" className="nav-link">
+										<i className="fa-solid fa-box-open me-2 nav-icon"></i>
 										Storages available
 									</Link>
 								</li>
+
 								<li className="nav-item ms-2">
-									<Link to="/client/private/locations" className="btn btn-outline-warning">
+									<Link to="/client/private/locations" className="nav-link">
+										<i className="fa-solid fa-warehouse me-2 nav-icon"></i>
 										Locations available
 									</Link>
 								</li>
+
 								<li className="nav-item ms-2">
-									<Link to="/client/private" className="btn btn-outline-warning">
+									<Link to="/client/private" className="nav-link">
+										<i className="fa-solid fa-user me-2 nav-icon"></i>
 										My Profile
 									</Link>
 								</li>
+
 								<li className="nav-item ms-2">
-									<Link to="/inventariator" className="btn btn-outline-warning">
+									<Link to="/inventariator" className="nav-link">
+										<i className="fa-solid fa-cart-flatbed me-2 nav-icon"></i>
 										My Inventory
 									</Link>
 								</li>
-							</div>
+							</ul>
 						</>
 					)}
 
 					{/* ==== Logout si hay alguien logueado ==== */}
 					{role && (
 						<li className="nav-item ms-2">
-							<button className="btn btn-danger"
-								onClick={handleLogout}>Logout</button>
+							<button
+								className="nav-link btn btn-link logout-link"
+								type="button"
+								onClick={handleLogout}>
+								<i className="fa-solid fa-arrow-right-from-bracket me-2 nav-icon"></i>
+								Logout
+							</button>
 						</li>
 					)}
 				</div>
