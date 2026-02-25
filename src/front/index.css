@@ -22,6 +22,8 @@
 	transform: translateY(-1px);
 }
 
+/* Inicio Navbar de Sergio */
+
 /* flechas del navbar */
 
 /* Quitamos flecha default */
@@ -239,4 +241,6 @@
   transform: translateY(0);
   box-shadow: 0 3px 10px rgba(0,0,0,0.06);
 }
+
+/* Fin Navbar de Sergio */
 
