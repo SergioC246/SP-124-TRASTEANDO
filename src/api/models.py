@@ -223,3 +223,50 @@ class Message(db.Model):
             "sender_name": sender_name,
             "sender_photo": sender_photo
         }
+
+class Category(db.Model):
+    __tablename__ = "categories"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str] = mapped_column(String(100), unique=True, nullable=False)
+
+    products = db.relationship(
+        "Product",
+        back_populates="category",
+        cascade="all, delete-orphan"
+    )
+    
+    def serialize(self):
+        return {
+            "id": self.id,
+            "name": self.name
+        }
+    
+class Product(db.Model):
+    __tablename__ = "products"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str] = mapped_column(db.String(255), nullable=False)
+    description: Mapped[str] = mapped_column(db.String(1000), nullable=True)
+    image_url: Mapped[str] = mapped_column(db.String(500), nullable=True)
+    placement: Mapped[str] = mapped_column(db.String(255), nullable=True)
+    
+    category_id: Mapped[int] = mapped_column(ForeignKey("categories.id"), nullable=False)
+    user_id: Mapped[int] = mapped_column(db.Integer, nullable=False)  # V1 simple (sin FK aún)
+
+    created_at: Mapped[datetime] = mapped_column(db.DateTime, default=datetime.utcnow, nullable=False)
+
+    category: Mapped["Category"] = relationship("Category", back_populates="products")
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "description": self.description,
+            "placement": self.placement,
+            "category_id": self.category_id,
+            "category": self.category.serialize() if self.category else None,
+            "user_id": self.user_id,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+            "image_url": self.image_url,
+        }

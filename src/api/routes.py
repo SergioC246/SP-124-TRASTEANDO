@@ -6,17 +6,20 @@ from datetime import date, datetime
 from sqlalchemy import select
 import math
 from sqlalchemy import select, and_, not_, cast, Date
-from flask import Flask, request, jsonify, url_for, Blueprint
+from flask import Flask, request, jsonify, url_for, Blueprint, Response
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
-from api.models import db, User, AdminUser, Client, Company, Leases, Storage, Location, Message
+from api.models import db, User, AdminUser, Client, Company, Leases, Storage, Location, Message, Category, Product
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from api.socketio_instance import socketio
 from api.realtime_rooms import conversation_room
 from dotenv import load_dotenv
 from pathlib import Path
+from api.services.vision_category import suggest_category_from_image
 import os
 import stripe
+import io
+import csv
 
 
 api = Blueprint('api', __name__)
@@ -1572,7 +1575,200 @@ def confirm_lease(lease_id):
 
         lease.status = "active" 
         db.session.commit()
+
         return jsonify({"message": "Reserva activada con éxito"}), 200
+
     except Exception as e:
         db.session.rollback()
         return jsonify({"error": str(e)}), 500
+
+# # OpenAI
+
+# @api.route("/seed/categories", methods=["POST"])
+# def seed_categories():
+#     names = [
+#         "Ropa",
+#         "Deporte",
+#         "Herramientas",
+#         "Hogar",
+#         "Electrónica",
+#         "Otros"
+#     ]
+
+#     for name in names:
+#         if not Category.query.filter_by(name=name).first():
+#             db.session.add(Category(name=name))
+
+#     db.session.commit()
+
+#     return {"msg": "Categories created"}, 200
+
+
+# Open AI Productos
+
+@api.route("/products", methods=["POST"])
+@jwt_required()
+def create_product():
+
+    current_user_id = get_jwt_identity()
+    body = request.get_json() or {}
+    print("BODY:", body)
+
+    name = body.get("name")
+    if not name:
+        return jsonify({"msg": "Missing name"}), 400
+
+    category_id = body.get("category_id")
+    if not category_id:
+        return jsonify({"msg": "Missing category_id"}), 400
+
+    category = Category.query.get(category_id)
+    if not category:
+        return jsonify({"msg": "Category not found"}), 404
+        
+    placement = body.get("placement")
+
+    product = Product(
+        name=name.strip(),
+        description=body.get("description"),
+        placement=placement,
+        category_id=category_id,
+        image_url=body.get("image_url"),
+        user_id=current_user_id
+    )
+
+    db.session.add(product)
+    db.session.commit()
+
+    return jsonify(product.serialize()), 201
+
+
+@api.route("/products", methods=["GET"])
+@jwt_required()
+def get_products():
+
+    current_user_id = get_jwt_identity()
+    print("IDENTITY:", current_user_id, type(current_user_id))
+
+    products = Product.query.filter(
+        Product.user_id == current_user_id
+    ).order_by(Product.created_at.desc()).all()
+
+    return jsonify([p.serialize() for p in products]), 200
+
+
+
+@api.route("/categories", methods=["GET"])
+def get_categories():
+    categories = Category.query.order_by(Category.id.asc()).all()
+    return jsonify([c.serialize() for c in categories]), 200
+
+
+@api.route("/products/<int:product_id>", methods=["DELETE"])
+@jwt_required()
+def delete_product(product_id):
+    current_user_id = get_jwt_identity()
+
+    product = Product.query.get(product_id)
+    if not product:
+        return jsonify({"msg": "Product not found"}), 404
+
+    if str(product.user_id) != str(current_user_id):
+        return jsonify({"msg": "Forbidden"}), 403
+
+    db.session.delete(product)
+    db.session.commit()
+    return jsonify({"msg": "Deleted"}), 200
+
+
+@api.route("/products/suggest-category", methods=["POST"])
+@jwt_required()
+def suggest_product_category():
+
+    body = request.get_json(silent=True) or {}
+    image_url = body.get("image_url")
+
+    if not image_url or not isinstance(image_url, str):
+        return jsonify({"msg": "image_url is required"}), 400
+
+    categories = Category.query.order_by(Category.id.asc()).all()
+    if not categories:
+        return jsonify({"msg": "No categories available"}), 400
+    
+    result = suggest_category_from_image(image_url, categories)
+
+    return jsonify(result), 200
+
+@api.route("/products/export", methods=["GET"])
+@jwt_required()
+def export_products_csv():
+
+    current_user_id = get_jwt_identity()
+
+    products = Product.query.filter(
+        Product.user_id == current_user_id
+    ).order_by(Product.created_at.desc()).all()
+
+    output = io.StringIO()
+    writer = csv.writer(output, delimiter=",", quoting=csv.QUOTE_MINIMAL)
+
+    # Cabecera
+    writer.writerow([
+        "ID",
+        "Name",
+        "Description",
+        "Category",
+        "Placement",
+        "Image URL",
+        "Created At"
+    ])
+
+    # Filas
+    for p in products:
+        writer.writerow([
+            p.id,
+            p.name,
+            p.description or "",
+            p.category.name if p.category else "",
+            p.placement or "",
+            p.image_url or "",
+            p.created_at.isoformat() if p.created_at else ""
+        ])
+
+    output.seek(0)
+
+    csv_content = output.getvalue()
+
+
+    response = Response(
+        "\ufeff" + csv_content,  # 👈 BOM para Excel UTF-8
+        mimetype="text/csv; charset=utf-8",
+        headers={
+           "Content-Disposition": "attachment; filename=products.csv"
+        }
+    )
+
+    return response
+
+@api.route("/products/<int:product_id>", methods=["PUT"])
+@jwt_required()
+def update_product(product_id):
+
+    current_user_id = get_jwt_identity()
+    product = Product.query.get(product_id)
+
+    if not product:
+        return jsonify({"msg": "Product not found"}), 404
+
+    if str(product.user_id) != str(current_user_id):
+        return jsonify({"msg": "Forbidden"}), 403
+
+    body = request.get_json() or {}
+
+    # Solo actualizamos placement por ahora
+    if "placement" in body:
+        product.placement = body.get("placement")
+
+    db.session.commit()
+
+    return jsonify(product.serialize()), 200
