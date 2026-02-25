@@ -18,7 +18,7 @@ export const Footer = () => {
               </h5>
             </Link>
             <p className="text-white" style={{ fontSize: "0.9rem" }}>
-              Making space for a better life.
+              Smart storage for modern living
             </p>
             <p className="mb-2 text-white">
               <i className="fa-solid fa-phone me-2"></i> +34 600 000 000
