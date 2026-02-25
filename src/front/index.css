@@ -250,20 +250,23 @@
   color: #5C73F2;
 }
 
+
 /* Cuando dropdown está abierto */
 .navbar .dropdown-toggle.show {
   color: #5C73F2 !important;
 }
 
-
-
-/* CENTRAR LOGIN Y SERVICES ABSOLUTO */
-.center-nav {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
+.navbar .nav-link {
+  color: #333;
+  transition: all 0.25s ease;
 }
 
+.navbar .nav-link:hover {
+  color: #5C73F2 !important;
+  transform: translateY(-1px);
+}
+
+/* CENTRAR LOGIN Y SERVICES ABSOLUTO */
 /* Links centrales más grandes */
 .center-link {
   font-size: 1.1rem;
@@ -314,6 +317,38 @@
   color: #5C73F2;
 }
 
+/* ===== NAV LINKS PREMIUM (About & Features) ===== */
+
+.custom-nav-link {
+  position: relative;
+  font-weight: 600;
+  color: #333 !important;
+  padding: 8px 4px;
+  transition: all 0.25s ease;
+}
+
+/* Línea animada elegante */
+.custom-nav-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 0%;
+  height: 2px;
+  background-color: #5C73F2;
+  transition: width 0.3s ease;
+}
+
+/* Hover */
+.custom-nav-link:hover {
+  color: #5C73F2 !important;
+  transform: translateY(-2px);
+}
+
+.custom-nav-link:hover::after {
+  width: 100%;
+}
+
 /* Animación suave tipo "vida" */
 @keyframes microBounce {
   0%   { transform: translateY(0); }
@@ -339,23 +374,9 @@
 }
 
 .password-eye:active {
-  transform: translate(-50%) scale(0.95);
-}
+  transform: translate(-50%) scale(0.95);}
 
-.password-eye {
-  position: absolute;
-  top: 50%;
-  right: 15px;
-  transform: translateY(-50%);
-  cursor: pointer;
-  color: #91BBF2;
-  transition: all 0.25s ease;
-}
 
-.password-eye:hover {
-  transform: translateY(-50%) scale(1.15);
-  color: #5C73F2;
-}
 
 /* Login principal */
 .login-btn {
@@ -393,6 +414,48 @@
 .social-btn:active {
   transform: translateY(0);
   box-shadow: 0 3px 10px rgba(0,0,0,0.06);
+}
+
+/* ===== NAVBAR RIGHT PREMIUM STYLE ===== */
+
+.navbar-right {
+  margin-left: auto;
+}
+
+/* estilo base */
+.nav-pill {
+  display: flex;
+  align-items: center;
+  padding: 8px 16px;
+  border-radius: 12px;
+  font-weight: 600;
+  color: #222;
+  text-decoration: none;
+  transition: all 0.25s ease;
+}
+
+/* iconos */
+.nav-pill i {
+  font-size: 0.9rem;
+  transition: transform 0.2s ease;
+}
+
+/* hover elegante */
+.nav-pill:hover {
+  background-color: rgba(92, 115, 242, 0.08);
+  color: #5C73F2;
+  transform: translateY(-2px);
+}
+
+/* iconito animado */
+.nav-pill:hover i {
+  transform: scale(1.15);
+}
+
+/* activo tipo Hotel */
+.active-pill {
+  background-color: rgba(92, 115, 242, 0.15);
+  color: #5C73F2;
 }
 
 /* FIN NAVBAR SERGIO */

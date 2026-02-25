@@ -25,77 +25,88 @@ export const Navbar = () => {
 						<img src={logo} alt="logo"
 							height="70"
 							className="light-mode-item navbar-brand-item" />
-						<span className="fw-bold fs-5" style={{ color: "#5C73F2" }}>
+						<span className="fw-bold fs-5 " style={{ color: "#5C73F2" }}>
 							Trasteando
 						</span>
 					</a>
 
 					{!role && (
 						<>
-							<div className="nav-brand d-flex align-items-start gap-4">
-								<div className="nav-item dropdown">
-									<a className="nav-link dropdown-toggle center-link fw-bold"
-										role="button"
-										data-bs-toggle="dropdown">
-										<i className="fa-regular fa-circle-user me-2 nav-icon"></i>
-										Login
-									</a>
+							<div className="d-flex w-100 justify-content-between align-items-center">
+								<div className="d-flex align-items-center gap-4">
 
-									<ul className="dropdown-menu shadow border-0 rounded-3">
-										<li>
-											<Link className="dropdown-item d-flex gap-2 align-items-center" to="/client/login">
-												<i className="fa-regular fa-user nav-icon" style={{ color: "#5C73F2" }}></i>
-												Client
-											</Link>
-										</li>
-										<li>
-											<Link className="dropdown-item d-flex  gap-2 align-items-center" to="/companies/login">
-												<i className="fa-regular fa-building nav-icon" style={{ color: "#5C73F2" }}></i>
-												Company
-											</Link>
-										</li>
-									</ul>
+									<div className="nav-item dropdown">
+										<a className="nav-link dropdown-toggle fw-bold"
+											role="button"
+											data-bs-toggle="dropdown">
+											<i className="fa-regular fa-circle-user me-2 nav-icon"></i>
+											Login
+										</a>
+
+										<ul className="dropdown-menu shadow border-0 rounded-3">
+											<li>
+												<Link className="dropdown-item d-flex gap-2 align-items-center" to="/client/login">
+													<i className="fa-regular fa-user nav-icon" style={{ color: "#5C73F2" }}></i>
+													Client
+												</Link>
+											</li>
+											<li>
+												<Link className="dropdown-item d-flex  gap-2 align-items-center" to="/companies/login">
+													<i className="fa-regular fa-building nav-icon" style={{ color: "#5C73F2" }}></i>
+													Company
+												</Link>
+											</li>
+										</ul>
+									</div>
+
+									<li className="nav-item dropdown">
+										<a className="nav-link dropdown-toggle fw-bold"
+											role="button"
+											data-bs-toggle="dropdown">
+											<i className="fa-solid fa-house me-2 nav-icon"></i>
+											Services
+										</a>
+
+										<ul className="dropdown-menu shadow border-0 rounded-3">
+											<li>
+												<Link className="dropdown-item d-flex gap-2 align-items-center" to="/client/private/locations">
+													<i className="fa-regular fa-map nav-icon" style={{ color: "#5C73F2" }}></i>
+													Locations
+												</Link>
+											</li>
+											<li>
+												<Link className="dropdown-item d-flex gap-2 align-items-center" to="/client/private/storages/:locationId">
+													<i className="fas fa-box-open nav-icon" style={{ color: "#5C73F2" }}></i>
+													Storages
+												</Link>
+											</li>
+										</ul>
+									</li>
 								</div>
-
-								<li className="nav-item dropdown">
-									<a className="nav-link dropdown-toggle center-link fw-bold"
-										role="button"
-										data-bs-toggle="dropdown"
-									>
-										<i className="fa-solid fa-house me-2 nav-icon"></i>
-										Services
-									</a>
-
-									<ul className="dropdown-menu shadow border-0 rounded-3">
-										<li>
-											<Link className="dropdown-item d-flex gap-2 align-items-center" to="/client/private/locations">
-												<i className="fa-regular fa-map nav-icon" style={{ color: "#5C73F2" }}></i>
-												Locations
-											</Link>
-										</li>
-										<li>
-											<Link className="dropdown-item d-flex gap-2 align-items-center" to="/client/private/storages/:locationId">
-												<i className="fas fa-box-open nav-icon" style={{ color: "#5C73F2" }}></i>
-												Storages
-											</Link>
-										</li>
-									</ul>
-								</li>
 							</div>
 
-							<div className="d-flex align-items-center gap-2">
-								<Link
-									to="/chat"
-									className="btn rounded-pill px-3 fw-semibold anfitrion-btn">
+							<div className="navbar-right d-flex align-items-center gap-2">
+
+								<Link to="#" className="nav-pill">
+									<i className="fa-solid fa-users me-2"></i>
+									About us
+								</Link>
+
+								<Link to="#" className="nav-pill">
+									<i className="fa-solid fa-magnifying-glass me-2"></i>
+									Fetures
+								</Link>
+
+								<Link to="/chat" className="nav-pill active-pill">
 									Become a host
 								</Link>
 
-								<div className="dropdown">
-									<button
-										className="btn menu-btn"
+								<div className="nav-item dropdown">
+									<a className="nav-link dropdown-toggle fw-bold"
+										role="button"
 										data-bs-toggle="dropdown">
-										<i className="fa-solid fa-circle-question nav-icon" style={{ color: "#5C73F2" }}></i>
-									</button>
+										<i className="fa-solid fa-paper-plane"></i> Contact
+									</a>
 									<ul className="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-4 p-2">
 										<li className="dropdown-item">
 											<i className="fa-solid fa-phone nav-icon" style={{ color: "#5C73F2" }}></i> +34 600 000 000
@@ -161,7 +172,7 @@ export const Navbar = () => {
 
 					{role === "client" && (
 						<>
-							<div className="center-nav d-flex align-items-center gap-1">
+							<div className="d-flex align-items-center gap-1">
 								<li className="nav-item ms-2">
 									<Link to="/client/private/leases" className="btn btn-outline-warning">
 										<i className="fa-solid fa-file-contract"></i>My leases
@@ -176,9 +187,15 @@ export const Navbar = () => {
 									<Link to="/client/private/locations" className="btn btn-outline-warning">
 										Locations available
 									</Link>
-								</li><li className="nav-item ms-2">
+								</li>
+								<li className="nav-item ms-2">
 									<Link to="/client/private" className="btn btn-outline-warning">
 										My Profile
+									</Link>
+								</li>
+								<li className="nav-item ms-2">
+									<Link to="/inventariator" className="btn btn-outline-warning">
+										My Inventory
 									</Link>
 								</li>
 							</div>
