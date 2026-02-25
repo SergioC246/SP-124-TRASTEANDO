@@ -25,8 +25,7 @@
 }
 
 .underline-svg path {
-  fill: var(--primary-color) !important; /* Aquí forzamos tu color azul */
-  opacity: 0.7; /* Para que no sea tan chillón y deje ver bien las letras */
+  fill: var(--primary-color);
 }
 
 /* marcador para el mapa SOLO MAPA */
