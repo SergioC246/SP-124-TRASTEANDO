@@ -110,11 +110,11 @@ export const Chat = () => {
 
   /* ===== RENDER ===== */
   return (
-    <div className="container-fluid mt-3">
-      <div className="row" style={{ height: "80vh" }}>
+    <div className="container-fluid"  style={{ height: "calc(100vh - 130px)", display: "flex", flexDirection: "column", padding: "12px" }}>
+      <div className="row flex-grow-1" style={{ overflow: "hidden", minHeight: 0 }}>
 
         {/* PANEL IZQUIERDO */}
-        <div className="col-md-4 col-lg-3 border-end bg-light overflow-auto d-flex flex-column">
+        <div className="col-md-4 col-lg-3 border-end bg-light d-flex flex-column" style={{ overflow: "hidden", height: "100%" }}>
           <div className="p-3 border-bottom d-flex justify-content-between align-items-center">
             <h5 className="m-0">Mensajes</h5>
             <button
@@ -164,7 +164,7 @@ export const Chat = () => {
         </div>
 
         {/* PANEL DERECHO */}
-        <div className="col-md-8 col-lg-9 d-flex flex-column bg-white border rounded">
+        <div className="col-md-8 col-lg-9 d-flex flex-column bg-white border rounded" style={{ overflow: "hidden", height: "100%" }}>
 
           {/* CABECERA con foto */}
           <div className="p-3 border-bottom bg-light d-flex justify-content-between align-items-center">

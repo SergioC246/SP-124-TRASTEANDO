@@ -181,6 +181,11 @@ export const Navbar = () => {
 										My Profile
 									</Link>
 								</li>
+								<li className="nav-item ms-2">
+									<Link to="/inventariator" className="btn btn-outline-warning">
+										My Inventory
+									</Link>
+								</li>
 							</div>
 						</>
 					)}
