@@ -83,7 +83,9 @@ export const AboutUs = () => {
                                     rel="noopener noreferrer" className="text-dark me-3 fs-5">
                                     <i className="fa-brands fa-linkedin social-icon"></i>
                                 </a>
-                                <a href="#" className="text-dark me-3 fs-5">
+                                <a href="https://github.com/SergioC246"
+                                    target="_blank"
+                                    rel="noopener noreferrer" className="text-dark me-3 fs-5">
                                     <i className="fa-brands fa-github social-icon"></i>
                                 </a>
                                 <a href="mailto:sergiocordoba246@gmail.com" className="text-dark fs-5">
@@ -111,13 +113,17 @@ export const AboutUs = () => {
                             </p>
 
                             <div className="mt-3">
-                                <a href="#" className="text-dark me-3 fs-5">
+                                <a href="https://www.linkedin.com/in/irene-sanchez-419041248/?trk=opento_sprofile_topcard"
+                                    target="_blank"
+                                    rel="noopener noreferrer" className="text-dark me-3 fs-5">
                                     <i className="fa-brands fa-linkedin social-icon"></i>
                                 </a>
-                                <a href="#" className="text-dark fs-5">
+                                <a href="https://github.com/isanarmu"
+                                    target="_blank"
+                                    rel="noopener noreferrer" className="text-dark fs-5">
                                     <i className="fa-brands fa-github me-3 social-icon"></i>
                                 </a>
-                                <a href="#" className="text-dark fs-5">
+                                <a href="mailto:isanarmu@gmail.com" className="text-dark fs-5">
                                     <i className="fa-regular fa-envelope social-icon"></i>
                                 </a>
                             </div>
@@ -148,7 +154,9 @@ export const AboutUs = () => {
                                     rel="noopener noreferrer" className="text-dark me-3 fs-5">
                                     <i className="fa-brands fa-linkedin social-icon"></i>
                                 </a>
-                                <a href="#" className="text-dark fs-5">
+                                <a href="https://github.com/daalvarezig"
+                                    target="_blank"
+                                    rel="noopener noreferrer" className="text-dark fs-5">
                                     <i className="fa-brands fa-github me-3 social-icon"></i>
                                 </a>
                                 <a href="mailto:daalvarezig@gmail.com" className="text-dark fs-5">

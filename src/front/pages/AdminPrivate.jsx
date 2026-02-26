@@ -41,7 +41,7 @@ export const AdminPrivate = () => {
     const admin = store.admin_info;
 
     return (
-        <div className="container mt-4">
+        <div className="container mt-4 mb-5">
             <h1>Admin private panel</h1>
 
 
