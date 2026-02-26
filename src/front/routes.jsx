@@ -65,9 +65,9 @@ import { SubscriptionCheckout } from "./pages/SubscriptionCheckout";
 import { PaymentSuccess } from "./pages/PaymentSucess";
 import { PaymentCancel } from "./pages/PaymentCancel";
 import { Inventariator } from "./pages/Inventariator";
-import { ClientDashboardLayout } from "./layouts/ClientDashboardLayout";
-import { CompanyDashboardLayout } from "./layouts/CompanyDashboardLayout";
-import { AdminDashboardLayout } from "./layouts/AdminDashboardLayout";
+import { ClientDashboardLayout } from "../layouts/ClientDashboardLayout";
+import { CompanyDashboardLayout } from "../layouts/CompanyDashboardLayout";
+import { AdminDashboardLayout } from "../layouts/AdminDashboardLayout";
 
 
 
@@ -86,7 +86,7 @@ export const router = createBrowserRouter(
 
       {/* Rutas client */}
 
-      <Route path="/clients-edit/:id/edit" element={<ClientEdit />} />  
+      <Route path="/clients-edit/:id/edit" element={<ClientEdit />} />
       <Route path="/client/login" element={<ClientLogin />} />
       <Route path="/client/signup" element={<ClientSignup />} />
 
@@ -168,8 +168,8 @@ export const router = createBrowserRouter(
         <Route path="/clients/:id/edit" element={<ClientEdit />} />
         <Route path="/client/private" element={<ClientPrivate />} />
         <Route path="/client/private/leases" element={<ClientPrivateLeases />} />
-        <Route path="/client/private/checkout/:storageId" element={<StoragePrivateCheckout />} />        
-        
+        <Route path="/client/private/checkout/:storageId" element={<StoragePrivateCheckout />} />
+
         <Route path="/client/private/storage/:storageId" element={<StoragesPrivateDetails />} />
         <Route path="/inventariator" element={<Inventariator />} />
       </Route>
@@ -182,9 +182,10 @@ export const router = createBrowserRouter(
       {/* ==== DASHBOARD CLIENT (PARALELO) ==== */}
       <Route element={<ClientProtectedRoute />}>
         <Route path="/client/dashboard" element={<ClientDashboardLayout />}>
-          <Route index element={<ClientPrivate />} />
-          <Route path="leases" element={<ClientPrivateLeases />} />
+          <Route index element={<SearchHome />} />
+          <Route path="profile" element={<ClientPrivate />} />
           <Route path="search" element={<SearchHome />} />
+          <Route path="leases" element={<ClientPrivateLeases />} />
           <Route path="inventory" element={<Inventariator />} />
           <Route path="storage/:storageId" element={<StoragesPrivateDetails />} />
           <Route path="checkout/:storageId" element={<StoragePrivateCheckout />} />
@@ -211,6 +212,7 @@ export const router = createBrowserRouter(
           <Route index element={<AdminPrivate />} />
           <Route path="users" element={<AdminUsers />} />
           <Route path="companies" element={<Companies />} />
+          <Route path="clients" element={<ClientList />} />
         </Route>
       </Route>
 
