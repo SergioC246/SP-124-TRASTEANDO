@@ -65,6 +65,9 @@ import { SubscriptionCheckout } from "./pages/SubscriptionCheckout";
 import { PaymentSuccess } from "./pages/PaymentSucess";
 import { PaymentCancel } from "./pages/PaymentCancel";
 import { Inventariator } from "./pages/Inventariator";
+import { ClientDashboardLayout } from "./layouts/ClientDashboardLayout";
+import { CompanyDashboardLayout } from "./layouts/CompanyDashboardLayout";
+import { AdminDashboardLayout } from "./layouts/AdminDashboardLayout";
 
 
 
@@ -176,6 +179,40 @@ export const router = createBrowserRouter(
       <Route path="/payment/success" element={<PaymentSuccess />} />
       <Route path="/payment/cancel" element={<PaymentCancel />} />
 
+      {/* ==== DASHBOARD CLIENT (PARALELO) ==== */}
+      <Route element={<ClientProtectedRoute />}>
+        <Route path="/client/dashboard" element={<ClientDashboardLayout />}>
+          <Route index element={<ClientPrivate />} />
+          <Route path="leases" element={<ClientPrivateLeases />} />
+          <Route path="search" element={<SearchHome />} />
+          <Route path="inventory" element={<Inventariator />} />
+          <Route path="storage/:storageId" element={<StoragesPrivateDetails />} />
+          <Route path="checkout/:storageId" element={<StoragePrivateCheckout />} />
+          <Route path="chat" element={<Chat />} />
+        </Route>
+      </Route>
+
+      {/* ==== DASHBOARD COMPANY (PARALELO) ==== */}
+      <Route element={<CompanyProtectedRoute />}>
+        <Route path="/company/dashboard" element={<CompanyDashboardLayout />}>
+          <Route index element={<CompanyPrivate />} />
+          <Route path="locations" element={<CompanyLocations />} />
+          <Route path="storages" element={<CompanyStorages />} />
+          <Route path="storages/:id" element={<CompanyStoragesDetails />} />
+          <Route path="storages/edit/:storage_id" element={<CompanyStoragesEdit />} />
+          <Route path="locations/:id" element={<CompanyLocationsDetails />} />
+          <Route path="chat" element={<Chat />} />
+        </Route>
+      </Route>
+
+      {/* ==== DASHBOARD ADMIN (PARALELO) ==== */}
+      <Route element={<AdminProtectedRoute />}>
+        <Route path="/admin/dashboard" element={<AdminDashboardLayout />}>
+          <Route index element={<AdminPrivate />} />
+          <Route path="users" element={<AdminUsers />} />
+          <Route path="companies" element={<Companies />} />
+        </Route>
+      </Route>
 
       {/* <Route path="/leases" element={<Leases />} /> */}
       {/* <Route path="/leasesCreate" element={<LeasesCreate />} />
