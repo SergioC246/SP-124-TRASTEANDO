@@ -528,5 +528,68 @@ header,
   width: 100%;
 }
 
-
 /* FIN NAVBAR SERGIO */
+
+/* INICIO ABOUT US SERGIO */
+
+.team-card {
+  transition: all 0.3s ease;
+  border-radius: 15px;
+}
+
+.team-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+}
+
+.team-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(92,115,242,0.08), rgba(0,0,0,0.03));
+  z-index: 0;
+}
+
+.team-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+.hero-text-box {
+  background: rgba(0, 0, 0, 0.25);
+  padding: 40px;
+  border-radius: 20px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+  transition: all 0.3s ease;
+}
+
+.hero-text-box:hover {
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.social-icon {
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.social-icon:hover {
+  transform: translateY(-3px) scale(1.2);
+  color: #5C73F2;
+  text-shadow: 0 8px 20px rgba(92,115,242,0.6);
+}
+
+.fade-section {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: all 0.8s ease;
+}
+
+.fade-section.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+
+/* FIN ABOUT US SERGIO */
+

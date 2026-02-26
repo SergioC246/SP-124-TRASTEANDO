@@ -108,12 +108,15 @@ export const Footer = () => {
 
           <div className="nav mt-2 mt-lg-0 nav">
             <ul className="list-inline text-primary-hover mx-auto mb-0">
-              <li className="list-inline-item me-0">
-                <a href="#" className="me-3 text-white text-decoration-none">English (US)</a>
+              <li className="list-inline-item me-4">                
+                <a href="#" className="text-white text-decoration-none">Privacy Policy</a>
               </li>
-              <ul className="list-inline text-primary-hover mx-auto mb-0">
-                <a href="#" className="text-white text-decoration-none">Spain</a>
-              </ul>
+              <li className="list-inline-item me-4">
+                <a href="#" className="text-white text-decoration-none">Terms and Conditions</a>
+              </li>              
+              <li className="list-inline-item me-0">
+                <a href="#" className="text-white text-decoration-none">Refund policy</a>
+              </li>
             </ul>
           </div>
         </div>

@@ -92,7 +92,7 @@ export const Navbar = () => {
 									About us
 								</Link>
 
-								<Link to="#" className="nav-link fw-bold nav-main-link">
+								<Link to="/features" className="nav-link fw-bold nav-main-link">
 									<i className="fa-solid fa-magnifying-glass nav-icon"></i>
 									Features
 								</Link>
