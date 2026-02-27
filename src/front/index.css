@@ -1,22 +1,186 @@
+/* css irene mapa */
+/* MAPA ESTILO AIRBNB */
+.map-view-container {
+  display: flex;
+  height: calc(100vh - 90px); 
+  background-color: #fff;
+}
 
-/* marcador para el mapa SOLO MAPA */
+.map-list-section {
+  width: 50%;
+  overflow-y: auto;
+  padding: 24px;
+}
+
+.map-section {
+  width: 50%;
+  height: 100%;
+}
+
+/* MARCADORES DEL MAPA */
 .marker-nube {
-    background: white;
-    padding: 5px 10px;
-    border-radius: 20px;
-    border: 1px solid #ccc;
-    font-weight: bold;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2)
+  background: white;
+  padding: 8px 14px;
+  border-radius: 28px;
+  border: 1px solid rgba(0,0,0,0.1);
+  font-weight: 800;
+  font-size: 14px;
+  color: var(--text-dark);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.marker-nube:hover {
+  transform: scale(1.05);
+  z-index: 100 !important;
+}
+
+/* TARJETAS DE LA LISTA */
+.airbnb-card {
+  display: flex;
+  gap: 20px;
+  padding: 16px;
+  border-bottom: 1px solid #ebebeb; 
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); 
+  border-radius: 16px;
+  background-color: transparent;
+}
+
+.airbnb-card:hover {
+  background-color: #ffffff;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+  transform: translateY(-2px); 
+  z-index: 1;
+}
+.airbnb-card-img {
+  width: 160px;
+  height: 120px;
+  border-radius: 12px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.airbnb-card-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex-grow: 1;
+}
+
+/* POPUP DEL MAPA (INFO WINDOW) */
+/* POPUP DEL MAPA (INFO WINDOW) */
+.gm-style-iw-c {
+  padding: 0 !important;
+  border-radius: 16px !important;
+  max-width: 260px !important;
+  overflow: hidden !important;
+}
+
+.gm-style-iw-d {
+  overflow: hidden !important;
+  padding: 0 !important;
+  max-height: none !important;
+}
+
+.gm-style-iw-chr {
+  position: absolute !important;
+  top: 0;
+  right: 0;
+  width: 100%;
+  height: 0; 
+  z-index: 10;
+  background: transparent !important;
+}
+
+/* BOTÓN CERRAR CON FONDO SEMITRANSPARENTE */
+.gm-ui-hover-effect {
+  top: 8px !important;
+  right: 8px !important;
+  background-color: rgba(255, 255, 255, 0.6) !important; /* Blanco con 60% opacidad */
+  border-radius: 50% !important;
+  width: 28px !important;
+  height: 28px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+  opacity: 1 !important;
+  border: none !important;
+}
+
+/* OCULTAR ICONOS ORIGINALES DE GOOGLE */
+.gm-ui-hover-effect img, 
+.gm-ui-hover-effect span, 
+.gm-ui-hover-effect svg {
+  display: none !important;
+}
+
+/* DIBUJO MANUAL DE LA X (PALITOS NEGROS) */
+.gm-ui-hover-effect::before,
+.gm-ui-hover-effect::after {
+  content: "" !important;
+  position: absolute !important;
+  width: 12px !important;
+  height: 2px !important;
+  background-color: #000 !important; /* Color de la X */
+}
+
+.gm-ui-hover-effect::before {
+  transform: rotate(45deg) !important;
+}
+
+.gm-ui-hover-effect::after {
+  transform: rotate(-45deg) !important;
+}
+
+/* CONTENIDO PERSONALIZADO */
+.custom-info-window {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.custom-info-window img {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+  display: block;
+  margin: 0 !important;
+}
+
+.custom-info-window .info-text {
+  padding: 12px 16px;
+  background: white;
+}
+
+.custom-info-window h6 {
+  margin: 0 0 4px 0;
+  font-size: 15px;
+  color: #222;
+  font-weight: 600;
+}
+
+.custom-info-window p {
+  margin: 0;
+  color: #222; 
+  font-weight: 800;
+  font-size: 16px;
 }
 /* fin css SOLO MAPA */
 
 /* inicio css HOME por irene */
+html {
+  scroll-behavior: smooth;
+}
 
 :root {
-
-  --primary-color: #5C73F2;  
-  --secondary-color: #91BBF2; 
-  --accent-pink: #F24171;   
+  --primary-color: #5c73f2;
+  --secondary-color: #91bbf2;
+  --accent-pink: #f24171;
   --text-dark: #111111;
 }
 .highlight-container {
@@ -25,7 +189,18 @@
 }
 
 .underline-svg path {
-  fill: var(--primary-color);
+  fill: var(--secondary-color);
+}
+.underline-svg {
+  position: absolute;
+  bottom: -17px;
+  left: 0;
+  width: 100%;
+  z-index: 1;
+}
+.highlight-text {
+  position: relative;
+  z-index: 2;
 }
 
 /* marcador para el mapa SOLO MAPA */
@@ -35,10 +210,10 @@
   border-radius: 20px;
   border: 1px solid #ccc;
   font-weight: bold;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
-/* home */
+/* HOME */
 .hero-section {
   padding: 0 5% !important;
   background-color: #ffffff;
@@ -47,33 +222,31 @@
 
 /* imagen*/
 .image-side {
-  background-image: url('https://images.unsplash.com/photo-1551313158-73d016a829ae?q=80&w=2037&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'); 
+  background-image: url("https://images.unsplash.com/photo-1551313158-73d016a829ae?q=80&w=2037&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
   background-size: cover;
   background-position: center;
-  background-repeat: no-repeat;  
-  min-height: 100vh; 
-  border-radius: 50px !important; 
+  background-repeat: no-repeat;
+  min-height: 100vh;
+  border-radius: 50px !important;
   margin-top: 40px;
   position: relative;
-  
 }
-
 
 /* badge transparente */
 .support-badge {
-  background: rgba(255, 255, 255, 0.7) !important; 
+  background: rgba(255, 255, 255, 0.7) !important;
   backdrop-filter: blur(10px);
   border-radius: 20px !important;
-  border: 1px solid rgba(255,255,255,0.3) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
   padding: 12px 20px !important;
   top: 30px !important;
   right: 30px !important;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 }
 
 /* buscador */
 .search-bar-container {
-  margin-top: -120px ;
+  margin-top: -120px;
   max-width: 1100px;
   z-index: 100;
   position: relative;
@@ -114,25 +287,189 @@
 
 .search-btn:hover {
   transform: scale(1.1);
-  background-color: var(--accent-pink) !important; 
+  background-color: var(--accent-pink) !important;
+}
+/* EFECTO DE TEXTO DINÁMICO */
+
+.dynamic-text-container {
+  display: inline-flex; 
+  perspective: 1000px;
+  margin-left: 10px;
+  vertical-align: baseline;
+  white-space: nowrap; 
+}
+.content-side {
+  padding-right: 10% !important; 
 }
 
-/* cards */
+.search-bar-container {
+  margin-bottom: 100px; 
+}
+
+.dynamic-text {
+  color: var(--accent-pink);
+  display: inline-block;
+  font-weight: 800;
+  animation: flipDown 0.6s cubic-bezier(0.455, 0.03, 0.515, 0.955) forwards;
+  transform-origin: top;
+}
+
+@keyframes flipDown {
+  0% {
+    opacity: 0;
+    transform: rotateX(-90deg);
+  }
+  100% {
+    opacity: 1;
+    transform: rotateX(0deg);
+  }
+}
+
+/* título sobre los storages */
+.secondary-hero-title {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+}
+
+/* cards ultimas circulares de storages dentro de home */
+.nearby-card {
+  text-align: center;
+  transition: transform 0.3s ease;
+  cursor: pointer;
+  border: none !important;
+  background: transparent !important;
+}
+
+.nearby-card:hover {
+  transform: translateY(-5px);
+}
+
+.nearby-img-container {
+  width: 150px;
+  height: 150px;
+  margin: 0 auto 15px;
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.nearby-img-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.nearby-title {
+  font-weight: 800;
+  font-size: 1.1rem;
+  margin-bottom: 2px;
+  color: #000;
+}
+
+.nearby-subtitle {
+  font-size: 0.85rem;
+  color: #666;
+}
+/* seccion ultima home de reserva */
+.reserve-banner-video {
+  border-radius: 40px;
+  min-height: 450px; 
+  position: relative; 
+  overflow: hidden;   
+  justify-content: center;
+}
+
+.reserve-video-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 1;
+}
+
+.reserve-content-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  background: rgba(0, 0, 0, 0.6); 
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 60px;
+  text-align: center;
+}
+
+.reserve-content-overlay h2 {
+  font-weight:400 ;
+  font-size: 3.5rem; 
+  letter-spacing: -1px;
+  line-height: 1.1;
+  color: white;
+  margin-bottom: 20px;
+  text-transform: capitalize;
+}
+
+.reserve-content-overlay p {
+  font-size: 1.50rem;
+  opacity: 0.9;
+  font-weight: 500;
+  margin-bottom: 40px !important;
+}
+
+.btn-glass-custom {
+  background: rgba(255, 255, 255, 0.1) !important;
+  backdrop-filter: blur(5px);
+  color: white !important;
+  border: 2px solid white !important;
+  padding: 18px 45px !important;
+  border-radius: 50px !important; 
+  font-weight: 700;
+  letter-spacing: 1px;
+  transition: all 0.4s ease;
+}
+
+.btn-glass-custom:hover {
+  background: var(--acce-color) !important;
+  border-color: var(--secondary-color) !important;
+  transform: scale(1.05);
+  box-shadow: 0 10px 25px var(--primary-color);
+}
+/* FIN HOME */
+
+/* cards de location*/
 .location-card {
   border-radius: 25px !important;
   overflow: hidden;
   transition: all 0.3s ease;
   border: none !important;
+  background: #fff;
 }
 
 .location-card:hover {
   transform: translateY(-10px);
-  box-shadow: 0 20px 40px rgba(0,0,0,0.12) !important;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12) !important;
 }
 
 .card-img-wrapper {
-  height: 280px; /* Un poco más estilizadas */
+  width: 100%;
+  aspect-ratio: 9 / 9; 
   overflow: hidden;
+  position: relative;
+}
+.card-img-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; 
+  transition: transform 0.5s ease;
+}
+.location-card:hover .card-img-wrapper img {
+  transform: scale(1.1);
 }
 
 .location-tag {
@@ -144,35 +481,36 @@
 }
 
 .btn-primary-custom {
-  background-color: var(--primary-color) !important; /* Forzamos el azul */
-  color: white !important; /* Texto siempre blanco */
+  background-color: var(--primary-color) !important;
+  color: white !important;
   border: none !important;
   font-weight: 600;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(92, 115, 242, 0.3); /* Sombra azulada */
+  box-shadow: 0 4px 15px rgba(92, 115, 242, 0.3);
 }
 
 .btn-primary-custom:hover {
-  background-color: #455bc4 !important; /* Un azul un poco más oscuro al pasar el ratón */
+  background-color: #455bc4 !important;
   color: white !important;
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(92, 115, 242, 0.4);
 }
+
 /* fin css HOME por irene */
 
 /* INICIO NAVBAR SERGIO */
 
 /* boton de anfitrión del navbar */
 .anfitrion-btn {
-	background-color: #f2f2f2;
-	color: #333;
-	transition: all 0.2s ease-in-out;
+  background-color: #f2f2f2;
+  color: #333;
+  transition: all 0.2s ease-in-out;
 }
 
 .anfitrion-btn:hover {
-	background-color: #e0e0e0;
-	color: #000;
-	transform: translateY(-1px);
+  background-color: #e0e0e0;
+  color: #000;
+  transform: translateY(-1px);
 }
 
 /* Inicio Navbar de Sergio */
@@ -186,22 +524,24 @@
 
 /* Aplicamos padding correcto a TODOS los toggles */
 .navbar .nav-link.dropdown-toggle,
-.navbar .btn.dropdown-toggle {  
+.navbar .btn.dropdown-toggle {
   padding-right: 24px !important;
 }
 
 /* Flecha personalizada */
 .navbar .dropdown-toggle::before {
-  content:"";
+  content: "";
   position: absolute;
   right: 8px;
   top: 50%;
   width: 9px;
   height: 9px;
-  border-right: 3px solid #5C73F2;
-  border-bottom: 3px solid #5C73F2;
+  border-right: 3px solid #5c73f2;
+  border-bottom: 3px solid #5c73f2;
   transform: translateY(-50%) rotate(45deg);
-  transition: transform 0.25s ease, border-color 0.25s ease;
+  transition:
+    transform 0.25s ease,
+    border-color 0.25s ease;
 }
 
 /* Elimina cualquier marcador extraño en navbar */
@@ -219,7 +559,7 @@
 /* Cuando está abierto */
 .navbar .dropdown-toggle.show::before {
   transform: translateY(-50%) rotate(-135deg);
-  border-color: #91BBF2;
+  border-color: #91bbf2;
 }
 
 /* animaciones del navbar */
@@ -233,29 +573,37 @@
 /* Efecto hover */
 .navbar .nav-link:hover,
 .navbar .nav-toggle-btn:hover {
-  color: #5C73F2 !important;
+  color: #5c73f2 !important;
   transform: translateY(-1px);
 }
 
 /* Iconos */
 .nav-icon {
   font-size: 0.9rem;
-  transition: transform 0.2s ease, color 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    color 0.2s ease;
 }
 
 /* Icono crece al hover */
 .navbar .nav-link:hover .nav-icon,
 .navbar .nav-toggle-btn:hover .nav-icon {
   transform: scale(1.15);
-  color: #5C73F2;
+  color: #5c73f2;
 }
 
 
 /* Cuando dropdown está abierto */
 .navbar .dropdown-toggle.show {
-  color: #5C73F2 !important;
+  color: #5c73f2 !important;
 }
 
+/* CENTRAR LOGIN Y SERVICES ABSOLUTO */
+.center-nav {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
 .navbar .nav-link {
   color: #333;
   transition: all 0.25s ease;
@@ -276,7 +624,7 @@
 
 /* Hover elegante Airbnb */
 .center-link:hover {
-  color: #5C73F2 !important;
+  color: #5c73f2 !important;
   transform: scale(1.05);
 }
 
@@ -294,14 +642,13 @@
 
 /* Botón hamburguesa */
 .menu-btn {
-  background: white;  
+  background: white;
   transition: all 0.2s ease;
 }
 
 .menu-btn:hover {
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
-
 
 /* ===== MICRO BOUNCE ICONOS ===== */
 
@@ -314,7 +661,7 @@
 .navbar .dropdown-item:hover .nav-icon,
 .navbar .menu-btn:hover .nav-icon {
   animation: microBounce 0.45s ease;
-  color: #5C73F2;
+  color: #5c73f2;
 }
 
 /* ===== NAV LINKS PREMIUM (About & Features) ===== */
@@ -351,11 +698,21 @@
 
 /* Animación suave tipo "vida" */
 @keyframes microBounce {
-  0%   { transform: translateY(0); }
-  40%  { transform: translateY(-5px); }
-  65%  { transform: translateY(1px); }
-  85%  { transform: translateY(-1px); }
-  100% { transform: translateY(0); }
+  0% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-5px);
+  }
+  65% {
+    transform: translateY(1px);
+  }
+  85% {
+    transform: translateY(-1px);
+  }
+  100% {
+    transform: translateY(0);
+  }
 }
 
 .password-eye {
@@ -364,23 +721,36 @@
   right: 15px;
   transform: translate(-50%);
   cursor: pointer;
-  color: #91BBF2;
+  color: #91bbf2;
   transition: all 0.25s ease;
 }
 
 .password-eye:hover {
   transform: translateY(-50%) scale(1.15);
-  color: #5C73F2;
+  color: #5c73f2;
 }
 
 .password-eye:active {
   transform: translate(-50%) scale(0.95);}
 
+.password-eye {
+  position: absolute;
+  top: 50%;
+  right: 15px;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #91bbf2;
+  transition: all 0.25s ease;
+}
 
+.password-eye:hover {
+  transform: translateY(-50%) scale(1.15);
+  color: #5c73f2;
+}
 
 /* Login principal */
 .login-btn {
-  background-color: #5C73F2;
+  background-color: #5c73f2;
   color: white;
   border-radius: 10px;
   transition: all 0.25s ease;
@@ -397,7 +767,6 @@
   box-shadow: 0 4px 10px rgba(92, 115, 242, 0.2);
 }
 
-
 /* Botones sociales */
 .social-btn {
   background-color: #ffffff;
@@ -407,15 +776,16 @@
 
 .social-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
   background-color: #f9faff;
 }
 
 .social-btn:active {
   transform: translateY(0);
-  box-shadow: 0 3px 10px rgba(0,0,0,0.06);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
 }
 
+/* FIN NAVBAR SERGIO */
 /* ===== NAVBAR RIGHT PREMIUM STYLE ===== */
 
 .navbar-right {
