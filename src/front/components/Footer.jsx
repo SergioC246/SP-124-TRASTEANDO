@@ -25,7 +25,8 @@ export const Footer = () => {
               +34 600 000 000
             </p>
             <Link to="/chat" className="text-secondary text-decoration-none">
-              <i className="fas fa-comments me-2"></i>Chat
+              <i className="fas fa-comments me-2"></i>
+              Chat
             </Link>
           </div>
 
@@ -68,18 +69,7 @@ export const Footer = () => {
                     <a href="#" className="text-secondary text-decoration-none">Refund Policy</a>
                   </li>
                 </ul>
-              </div>
-
-              {/* Payments */}
-              <div className="col-md-3 col-6">
-                <h5 className="text-white mb-2 mb-md-4 fw-bold">Payment Methods</h5>
-                <ul className="list-unstyled small text-secondary">
-                  <li className="mb-2"><i className="fa-brands fa-cc-visa me-2"></i>Visa</li>
-                  <li className="mb-2"><i className="fa-brands fa-cc-mastercard me-2"></i>Mastercard</li>
-                  <li className="mb-2"><i className="fa-brands fa-paypal me-2"></i>PayPal</li>
-                  <li><i className="fa-brands fa-cc-amex me-2"></i>AMEX</li>
-                </ul>
-              </div>
+              </div>                            
 
               {/* Social */}
               <div className="col-md-3 col-6">
@@ -97,6 +87,16 @@ export const Footer = () => {
                   <li>
                     <a href="#" className="text-secondary text-decoration-none"><i className="fa-brands fa-twitter me-2"></i>X</a>
                   </li>
+                </ul>
+              </div>
+
+              <div className="col-md-3 col-6">
+                <h5 className="text-white mb-2 mb-md-4 fw-bold">Payment Methods</h5>
+                <ul className="list-unstyled small text-secondary">
+                  <li className="mb-2"><i className="fa-brands fa-cc-visa me-2"></i>Visa</li>
+                  <li className="mb-2"><i className="fa-brands fa-cc-mastercard me-2"></i>Mastercard</li>
+                  <li className="mb-2"><i className="fa-brands fa-paypal me-2"></i>PayPal</li>
+                  <li><i className="fa-brands fa-cc-amex me-2"></i>AMEX</li>
                 </ul>
               </div>
             </div>

@@ -121,30 +121,41 @@ export const Navbar = () => {
 
 					{/* ==== Solo Admin ==== */}
 
-						{role === "admin" && (
-							<>
+					{role === "admin" && (
+						<>
+							<ul className="navbar-nav ms-auto align-items-center">
+
 								<li className="nav-item ms-2">
-									<Link to="/clients-info" className="btn btn-outline-warning" >
+									<Link to="/clients-info" className="nav-link">
+										<i className="fa-solid fa-user me-2 nav-icon"></i>
 										Clients
 									</Link>
 								</li>
+
 								<li className="nav-item ms-2">
-									<Link to="/companies" className="btn btn-outline-warning">
+									<Link to="/companies" className="nav-link">
+										<i className="fa-regular fa-building me-2 nav-icon"></i>
 										Companies
 									</Link>
 								</li>
+
 								<li className="nav-item ms-2">
-									<Link to="/admin-users" className="btn btn-outline-warning" >
+									<Link to="/admin-users" className="nav-link">
+										<i class="fa-solid fa-user-tie me-2 nav-icon"></i>
 										Admins
 									</Link>
 								</li>
+
 								<li className="nav-item ms-2">
-									<Link to="/locations-public" className="btn btn-outline-warning" >
+									<Link to="/location" className="nav-link">
+										<i className="fa-regular fa-map me-2 nav-icon"></i>
 										Locations
 									</Link>
 								</li>
-								<li className="nav-item ms-2">
-									<Link to="/admin/private" className="btn btn-outline-danger" >
+
+								<li className="nav-item ms-2 me-2">
+									<Link to="/admin/private" className="nav-link" >
+										<i className="fa-solid fa-user me-2 nav-icon"></i>
 										My Profile
 									</Link>
 								</li>
@@ -155,11 +166,11 @@ export const Navbar = () => {
 									</Link>
 								</li>
 
+							</ul>
+						</>
+					)}
 
-							</>
-						)}
-
-						{/* ==== Solo Company ==== */}
+					{/* ==== Solo Company ==== */}
 
 					{role === "company" && (
 						<>
@@ -194,7 +205,7 @@ export const Navbar = () => {
 								<li className="nav-item ms-2">
 									<Link to="/search" className="nav-link">
 										<i className="fa-solid fa-box-open me-2 nav-icon"></i>
-										Storages available
+										Find storages
 									</Link>
 								</li>
 

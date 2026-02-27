@@ -55,7 +55,6 @@ export const ClientLocations = () => {
             <div className="row row-cols-1 row-cols-md-3 g-4">
                 {locations.map((loc, index) => (
                     <div key={loc.id || index} className="col">
-                        {/* He añadido 'shadow-hover' que es común en muchos CSS o simplemente mejora la profundidad */}
                         <div className="location-card card h-100 ">
                             <div className="card-img-wrapper">
                                 <img src={loc.photo || `https://images.unsplash.com/photo-1551313158-73d016a829ae?q=80&w=1137&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D`}
