@@ -86,7 +86,7 @@ export const router = createBrowserRouter(
 
       {/* Rutas client */}
 
-      <Route path="/clients-edit/:id/edit" element={<ClientEdit />} />
+
       <Route path="/client/login" element={<ClientLogin />} />
       <Route path="/client/signup" element={<ClientSignup />} />
 
