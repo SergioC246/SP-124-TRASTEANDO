@@ -13,7 +13,7 @@ export const ClientProtectedRoute = () => {
 
     useEffect(() => {
          if (!token){
-            navigate("/client-login/login")
+            navigate("/client/login")
          }
     },[])
 

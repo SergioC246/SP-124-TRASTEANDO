@@ -8,6 +8,7 @@ export const Navbar = () => {
 	const { store, dispatch } = useGlobalReducer();
 	const role = getUserRole(store);
 
+
 	const navigate = useNavigate()
 
 	const handleLogout = () => {
@@ -21,14 +22,12 @@ export const Navbar = () => {
 			<nav className="navbar navbar-expand-xl navbar-light">
 				<div className="container px-2">
 
-					<a className="navbar-brand" href="/">
-						<img src={logo} alt="logo"
-							height="70"
-							className="light-mode-item navbar-brand-item" />
+					<Link to="/" className="navbar-brand">
+						<img src={logo} alt="logo" height="70" className="navbar-brand-item" />
 						<span className="fw-bold fs-5 me-3" style={{ color: "#5C73F2" }}>
 							Trasteando
 						</span>
-					</a>
+					</Link>
 
 					{!role && (
 						<>
@@ -75,7 +74,7 @@ export const Navbar = () => {
 												</Link>
 											</li>
 											<li>
-												<Link className="dropdown-item d-flex gap-2 align-items-center" to="/client/private/storages/:locationId">
+												<Link className="dropdown-item d-flex gap-2 align-items-center" to="/search">
 													<i className="fas fa-box-open nav-icon" style={{ color: "#5C73F2" }}></i>
 													Storages
 												</Link>
