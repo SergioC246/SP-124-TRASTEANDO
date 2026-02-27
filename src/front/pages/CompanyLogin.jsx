@@ -59,7 +59,7 @@ export const CompanyLogin = () => {
                     </div>
 
                     <div className="col-md-6 bg-white p-5 d-flex flex-column justify-content-center">
-                        <div className="h-100 w-100 d-flex flex-column justify-content-end">
+                        <div className="d-flex flex-column justify-content-end">
                             <h2 className="text-black fw-bold">Welcome Back</h2>
                             <div className="mb-3">
                                 <small className="text-secondary">New here? <span className="fw-bold" style={{ cursor: 'pointer', color: "#91BBF2" }} onClick={() => navigate("/createCompanies")}>Register here</span></small>
@@ -110,7 +110,7 @@ export const CompanyLogin = () => {
                                 Login
                             </button>
 
-                            <div className="d-flex align-items-center my-4">
+                            {/* <div className="d-flex align-items-center my-4">
                                 <div className="flex-grow-1" style={{ height: "1px", backgroundColor: "#e0e0e0" }}></div>
 
                                 <span
@@ -132,7 +132,7 @@ export const CompanyLogin = () => {
                                     <img src={facebookIcon} alt="Facebook" style={{ width: "20px" }} />
                                     <strong> Continue with Facebook</strong>
                                 </button>
-                            </div>
+                            </div> */}
 
                             <div className="d-flex flex-column flex-md-row justify-content-center text-muted mt-3">
                                 <div>

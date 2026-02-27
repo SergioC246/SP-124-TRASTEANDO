@@ -138,7 +138,7 @@ export const ClientLogin = () => {
                                 )}
                             </button>
 
-                            <div className="d-flex align-items-center my-4">
+                            {/* <div className="d-flex align-items-center my-4">
                                 <div className="flex-grow-1" style={{ height: "1px", backgroundColor: "#e0e0e0" }}></div>
 
                                 <span
@@ -160,7 +160,7 @@ export const ClientLogin = () => {
                                     <img src={facebookIcon} alt="Facebook" style={{ width: "20px" }}/>
                                     <strong> Continue with Facebook</strong>
                                 </button>
-                            </div>
+                            </div> */}
                             <div className="d-flex flex-column flex-md-row justify-content-center text-muted mt-3">
                                 <div>
                                     © {new Date().getFullYear()} Trasteando. All rights reserved.
