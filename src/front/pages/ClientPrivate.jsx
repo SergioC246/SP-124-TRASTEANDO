@@ -39,7 +39,7 @@ export const ClientPrivate = () => {
                     localStorage.removeItem("tokenClient");
                     localStorage.removeItem("client_id");
                     dispatch({ type: "logout_client" });
-                    navigate("/login");
+                    navigate("/client/login");
                     return;
                 }
                 setClient(data);

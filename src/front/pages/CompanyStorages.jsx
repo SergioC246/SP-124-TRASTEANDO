@@ -55,7 +55,7 @@ export const CompanyStorages = () => {
     if (storages.length === 0) return <h2>No storages found</h2>
 
     return (
-        <div className="container py-4">
+        <div className="container py-5">
             <div className="row justify-content-center">
                 <div className="col-md-6">
                     <div className="card show">
