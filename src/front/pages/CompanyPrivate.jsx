@@ -54,7 +54,7 @@ export const CompanyPrivate = () => {
 
     return (
         <div className="container py-4">
-            <div className="row justify-content-center">
+            <div className="row justify-content-center mb-5">
                 <div className="col-12 col-md-8 col-lg-5">
                     <div className="card shadow-lg border-0">
 
