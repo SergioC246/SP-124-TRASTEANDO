@@ -65,6 +65,8 @@ import { SubscriptionCheckout } from "./pages/SubscriptionCheckout";
 import { PaymentSuccess } from "./pages/PaymentSucess";
 import { PaymentCancel } from "./pages/PaymentCancel";
 import { Inventariator } from "./pages/Inventariator";
+import { AboutUs } from "./pages/AboutUs";
+import { Features } from "./pages/Features";
 
 
 
@@ -76,7 +78,9 @@ export const router = createBrowserRouter(
       {/* ruta para el search de home */}
       <Route path="/search" element={<SearchHome />} />
       <Route path="/search/map" element={<Map />} />
-
+      <Route path="/aboutUs" element={<AboutUs />} />
+      <Route path="/features" element={<Features />} />
+      
       {/* Rutas adminUser */}
 
       <Route path="/admin/login" element={<AdminLogin />} />

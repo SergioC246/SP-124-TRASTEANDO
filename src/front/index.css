@@ -513,6 +513,8 @@ html {
   transform: translateY(-1px);
 }
 
+/* Inicio Navbar de Sergio */
+
 /* flechas del navbar */
 
 /* Quitamos flecha default */
@@ -590,6 +592,7 @@ html {
   color: #5c73f2;
 }
 
+
 /* Cuando dropdown está abierto */
 .navbar .dropdown-toggle.show {
   color: #5c73f2 !important;
@@ -601,7 +604,17 @@ html {
   left: 50%;
   transform: translateX(-50%);
 }
+.navbar .nav-link {
+  color: #333;
+  transition: all 0.25s ease;
+}
 
+.navbar .nav-link:hover {
+  color: #5C73F2 !important;
+  transform: translateY(-1px);
+}
+
+/* CENTRAR LOGIN Y SERVICES ABSOLUTO */
 /* Links centrales más grandes */
 .center-link {
   font-size: 1.1rem;
@@ -651,6 +664,38 @@ html {
   color: #5c73f2;
 }
 
+/* ===== NAV LINKS PREMIUM (About & Features) ===== */
+
+.custom-nav-link {
+  position: relative;
+  font-weight: 600;
+  color: #333 !important;
+  padding: 8px 4px;
+  transition: all 0.25s ease;
+}
+
+/* Línea animada elegante */
+.custom-nav-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 0%;
+  height: 2px;
+  background-color: #5C73F2;
+  transition: width 0.3s ease;
+}
+
+/* Hover */
+.custom-nav-link:hover {
+  color: #5C73F2 !important;
+  transform: translateY(-2px);
+}
+
+.custom-nav-link:hover::after {
+  width: 100%;
+}
+
 /* Animación suave tipo "vida" */
 @keyframes microBounce {
   0% {
@@ -686,8 +731,7 @@ html {
 }
 
 .password-eye:active {
-  transform: translate(-50%) scale(0.95);
-}
+  transform: translate(-50%) scale(0.95);}
 
 .password-eye {
   position: absolute;
@@ -742,3 +786,269 @@ html {
 }
 
 /* FIN NAVBAR SERGIO */
+/* ===== NAVBAR RIGHT PREMIUM STYLE ===== */
+
+.navbar-right {
+  margin-left: auto;
+}
+
+/* estilo base */
+.nav-pill {
+  display: flex;
+  align-items: center;
+  padding: 8px 16px;
+  border-radius: 12px;
+  font-weight: 600;
+  color: #222;
+  text-decoration: none;
+  transition: all 0.25s ease;
+}
+
+/* iconos */
+.nav-pill i {
+  font-size: 0.9rem;
+  transition: transform 0.2s ease;
+}
+
+/* hover elegante */
+.nav-pill:hover {
+  background-color: rgba(92, 115, 242, 0.08);
+  color: #5C73F2;
+  transform: translateY(-2px);
+}
+
+/* iconito animado */
+.nav-pill:hover i {
+  transform: scale(1.15);
+}
+
+/* activo tipo Hotel */
+.active-pill {
+  background-color: rgba(92, 115, 242, 0.15);
+  color: #5C73F2;
+}
+
+.nav-pill {
+  white-space: nowrap;
+}
+
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 18px; /* más aire */
+  white-space: nowrap;
+}
+
+.nav-main-link {
+  position: relative;
+  color: #333 !important;
+  transition: all 0.25s ease;
+  padding: 8px 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+/* Hover */
+.nav-main-link:hover {
+  color: #5C73F2 !important;
+  transform: translateY(-1px);
+}
+
+/* Iconos animados */
+.nav-main-link i {
+  transition: transform 0.25s ease;
+}
+
+.nav-main-link:hover i {
+  transform: translateY(-3px);
+}
+
+/* NAVBAR SIEMPRE POR ENCIMA */
+header,
+.navbar {
+  position: relative;
+  z-index: 1100;
+}
+
+/* Dropdown aún más arriba */
+.dropdown-menu {
+  z-index: 1200 !important;
+}
+
+.company-link .nav-link {
+  font-weight: 600;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+/* Subrayado elegante animado */
+.company-link .nav-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 4px;
+  width: 0%;
+  height: 2px;  
+  transition: width 0.3s ease;
+}
+
+.company-link .nav-link:hover::after {
+  width: 100%;
+}
+
+/* FIN NAVBAR SERGIO */
+
+/* INICIO ABOUT US SERGIO */
+
+.team-card {
+  transition: all 0.3s ease;
+  border-radius: 15px;
+}
+
+.team-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+}
+
+.team-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(92,115,242,0.08), rgba(0,0,0,0.03));
+  z-index: 0;
+}
+
+.team-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+.hero-text-box {
+  background: rgba(0, 0, 0, 0.25);
+  padding: 40px;
+  border-radius: 20px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+  transition: all 0.3s ease;
+}
+
+.hero-text-box:hover {
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.social-icon {
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.social-icon:hover {
+  transform: translateY(-3px) scale(1.2);
+  color: #5C73F2;
+  text-shadow: 0 8px 20px rgba(92,115,242,0.6);
+}
+
+.fade-section {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: all 0.8s ease;
+}
+
+.fade-section.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* FIN ABOUT US SERGIO */
+
+/* INICIO FEATURES SERGIO */
+
+.features-bg {
+  background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+}
+
+/* HERO */
+.hero {
+  padding-top: 120px;
+  padding-bottom: 120px;
+}
+
+.hero-title {
+  letter-spacing: 1px;
+}
+
+.hero-subtitle {
+  max-width: 850px;
+  margin: auto;
+  opacity: 0.85;
+}
+
+/* TITLES */
+.section-title {
+  font-size: 2.2rem;
+  font-weight: 700;
+}
+
+.section-text {
+  max-width: 900px;
+  margin: auto;
+  opacity: 0.85;
+  line-height: 1.7;
+}
+
+/* TECH STACK */
+.tech-stack {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-top: 25px;
+}
+
+.tech-stack span {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 8px 15px;
+  border-radius: 25px;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+}
+
+.tech-stack span:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: translateY(-3px);
+}
+
+/* CARDS */
+.feature-card {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  backdrop-filter: blur(8px);
+  transition: all 0.3s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-6px);
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* DIVIDER */
+.section-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.2);
+  margin: 60px auto;
+  width: 80%;
+}
+
+/* FADE ANIMATION */
+.fade-section {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: all 0.8s ease-out;
+}
+
+.fade-section.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+/* FIN FEATURES SERGIO */

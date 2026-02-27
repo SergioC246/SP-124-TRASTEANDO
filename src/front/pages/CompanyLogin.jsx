@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import useGlobalReducer from "../hooks/useGlobalReducer";
-import clientLoginImg from "../assets/img/Login-client.png";
+import companyLoginImg from "../assets/img/Login-company.jpg";
 import googleIcon from "../assets/img/googleIcon.png";
 import facebookIcon from "../assets/img/facebookIcon.png"
 
@@ -48,12 +48,14 @@ export const CompanyLogin = () => {
     return (
         <div className="d-flex align-items-center justify-content-center">
             <div className="container my-5" style={{ maxWidth: "1100px" }}>
-                <div className="row shadow-lg mx-auto" style={{ borderRadius: "18px", overflow: "hidden" }}>
-                    <div className="col-md-6 d-none d-md-block" style={{
-                        backgroundImage: `url(${clientLoginImg})`,
-                        backgroundSize: "cover",
-                        backgroundPosition: "center"
-                    }}>
+                <div className="row shadow-lg mx-auto" style={{ borderRadius: "18px", overflow: "hidden", minHeight: "600px" }}>
+                    <div className="col-md-6 d-none d-md-block p-0">
+                        <img
+                            src={companyLoginImg}
+                            alt="Login"
+                            className="img-fluid"
+                            style={{ width: "100%", height: "100%"}}
+                        />
                     </div>
 
                     <div className="col-md-6 bg-white p-5 d-flex flex-column justify-content-center">
@@ -141,6 +143,6 @@ export const CompanyLogin = () => {
                     </div>
                 </div>
             </div>
-        </div>
+        </div >
     )
 }

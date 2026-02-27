@@ -118,7 +118,7 @@ export const CompanyLocationStorages = () => {
 
     if (storages.length === 0) {
         return (
-            <div className="container py-5">
+            <div className="container py-5 px-5">
                 <div className="row justify-content-center">
                     <div className="col-12 col-md-8 col-lg-5">
                         <div className="card shadow-lg border-0">
@@ -149,8 +149,8 @@ export const CompanyLocationStorages = () => {
     }
 
     return (
-        <div className="container-fluid py-5 px-4">
-            <div className="row">
+        <div className="container-fluid py-5 px-5">
+            <div className="row mb-5">
                 <div className="col-12 col-xl-12 mx-auto">
                     <div className="card shadow-lg border-0">
                         <div className="card-header bg-info-subtle text-info-emphasis text-center py-4">
