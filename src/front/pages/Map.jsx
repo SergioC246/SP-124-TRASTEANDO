@@ -170,49 +170,65 @@ export const Map = () => {
     };
     // para dibujar los trasteros en el mapa
     useEffect(() => {
-        if (!mapReady || !mapInstance.current) return;
+    if (!mapReady || !mapInstance.current) return;
 
-        markersRef.current.forEach(marker => marker.setMap(null));
-        markersRef.current = [];
+    markersRef.current.forEach(marker => marker.setMap(null));
+    markersRef.current = [];
 
-        storages.forEach((storage, index) => {
-            const marker = new window.google.maps.Marker({
-                position: {
-                    lat: parseFloat(storage.latitude) + (index * 0.00001),
-                    lng: parseFloat(storage.longitude) + (index * 0.00001),
-                },
-                map: mapInstance.current,
-                icon: {
-                    url: "https://maps.gstatic.com/mapfiles/transparent.png",
-                    size: new window.google.maps.Size(50, 30),
-                    anchor: new window.google.maps.Point(25, 15)
-                },
-                optimized: false,
-                label: {
-                    className: "marker-nube",
-                    text: `${storage.price}€`,
-                }
-
-            });
-            const infoWindow = new window.google.maps.InfoWindow({
-                content:
-                    `<div style="color: black; padding: 5px;">
-                        <strong>${storage.price}€ / mes</strong><br>
-                        <span>${storage.size} m²</span>
-                    </div> `
-            });
-            marker.addListener("click", () => {
-                infoWindow.open(mapInstance.current, marker);
-            });
-
-            markersRef.current.push(marker);
+    storages.forEach((storage, index) => {
+        const marker = new window.google.maps.Marker({
+            position: {
+                lat: parseFloat(storage.latitude) + (index * 0.00001),
+                lng: parseFloat(storage.longitude) + (index * 0.00001),
+            },
+            map: mapInstance.current,
+            icon: {
+                url: "https://maps.gstatic.com/mapfiles/transparent.png",
+                size: new window.google.maps.Size(50, 30),
+                anchor: new window.google.maps.Point(25, 15)
+            },
+            optimized: false,
+            label: {
+                className: "marker-nube",
+                text: `${storage.price}€`,
+            }
         });
-    }, [storages, mapReady])
+
+        const infoWindow = new window.google.maps.InfoWindow({
+            // Estructura limpia para que el CSS haga el trabajo de "borde a borde"
+            content: `
+                <div class="custom-info-window" id="info-${storage.storage_id}">
+                    <img src="${storage.photo || "https://images.unsplash.com/photo-1581404917829-5a5d096770db?q=80&w=400&auto=format&fit=crop"}" alt="Storage">
+                    <div class="info-text">
+                        <h6>${storage.size} m² en ${storage.city}</h6>
+                        <p>${storage.price}€ <span style="font-size:14px; font-weight:normal; color:#717171;">/ mes</span></p>
+                    </div>
+                </div>
+            `
+        });
+
+        marker.addListener("click", () => {
+            
+            infoWindow.open(mapInstance.current, marker);
+        });
+
+        window.google.maps.event.addListener(infoWindow, 'domready', () => {
+            const popup = document.getElementById(`info-${storage.storage_id}`);
+            if (popup) {                
+                popup.addEventListener('click', () => {
+                    navigate(`/client/private/storage/${storage.storage_id}`);
+                });
+            }
+        });
+
+        markersRef.current.push(marker);
+    });
+}, [storages, mapReady]);
 
 
     return (
-        // barra de busqeuda
-        <div className="p-4">
+        <div className="d-flex flex-column" style={{ height: "100vh" }}>
+            {/* searchbar*/}
             <div className="bg-white border-bottom p-3 shadow-sm z-3">
                 <div className="container-fluid">
                     <div className="row g-2 align-items-center">
@@ -229,63 +245,63 @@ export const Map = () => {
                             <input type="date" className="form-control border-0 bg-light rounded-pill px-3" value={searchData.checkout} onChange={(e) => setSearchData({ ...searchData, checkout: e.target.value })} />
                         </div>
                         <div className="col-md-2">
-                            <button onClick={fetchStorages} className="btn btn-primary rounded-pill w-100 fw-bold shadow-sm">
+                            <button onClick={fetchStorages} className="btn btn-primary rounded-pill w-100 fw-bold shadow-sm" style={{ backgroundColor: 'var(--primary-color)', border: 'none' }}>
                                 <i className="fa fa-search me-2"></i>Search
                             </button>
                         </div>
                     </div>
                 </div>
             </div>
-
-            {/* // barra de busqeuda */}
-
-            <div style={{ display: "flex", height: "100vh" }}>
-                <div style={{ width: "50%", overflowY: "scroll", padding: "20px" }}>
-                    <h2>Trasteros cercanos</h2>
-                    {storages.length === 0 && <p>No hay trasteros disponibles en esta zona.</p>}
+            <div className="map-view-container">
+                <div className="map-list-section custom-scrollbar">
+                    <p className="text-muted fw-bold mb-4">{storages.length} trasteros disponibles</p>
+                    
+                    {storages.length === 0 && <p className="text-muted">No hay trasteros disponibles en esta zona.</p>}
 
                     {storages.map(storage => (
-                        <div key={storage.storage_id} style={{ border: "1px solid #ddd", borderRadius: "10px", padding: "15px", marginBottom: "15px", display: "flex", gap: "15px" }} >
-
-                            {/* CONTENEDOR DE IMAGEN CON URL SEGURA */}
-                            <div style={{ width: "150px", height: "120px", flexShrink: 0 }}>
-                                <img
-                                    src={storage.photo || "https://images.unsplash.com/photo-1581404917829-5a5d096770db?q=80&w=400&auto=format&fit=crop"}
-                                    alt="Storage"
-                                    style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "8px" }}
-                                    onError={(e) => {
-                                        e.target.onerror = null;
-                                        e.target.src = "https://images.unsplash.com/photo-1581404917829-5a5d096770db?q=80&w=400&auto=format&fit=crop";
-                                    }}
-                                />
-                            </div>
-
-                            {/* CONTENIDO ORIGINAL SIN CAMBIOS DE ESTILO */}
-                            <div style={{ flexGrow: 1 }}>
-                                <h4 style={{ margin: "0 0 5px 0" }}>{storage.address}</h4>
-                                <p style={{ margin: "0" }}>{storage.city}</p>
-                                <p style={{ margin: "0" }}>{storage.size} m²</p>
-                                <p style={{ margin: "5px 0" }}><strong>{storage.price}€ / mes</strong></p>
-
-                                {storage.distance_km !== undefined && storage.distance_km !== null && (
-                                    <p className="text-muted" style={{ margin: "0" }}>
-                                        <small>A {storage.distance_km} km de tu búsqueda</small>
-                                    </p>
-                                )}
-
-                                <p style={{ margin: "5px 0 0 0" }}>Status: {storage.status}</p>
-                                <button className="btn btn-primary mt-2" onClick={() => navigate(`/client/private/storage/${storage.storage_id}`)} >
-                                    Ver detalles
-                                </button>
+                        <div 
+                            key={storage.storage_id} 
+                            className="airbnb-card"
+                            onClick={() => navigate(`/client/private/storage/${storage.storage_id}`)}
+                        >
+                            <img
+                                src={storage.photo || "https://images.unsplash.com/photo-1581404917829-5a5d096770db?q=80&w=400&auto=format&fit=crop"}
+                                alt="Storage"
+                                className="airbnb-card-img"
+                                onError={(e) => {
+                                    e.target.onerror = null;
+                                    e.target.src = "https://images.unsplash.com/photo-1581404917829-5a5d096770db?q=80&w=400&auto=format&fit=crop";
+                                }}
+                            />
+                            
+                            <div className="airbnb-card-content">
+                                <div>
+                                    <div className="d-flex justify-content-between align-items-start">
+                                        <p className="text-muted mb-1" style={{ fontSize: "0.85rem", textTransform: "uppercase", letterSpacing: "0.5px" }}>
+                                            Trastero en {storage.city}
+                                        </p>                                        
+                                    </div>
+                                    <h5 className="fw-bold mb-1" style={{ color: 'var(--text-dark)' }}>{storage.size} m² • Acceso 24/7</h5>
+                                    
+                                    {storage.distance_km !== undefined && storage.distance_km !== null && (
+                                        <p className="text-muted mb-0" style={{ fontSize: "0.9rem" }}>
+                                            A {storage.distance_km} km del centro
+                                        </p>
+                                    )}
+                                </div>
+                                
+                                <div className="text-end mt-2">
+                                    <span className="fw-bold fs-5" style={{ color: 'var(--text-dark)' }}>{storage.price}€</span>
+                                    <span className="text-muted"> / mes</span>
+                                </div>
                             </div>
                         </div>
                     ))}
                 </div>
-                <div style={{ width: "50%", height: "100vh", background: "grey" }}>
-                    <div
-                        ref={mapRef}
-                        style={{ height: "100vh", width: "100%" }}
-                    />
+
+                {/* LADO DERECHO: MAPA */}
+                <div className="map-section">
+                    <div ref={mapRef} style={{ height: "100%", width: "100%" }} />
                 </div>
             </div>
         </div>
