@@ -1,5 +1,20 @@
 /* css irene mapa */
 /* MAPA ESTILO AIRBNB */
+/* searchbar mapa */
+:root {
+  --primary-color: #5c73f2;
+  --secondary-color: #91bbf2;
+  --accent-pink: #f24171;
+  --text-dark: #111111;
+}
+
+.search-bar-map {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  position: relative;
+  z-index: 100;
+}
+
 .map-view-container {
   display: flex;
   height: calc(100vh - 90px); 
@@ -37,39 +52,43 @@
 }
 
 /* TARJETAS DE LA LISTA */
-.airbnb-card {
-  display: flex;
-  gap: 20px;
-  padding: 16px;
-  border-bottom: 1px solid #ebebeb; 
+.airbnb-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); 
+  gap: 20px; 
+}
+
+.airbnb-grid-card {
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); 
-  border-radius: 16px;
-  background-color: transparent;
-}
-
-.airbnb-card:hover {
-  background-color: #ffffff;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.08);
-  transform: translateY(-2px); 
-  z-index: 1;
-}
-.airbnb-card-img {
-  width: 160px;
-  height: 120px;
-  border-radius: 12px;
-  object-fit: cover;
-  flex-shrink: 0;
-}
-
-.airbnb-card-content {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  flex-grow: 1;
+  transition: transform 0.2s ease;
 }
 
-/* POPUP DEL MAPA (INFO WINDOW) */
+.airbnb-grid-card:hover .img-container img {
+  transform: scale(1.05);
+}
+
+.airbnb-grid-card .img-container {
+  width: 100%;
+  aspect-ratio: 4 / 3 ; 
+  overflow: hidden;
+  border-radius: 12px;
+}
+.airbnb-grid-card .img-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+
+@media (max-width: 1200px) {
+  .airbnb-cards-grid {
+    grid-template-columns: 1fr; 
+  }
+}
+
 /* POPUP DEL MAPA (INFO WINDOW) */
 .gm-style-iw-c {
   padding: 0 !important;
@@ -117,14 +136,14 @@
   display: none !important;
 }
 
-/* DIBUJO MANUAL DE LA X (PALITOS NEGROS) */
+/* DIBUJO MANUAL DE LA X */
 .gm-ui-hover-effect::before,
 .gm-ui-hover-effect::after {
   content: "" !important;
   position: absolute !important;
-  width: 12px !important;
+  width: 10px !important;
   height: 2px !important;
-  background-color: #000 !important; /* Color de la X */
+  background-color: #00000072 !important; 
 }
 
 .gm-ui-hover-effect::before {
@@ -172,17 +191,73 @@
 }
 /* fin css SOLO MAPA */
 
+/* INICIO css para la pagina SEARCH HOME */
+
+.tns-carousel-manual {
+    display: flex;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    gap: 20px;
+    padding: 10px 5px;
+    scrollbar-width: none; 
+}
+
+.tns-carousel-manual::-webkit-scrollbar {
+    display: none;
+}
+
+.tns-manual-item {
+    flex: 0 0 350px;
+    max-width: 350px;
+}
+
+.tns-custom-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: white;
+    border: 1px solid #eee;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.tns-custom-btn:hover {
+    background: var(--primary-color);
+    color: white;
+}
+
+.tns-custom-btn.prev { left: -20px; }
+.tns-custom-btn.next { right: -20px; }
+
+
+.storage-card-elevated {
+    border: 1px solid #eee !important;
+}
+
+.btn-outline-primary{
+  transition: transform 0.2s ease; 
+}
+
+.btn-outline-primary:hover{
+  transform: scale(1.1);
+  background-color: var(--primary-color); 
+}
+/* FINALcss para la pagina search home */
+
 /* inicio css HOME por irene */
 html {
   scroll-behavior: smooth;
 }
 
-:root {
-  --primary-color: #5c73f2;
-  --secondary-color: #91bbf2;
-  --accent-pink: #f24171;
-  --text-dark: #111111;
-}
+
 .highlight-container {
   position: relative;
   display: inline-block;
@@ -243,6 +318,7 @@ html {
   right: 30px !important;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 }
+
 
 /* buscador */
 .search-bar-container {
@@ -449,11 +525,12 @@ html {
   transition: all 0.3s ease;
   border: none !important;
   background: #fff;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12) !important;
 }
 
 .location-card:hover {
   transform: translateY(-10px);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12) !important;
+  
 }
 
 .card-img-wrapper {

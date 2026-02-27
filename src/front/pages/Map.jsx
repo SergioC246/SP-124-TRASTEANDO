@@ -226,84 +226,60 @@ export const Map = () => {
 }, [storages, mapReady]);
 
 
-    return (
-        <div className="d-flex flex-column" style={{ height: "100vh" }}>
-            {/* searchbar*/}
-            <div className="bg-white border-bottom p-3 shadow-sm z-3">
-                <div className="container-fluid">
-                    <div className="row g-2 align-items-center">
-                        <div className="col-md-4 position-relative">
-                            <i className="fa fa-map-marker-alt position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
-                            <input ref={inputRef} type="text" className="form-control ps-5 border-0 bg-light rounded-pill"
-                                placeholder="Where are you looking?" value={searchData.location}
-                                onChange={(e) => setSearchData({ ...searchData, location: e.target.value })} />
-                        </div>
-                        <div className="col-md-2">
-                            <input type="date" className="form-control border-0 bg-light rounded-pill px-3" value={searchData.checkin} onChange={(e) => setSearchData({ ...searchData, checkin: e.target.value })} />
-                        </div>
-                        <div className="col-md-2">
-                            <input type="date" className="form-control border-0 bg-light rounded-pill px-3" value={searchData.checkout} onChange={(e) => setSearchData({ ...searchData, checkout: e.target.value })} />
-                        </div>
-                        <div className="col-md-2">
-                            <button onClick={fetchStorages} className="btn btn-primary rounded-pill w-100 fw-bold shadow-sm" style={{ backgroundColor: 'var(--primary-color)', border: 'none' }}>
-                                <i className="fa fa-search me-2"></i>Search
-                            </button>
-                        </div>
+   return (
+    <div className="d-flex flex-column" style={{ height: "100vh" }}>  
+        <div className="bg-white mb-5 z-3 d-flex justify-content-center">
+            <div className="search-bar-map w-100" style={{ maxWidth: "800px" }}>
+                <div className="bg-white search-bar-inner shadow-sm border d-flex align-items-center justify-content-between rounded-pill p-2">
+                    <div className="search-field border-end flex-grow-1 px-3">
+                        <label className="d-block mb-0">Location</label>
+                        <input ref={inputRef} type="text" className="form-control border-0 p-0 shadow-none fw-bold" placeholder="Where?" 
+                            value={searchData.location || ""} 
+                            onChange={(e) => setSearchData({ ...searchData, location: e.target.value })} />
                     </div>
+                    <div className="search-field border-end flex-grow-1 px-3">
+                        <label className="d-block mb-0">From</label>
+                        <input type="date" className="form-control border-0 p-0 shadow-none fw-bold" 
+                            value={searchData.checkin || ""} 
+                            onChange={(e) => setSearchData({ ...searchData, checkin: e.target.value })} />
+                    </div>
+                    <div className="search-field flex-grow-1 px-3">
+                        <label className="d-block mb-0">To</label>
+                        <input type="date" className="form-control border-0 p-0 shadow-none fw-bold" 
+                            value={searchData.checkout || ""} 
+                            onChange={(e) => setSearchData({ ...searchData, checkout: e.target.value })} />
+                    </div>
+                    <button onClick={fetchStorages} className="btn search-btn text-white ms-2">
+                        <i className="fa fa-search"></i>
+                    </button>
                 </div>
             </div>
-            <div className="map-view-container">
-                <div className="map-list-section custom-scrollbar">
-                    <p className="text-muted fw-bold mb-4">{storages.length} trasteros disponibles</p>
-                    
-                    {storages.length === 0 && <p className="text-muted">No hay trasteros disponibles en esta zona.</p>}
+        </div>
 
+        <div className="map-view-containe ps-3 d-flex flex-grow-1 overflow-hidden">
+            <div className="map-list-section custom-scrollbar p-4" style={{ width: "50%", overflowY: "auto" }}>
+                <p className="text-dark fw-bold mb-4 fs-5">{storages.length} trasteros disponibles</p>
+                
+                <div className="airbnb-cards-grid">
                     {storages.map(storage => (
-                        <div 
-                            key={storage.storage_id} 
-                            className="airbnb-card"
-                            onClick={() => navigate(`/client/private/storage/${storage.storage_id}`)}
-                        >
-                            <img
-                                src={storage.photo || "https://images.unsplash.com/photo-1581404917829-5a5d096770db?q=80&w=400&auto=format&fit=crop"}
-                                alt="Storage"
-                                className="airbnb-card-img"
-                                onError={(e) => {
-                                    e.target.onerror = null;
-                                    e.target.src = "https://images.unsplash.com/photo-1581404917829-5a5d096770db?q=80&w=400&auto=format&fit=crop";
-                                }}
-                            />
-                            
-                            <div className="airbnb-card-content">
-                                <div>
-                                    <div className="d-flex justify-content-between align-items-start">
-                                        <p className="text-muted mb-1" style={{ fontSize: "0.85rem", textTransform: "uppercase", letterSpacing: "0.5px" }}>
-                                            Trastero en {storage.city}
-                                        </p>                                        
-                                    </div>
-                                    <h5 className="fw-bold mb-1" style={{ color: 'var(--text-dark)' }}>{storage.size} m² • Acceso 24/7</h5>
-                                    
-                                    {storage.distance_km !== undefined && storage.distance_km !== null && (
-                                        <p className="text-muted mb-0" style={{ fontSize: "0.9rem" }}>
-                                            A {storage.distance_km} km del centro
-                                        </p>
-                                    )}
-                                </div>
-                                
-                                <div className="text-end mt-2">
-                                    <span className="fw-bold fs-5" style={{ color: 'var(--text-dark)' }}>{storage.price}€</span>
-                                    <span className="text-muted"> / mes</span>
-                                </div>
+                        <div key={storage.storage_id} className="airbnb-grid-card" onClick={() => navigate(`/client/private/storage/${storage.storage_id}`)}>
+                            <div className="img-container">
+                                <img src={storage.photo || "https://images.unsplash.com/photo-1581404917829-5a5d096770db?q=80&w=400&auto=format&fit=crop"} alt="Storage" />
+                            </div>
+                            <div className="card-info mt-2">
+                                <p className="fw-bold mb-0 text-truncate">Trastero en {storage.city}</p>
+                                <p className="text-muted mb-0" style={{ fontSize: "0.85rem" }}>{storage.size} m² • 24/7</p>
+                                <p className="mt-1 mb-0"><span className="fw-bold">{storage.price}€</span> / mes</p>
                             </div>
                         </div>
                     ))}
                 </div>
+            </div>
 
-                {/* LADO DERECHO: MAPA */}
-                <div className="map-section">
-                    <div ref={mapRef} style={{ height: "100%", width: "100%" }} />
-                </div>
+            <div className="map-section" style={{ width: "50%", position: "relative" }}>
+                <div ref={mapRef} style={{ height: "100%", width: "100%" }} />
             </div>
         </div>
-    )
+    </div>
+);
 }

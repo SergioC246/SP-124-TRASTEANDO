@@ -181,10 +181,10 @@ export const Home = () => {
 
       {/* final debajo storages */}
 
-      {/* SECCIÓN: RESERVE YOUR STORAGE CON VÍDEO DE FONDO */}
+      {/* CON VÍDEO DE FONDO */}
       <div className="container my-5">
         <div className="reserve-banner-video shadow-lg position-relative overflow-hidden">
-          {/* El vídeo de fondo */}
+     
           <video
             src={videoBg}
             autoPlay
@@ -193,10 +193,7 @@ export const Home = () => {
             playsInline
             className="reserve-video-bg"
           />
-
-          {/* El contenido encima del vídeo */}
           <div className="reserve-content-overlay">
-            {/* Título con más fuerza visual */}
             <h2 className="fw-extrabold display-3">
               Reserve your storage unit <br />
               <span style={{ color: '#f24171' }}>in minutes</span>
