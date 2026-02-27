@@ -18,7 +18,7 @@ export const Inventariator = () => {
     const [editingPlacement, setEditingPlacement] = useState("");
 
     const [imageFile, setImageFile] = useState(null);
-    const [imageUrl, setImageUrl] = useState(null); 
+    const [imageUrl, setImageUrl] = useState(null);
     const [previewUrl, setPreviewUrl] = useState(null);
 
     const [uploading, setUploading] = useState(false);
@@ -26,15 +26,15 @@ export const Inventariator = () => {
     const [suggestionMeta, setSuggestionMeta] = useState(null);
 
     const fileInputRef = useRef(null);
-    
-    
+
+
 
     // Limpieza del previewURL
     useEffect(() => {
-            return () => {
-                if (previewUrl) URL.revokeObjectURL(previewUrl);
-            };
-        }, [previewUrl]);
+        return () => {
+            if (previewUrl) URL.revokeObjectURL(previewUrl);
+        };
+    }, [previewUrl]);
 
     // Cargar categorías
     const loadCategories = async () => {
@@ -151,7 +151,7 @@ export const Inventariator = () => {
             const error = await resp.json();
             return alert(error.msg || "Error creando producto");
         }
-        
+
         await loadProducts();
         resetForm(); // <- 1 sola vez
     };
@@ -161,7 +161,7 @@ export const Inventariator = () => {
         if (!file) return;
 
         setImageFile(file);
-        setPreviewUrl(URL.createObjectURL(file)); // ✅ preview inmediata
+        setPreviewUrl(URL.createObjectURL(file));
 
         const token = store.tokenClient || localStorage.getItem("tokenClient");
         if (!token) return;
@@ -194,96 +194,96 @@ export const Inventariator = () => {
 
     return (
         <div className="container mt-5">
-            <h2>Inventariator v3</h2>
+            <h2>Inventariator</h2>
 
-        <form onSubmit={handleSubmit} className="mb-4">
-            {/* 1) Imagen */}
-            <input
-                ref={fileInputRef}
-                type="file"
-                className="form-control mb-2"
-                accept="image/*"
-                onChange={handleImageSelect}
-                disabled={isAnalyzing || uploading}
-            />
+            <form onSubmit={handleSubmit} className="mb-4">
+                {/* 1) Imagen */}
+                <input
+                    ref={fileInputRef}
+                    type="file"
+                    className="form-control mb-2"
+                    accept="image/*"
+                    onChange={handleImageSelect}
+                    disabled={isAnalyzing || uploading}
+                />
 
-            {(previewUrl || imageUrl) && (
-                <div className="mb-2">
-                    <img
-                        src={imageUrl || previewUrl}
-                        alt="preview"
-                        style={{
-                            width: "160px",
-                            height: "160px",
-                            objectFit: "cover",
-                            borderRadius: "12px",
-                            display: "block",
-                        }}
-                    />
-                </div>
-            )}
+                {(previewUrl || imageUrl) && (
+                    <div className="mb-2">
+                        <img
+                            src={imageUrl || previewUrl}
+                            alt="preview"
+                            style={{
+                                width: "160px",
+                                height: "160px",
+                                objectFit: "cover",
+                                borderRadius: "12px",
+                                display: "block",
+                            }}
+                        />
+                    </div>
+                )}
 
-            {(uploading || isAnalyzing) && (
-                <p className="mb-2">🔎 {uploading ? "Subiendo imagen..." : "Analizando imagen..."}</p>
-            )}
+                {(uploading || isAnalyzing) && (
+                    <p className="mb-2">🔎 {uploading ? "Subiendo imagen..." : "Analizando imagen..."}</p>
+                )}
 
-            {suggestionMeta && (
-                <small className="d-block mb-2">
-                    Sugerido: {suggestionMeta.suggested_category_name}{" "}
-                    ({(suggestionMeta.confidence * 100).toFixed(0)}%)
-                </small>
-            )}
+                {suggestionMeta && (
+                    <small className="d-block mb-2">
+                        Sugerido: {suggestionMeta.suggested_category_name}{" "}
+                        ({(suggestionMeta.confidence * 100).toFixed(0)}%)
+                    </small>
+                )}
+
+                <hr />
+
+                {/* 2) Campos */}
+                <input
+                    className="form-control mb-2"
+                    placeholder="Nombre"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    disabled={isAnalyzing || uploading}
+                />
+
+                <input
+                    className="form-control mb-2"
+                    placeholder="Descripción"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    disabled={isAnalyzing || uploading}
+                />
+
+                <select
+                    className="form-select mb-2"
+                    value={String(categoryId ?? "")}
+                    onChange={(e) => setCategoryId(e.target.value)}
+                    disabled={isAnalyzing || uploading}
+                >
+                    <option value="">Selecciona categoría</option>
+                    {categories.map((cat) => (
+                        <option key={cat.id} value={String(cat.id)}>
+                            {cat.name}
+                        </option>
+                    ))}
+                </select>
+
+                <input
+                    className="form-control mb-2"
+                    placeholder="Ubicación física (Caja 3 · Estantería A · Balda 2)"
+                    value={placement}
+                    onChange={(e) => setPlacement(e.target.value)}
+                    disabled={isAnalyzing || uploading}
+                />
+
+                <button className="btn" style={{ backgroundColor: "rgb(92, 115, 242)", border: "none", color: "white" }} disabled={isAnalyzing || uploading}>
+                    Crear Producto
+                </button>
+            </form>
 
             <hr />
 
-            {/* 2) Campos */}
-            <input
-                className="form-control mb-2"
-                placeholder="Nombre"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                disabled={isAnalyzing || uploading}
-            />
-
-            <input
-                className="form-control mb-2"
-                placeholder="Descripción"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                disabled={isAnalyzing || uploading}
-            />
-
-            <select
-                className="form-select mb-2"
-                value={String(categoryId ?? "")}
-                onChange={(e) => setCategoryId(e.target.value)}
-                disabled={isAnalyzing || uploading}
-            >
-                <option value="">Selecciona categoría</option>
-                {categories.map((cat) => (
-                    <option key={cat.id} value={String(cat.id)}>
-                        {cat.name}
-                    </option>
-                ))}
-            </select>
-
-            <input
-                className="form-control mb-2"
-                placeholder="Ubicación física (Caja 3 · Estantería A · Balda 2)"
-                value={placement}
-                onChange={(e) => setPlacement(e.target.value)}
-                disabled={isAnalyzing || uploading}
-            />
-
-            <button className="btn btn-primary" disabled={isAnalyzing || uploading}>
-                Crear Producto
-            </button>
-        </form>
-
-        <hr />
-
             <button
-                className="btn btn-outline-success mb-3"
+                className="btn btn-outline- mb-3" style={{ backgroundColor: "rgb(92, 115, 242)", border: "none", color: "white" }}
                 onClick={async () => {
                     const token = store.tokenClient;
                     if (!token) return;
@@ -308,106 +308,106 @@ export const Inventariator = () => {
                 📥 Exportar CSV
             </button>
 
-        <h4>Mis Productos</h4>
+            <h4>Mis Productos</h4>
 
-        {products.length === 0 && <p>No hay productos</p>}
+            {products.length === 0 && <p>No hay productos</p>}
 
-        <ul className="list-group">
-            {products.map((prod) => (
-                <li key={prod.id} className="list-group-item">
-                    <div className="d-flex align-items-start gap-3">
+            <ul className="list-group">
+                {products.map((prod) => (
+                    <li key={prod.id} className="list-group-item">
+                        <div className="d-flex align-items-start gap-3">
 
-                        {/* Imagen */}
-                        {prod.image_url && (
-                            <img
-                                src={prod.image_url}
-                                alt="product"
-                                style={{
-                                    width: "100px",
-                                    borderRadius: "8px",
-                                }}
-                            />
-                        )}
-
-                        {/* Contenido */}
-                        <div className="flex-grow-1">
-                            <strong>{prod.name}</strong> — {prod.category?.name}
-                            <br />
-                            <small>{prod.description}</small>
-
-                            {editingId === prod.id ? (
-                                <div className="mt-2 d-flex gap-2 align-items-center">
-                                    <input
-                                        className="form-control form-control-sm"
-                                        value={editingPlacement}
-                                        onChange={(e) => setEditingPlacement(e.target.value)}
-                                    />
-                                    <button
-                                        className="btn btn-sm btn-success"
-                                        onClick={async () => {
-                                            const token = store.tokenClient;
-                                            if (!token) return;
-
-                                            await fetch(`${API_URL}api/products/${prod.id}`, {
-                                                method: "PUT",
-                                                headers: {
-                                                    "Content-Type": "application/json",
-                                                    Authorization: `Bearer ${token}`,
-                                                },
-                                                body: JSON.stringify({ placement: editingPlacement }),
-                                            });
-
-                                            setEditingId(null);
-                                            loadProducts();
-                                        }}
-                                    >
-                                        ✔
-                                    </button>
-                                </div>
-                            ) : (
-                                prod.placement && (
-                                    <div className="mt-2">
-                                        <small>📍 {prod.placement}</small>
-                                    </div>
-                                )
+                            {/* Imagen */}
+                            {prod.image_url && (
+                                <img
+                                    src={prod.image_url}
+                                    alt="product"
+                                    style={{
+                                        width: "100px",
+                                        borderRadius: "8px",
+                                    }}
+                                />
                             )}
+
+                            {/* Contenido */}
+                            <div className="flex-grow-1">
+                                <strong>{prod.name}</strong> — {prod.category?.name}
+                                <br />
+                                <small>{prod.description}</small>
+
+                                {editingId === prod.id ? (
+                                    <div className="mt-2 d-flex gap-2 align-items-center">
+                                        <input
+                                            className="form-control form-control-sm"
+                                            value={editingPlacement}
+                                            onChange={(e) => setEditingPlacement(e.target.value)}
+                                        />
+                                        <button
+                                            className="btn btn-sm btn-success"
+                                            onClick={async () => {
+                                                const token = store.tokenClient;
+                                                if (!token) return;
+
+                                                await fetch(`${API_URL}api/products/${prod.id}`, {
+                                                    method: "PUT",
+                                                    headers: {
+                                                        "Content-Type": "application/json",
+                                                        Authorization: `Bearer ${token}`,
+                                                    },
+                                                    body: JSON.stringify({ placement: editingPlacement }),
+                                                });
+
+                                                setEditingId(null);
+                                                loadProducts();
+                                            }}
+                                        >
+                                            ✔
+                                        </button>
+                                    </div>
+                                ) : (
+                                    prod.placement && (
+                                        <div className="mt-2">
+                                            <small>📍 {prod.placement}</small>
+                                        </div>
+                                    )
+                                )}
+                            </div>
+
+                            {/* Botones */}
+                            <div className="d-flex flex-column gap-2">
+                                <button
+                                    className="btn btn-sm btn-outline-primary" style={{ backgroundColor: "rgb(92, 115, 242)", border: "none", color: "white" }}
+                                    onClick={() => {
+                                        setEditingId(prod.id);
+                                        setEditingPlacement(prod.placement || "");
+                                    }}
+                                >
+                                    <i className="bi bi-pencil-fill"></i>
+                                </button>
+
+                                <button
+                                    className="btn btn-sm btn-outline-danger"
+                                    onClick={async () => {
+                                        if (!window.confirm("¿Eliminar producto?")) return;
+
+                                        const token = store.tokenClient;
+                                        if (!token) return;
+
+                                        await fetch(`${API_URL}api/products/${prod.id}`, {
+                                            method: "DELETE",
+                                            headers: { Authorization: `Bearer ${token}` },
+                                        });
+                                        loadProducts();
+                                    }}
+                                >
+                                    <i className="bi bi-trash-fill"></i>
+                                </button>
+                            </div>
+
                         </div>
-
-                        {/* Botones */}
-                        <div className="d-flex flex-column gap-2">
-                            <button
-                                className="btn btn-sm btn-outline-primary"
-                                onClick={() => {
-                                    setEditingId(prod.id);
-                                    setEditingPlacement(prod.placement || "");
-                                }}
-                            >
-                                <i className="bi bi-pencil-fill"></i>
-                            </button>
-
-                            <button
-                                className="btn btn-sm btn-outline-danger"
-                                onClick={async () => {
-                                    if (!window.confirm("¿Eliminar producto?")) return;
-
-                                    const token = store.tokenClient;
-                                    if (!token) return;
-
-                                    await fetch(`${API_URL}api/products/${prod.id}`, {
-                                        method: "DELETE",
-                                        headers: { Authorization: `Bearer ${token}` },
-                                    });
-                                    loadProducts();
-                                }}
-                            >
-                                <i className="bi bi-trash-fill"></i>
-                            </button>
-                        </div>
-
-                    </div>
-                </li>
-            ))}
-        </ul>
-    </div>
-);
+                    </li>
+                ))}
+            </ul>
+        </div>
+    );
 };

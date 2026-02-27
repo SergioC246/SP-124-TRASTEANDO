@@ -21,6 +21,7 @@ export const Chat = () => {
   // Referencias para que el socket siempre vea el chat activo actual
   const activeChatRef = useRef({ targetId: null, targetRole: null });
   const myInfoRef = useRef({ id: null, role: null });
+  const messagesEndRef = useRef(null);
 
   /* ===== USER DATA ===== */
   const decodedClient = store.tokenClient ? jwtDecode(store.tokenClient) : null;
@@ -100,6 +101,11 @@ export const Chat = () => {
 
   useEffect(() => { loadContacts(); }, [myId, myRole]);
   useEffect(() => { loadChat(); }, [targetId, targetRole]);
+
+  // Scroll automático al último mensaje
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
   const handleSend = async () => {
     if (!text.trim() || !targetId) return;
@@ -232,6 +238,7 @@ export const Chat = () => {
                 </div>
               ))
             )}
+            <div ref={messagesEndRef} />
           </div>
 
           {/* INPUT */}

@@ -8,8 +8,8 @@ export const CompanyDashboardLayout = () => {
 
   const links = [
     { to: "/company/dashboard", label: "Profile", icon: "bi-building" },
-    { to: "/company/dashboard/locations", label: "Locations", icon: "bi-geo-alt" },
-    { to: "/company/dashboard/storages", label: "Storages", icon: "bi-box" },
+    // { to: "/company/dashboard/locations", label: "Locations", icon: "bi-geo-alt" },
+    // { to: "/company/dashboard/storages", label: "Storages", icon: "bi-box" },
     { to: "/company/dashboard/chat", label: "Chat", icon: "bi-chat-dots" },
   ];
 
@@ -57,7 +57,7 @@ export const CompanyDashboardLayout = () => {
   return (
     <div
       className="d-flex justify-content-center"
-      style={{ minHeight: "100vh", background: "#0b0f17", padding: 40 }}
+      style={{ minHeight: "100vh", background: "#ffffff", padding: 40 }}
     >
       <div
         className="d-flex"
@@ -65,14 +65,14 @@ export const CompanyDashboardLayout = () => {
           width: "1200px",
           borderRadius: 28,
           overflow: "hidden",
-          background: "#111827",
+          background: "#f9fafb",
           border: "1px solid rgba(255,255,255,0.08)",
         }}
       >
         <DashboardSidebar
           title="Company Panel"
           links={links}
-          color="#91BBF2"
+          color="#5C73F2"
           user={user}
           onLogout={onLogout}
         />

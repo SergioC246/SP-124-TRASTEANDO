@@ -7,7 +7,7 @@ export const AdminDashboardLayout = () => {
   const [me, setMe] = useState(null);
 
   const links = [
-    { to: "/admin/dashboard/profile", label: "Profile", icon: "bi-person-gear" },
+    { to: "/admin/dashboard/private", label: "Profile", icon: "bi-person-gear" },
     { to: "/admin/dashboard/users", label: "Admin Users", icon: "bi-people" },
     { to: "/admin/dashboard/companies", label: "Companies", icon: "bi-buildings" },
     { to: "/admin/dashboard/clients", label: "Clients", icon: "bi-person-lines-fill" },
@@ -57,7 +57,7 @@ export const AdminDashboardLayout = () => {
       className="d-flex justify-content-center"
       style={{
         minHeight: "100vh",
-        background: "#0b0f17",
+        background: "#ffffff",
         padding: 40,
       }}
     >
@@ -67,14 +67,14 @@ export const AdminDashboardLayout = () => {
           width: "1200px",
           borderRadius: 28,
           overflow: "hidden",
-          background: "#111827",
+          background: "#f9fafb",
           border: "1px solid rgba(255,255,255,0.08)",
         }}
       >
         <DashboardSidebar
           title="Admin Panel"
           links={links}
-          color="#F24171"
+          color="#5C73F2"
           user={user}
           onLogout={onLogout}
         />

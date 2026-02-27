@@ -10,9 +10,9 @@ export const ClientDashboardLayout = () => {
     { to: "/client/dashboard/profile", label: "My Profile", icon: "bi-person" },
     { to: "/client/dashboard/leases", label: "My Leases", icon: "bi-box-seam" },
     { to: "/client/dashboard/inventory", label: "My Inventory", icon: "bi-archive" },
-    { to: "/client/dashboard/storages", label: "Storages available", icon: "bi-box" },
+    { to: "/client/dashboard/search", label: "Storages available", icon: "bi-box" },
     { to: "/client/dashboard/locations", label: "Locations available", icon: "bi-building" },
-    { to: "/client/dashboard/chat", label: "Chat", icon: "bi-chat-dots" },
+    { to: "/client/dashboard/chat", label: "My Chat", icon: "bi-chat-dots" },
   ];
 
   useEffect(() => {
@@ -59,7 +59,7 @@ export const ClientDashboardLayout = () => {
       className="d-flex justify-content-center"
       style={{
         minHeight: "100vh",
-        background: "#0b0f17",   // fondo global
+        background: "#ffffff",   // fondo global
         padding: 40,
       }}
     >
@@ -69,7 +69,7 @@ export const ClientDashboardLayout = () => {
           width: "1200px",
           borderRadius: 28,
           overflow: "hidden",
-          background: "#111827", // card principal
+          background: "#f9fafb", // card principal
           border: "1px solid rgba(255,255,255,0.08)",
         }}
       >
@@ -83,7 +83,7 @@ export const ClientDashboardLayout = () => {
 
         <div
           className="flex-grow-1 p-4"
-          style={{ color: "#e9eefc" }}
+          style={{ color: "#5C73F2" }}
         >
           <Outlet />
         </div>

@@ -167,8 +167,8 @@ export const router = createBrowserRouter(
           <Route path="search" element={<SearchHome />} />
           <Route path="leases" element={<ClientPrivateLeases />} />
           <Route path="inventory" element={<Inventariator />} />
-          <Route path="storage/:storageId" element={<StoragesPrivateDetails />} />
-          <Route path="checkout/:storageId" element={<StoragePrivateCheckout />} />
+          <Route path="search" element={<SearchHome />} />
+          <Route path="locations" element={<ClientLocations />} />
           <Route path="chat" element={<Chat />} />
         </Route>
       </Route>
