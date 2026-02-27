@@ -181,7 +181,7 @@ export const Navbar = () => {
 								<li className="nav-item ms-2">
 									<Link to="/search" className="nav-link">
 										<i className="fa-solid fa-box-open me-2 nav-icon"></i>
-										Storages available
+										Find storages
 									</Link>
 								</li>
 
