@@ -75,7 +75,7 @@ export const Navbar = () => {
 												</Link>
 											</li>
 											<li>
-												<Link className="dropdown-item d-flex gap-2 align-items-center" to="/client/private/storages/:locationId">
+												<Link className="dropdown-item d-flex gap-2 align-items-center" to="/search">
 													<i className="fas fa-box-open nav-icon" style={{ color: "#5C73F2" }}></i>
 													Storages
 												</Link>

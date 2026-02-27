@@ -1,6 +1,9 @@
 import imagen1 from "../assets/img/Sergio.jpg";
 import imagen2 from "../assets/img/irene.png";
 import imagen3 from "../assets/img/david.png"
+import problem from "../assets/img/problem-solving.jpg";
+import team from "../assets/img/team-colaboration.avif";
+import real from "../assets/img/real-work.jpg"
 import { useEffect } from "react";
 
 export const AboutUs = () => {
@@ -31,7 +34,7 @@ export const AboutUs = () => {
         <div className="container-fluid p-0 features-bg">
 
             {/* ================= HERO SECTION ================= */}
-            <div className="container py-5 text-white text-center fade-section" style={{ paddingTop: "100px", paddingBottom: "100px" }}>
+            <div className="container py-5 text-black text-center fade-section" style={{ paddingTop: "100px", paddingBottom: "100px" }}>
                 <h1 className="display-3 fw-bold mb-4" style={{ textShadow: "0px 4px 12px rgba(0,0,0,0.3)" }}>
                     About Trasteando
                 </h1>
@@ -56,7 +59,7 @@ export const AboutUs = () => {
 
             {/* ================= TEAM SECTION ================= */}
             <div className="container py-5">
-                <h2 className="text-center text-white fw-bold mb-5">Meet the Team</h2>
+                <h2 className="text-center text-black fw-bold mb-5">Meet the Team</h2>
 
                 <div className="row g-4">
 
@@ -169,38 +172,92 @@ export const AboutUs = () => {
             </div>
 
             {/* ================= WHAT WE LEARNED SECTION ================= */}
-            <div className="container py-5 text-white text-center fade-section">
-                <h2 className="fw-bold mb-4">
-                    What We Learned Building This
-                </h2>
+            <div className="container py-5 text-black fade-section">
+                <div className="row align-items-center gy-5">
 
-                <div className="row g-4 mt-3">
+                    {/* LEFT IMAGE COLUMN */}
+                    <div className="col-lg-5">
+                        <div className="image-section">
 
-                    <div className="col-md-4">
-                        <i className="fa-solid fa-lightbulb fs-1 mb-3"></i>
-                        <h5 className="fw-bold">Problem Solving</h5>
-                        <p>Turning challenges into opportunities through creative thinking and persistence.</p>
+                            <div className="primary-image">
+                                <img
+                                    src={problem}
+                                    alt="Problem solving"
+                                    className="img-fluid main-img"
+                                />
+                            </div>
+
+                            <div className="image-grid">
+                                <img src={team} alt="Team work" className="small-img" />
+                                <img src={real} alt="Development" className="small-img" />
+                            </div>
+
+                        </div>
                     </div>
 
-                    <div className="col-md-4">
-                        <i className="fa-solid fa-people-group fs-1 mb-3"></i>
-                        <h5 className="fw-bold">Team Collaboration</h5>
-                        <p>Learning how to communicate, plan, and build together as a real development team.</p>
+                    {/* RIGHT CONTENT COLUMN */}
+                    <div className="col-lg-7">
+                        <h2 className="fw-bold section-heading mb-4">
+                            What We Learned Building This
+                        </h2>
+
+                        <div className="mt-4 learn-wrapper">
+
+                            <div className="learn-row">
+                                <div className="learn-icon">
+                                    <i className="fa-solid fa-lightbulb"></i>
+                                </div>
+                                <div className="learn-content">
+                                    <h5 className="fw-bold">Problem Solving</h5>
+                                    <p>
+                                        Turning challenges into opportunities through creative thinking and persistence.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div className="learn-row">
+                                <div className="learn-icon">
+                                    <i className="fa-solid fa-people-group"></i>
+                                </div>
+                                <div className="learn-content">
+                                    <h5 className="fw-bold">Team Collaboration</h5>
+                                    <p>
+                                        Learning how to communicate, plan, and build together as a real development team.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div className="learn-row">
+                                <div className="learn-icon">
+                                    <i className="fa-solid fa-code"></i>
+                                </div>
+                                <div className="learn-content">
+                                    <h5 className="fw-bold">Real-World Development</h5>
+                                    <p>
+                                        Designing, coding, debugging, and deploying a complete full-stack application.
+                                    </p>
+                                </div>
+                            </div>
+
+                        </div>
                     </div>
 
-                    <div className="col-md-4">
-                        <i className="fa-solid fa-code fs-1 mb-3"></i>
-                        <h5 className="fw-bold">Real-World Development</h5>
-                        <p>Designing, coding, debugging, and deploying a complete full-stack application.</p>
-                    </div>
                 </div>
             </div>
 
             {/* ================= SLOGAN SECTION ================= */}
-            <div className="container py-5 text-white text-center fade-section">
-                <h2 className="display-5 fw-bold mb-5" style={{ textShadow: "0px 4px 12px rgba(0,0,0,0.3)" }}>
-                    Smart storage for modern living
-                </h2>
+            <div className="container py-5 text-center fade-section" style={{ paddingTop: "100px", paddingBottom: "100px" }}>
+                <div
+                    className="p-3 px-5 rounded-pill shadow-sm d-inline-block"
+                    style={{
+                        background: "#91BBF2",
+                        textShadow: "0px 2px 8px rgba(0,0,0,0.2)"
+                    }}
+                >
+                    <h1 className="fw-bold mb-0" style={{ fontSize: "2.5rem" }}>
+                        Smart storage for modern living
+                    </h1>
+                </div>
             </div>
         </div>
     );
