@@ -14,14 +14,14 @@ export const ClientPrivate = () => {
         localStorage.removeItem("tokenClient");
         localStorage.removeItem("client_id");
         dispatch({ type: "logout_client" });
-        navigate("/client-login/login");
+        navigate("/client/login");
     };
 
     useEffect(() => {
         const token = localStorage.getItem("tokenClient");
 
         if (!token) {
-            navigate("/client-login/login");
+            navigate("/client/login");
             return;
         }
 
@@ -39,7 +39,7 @@ export const ClientPrivate = () => {
                     localStorage.removeItem("tokenClient");
                     localStorage.removeItem("client_id");
                     dispatch({ type: "logout_client" });
-                    navigate("/client-login/login");
+                    navigate("/client/login");
                     return;
                 }
                 setClient(data);
@@ -72,23 +72,23 @@ export const ClientPrivate = () => {
                     <div className="card shadow-sm border-0 mb-4 rounded-4">
                         <div className="card-body text-center p-4">
                             <div className="position-relative d-inline-block mb-3">
-                                <div className="rounded-circle bg-light d-flex align-items-center justify-content-center shadow-sm" 
-                                     style={{ width: "120px", height: "120px", border: "4px solid white", overflow: "hidden" }}>
+                                <div className="rounded-circle bg-light d-flex align-items-center justify-content-center shadow-sm"
+                                    style={{ width: "120px", height: "120px", border: "4px solid white", overflow: "hidden" }}>
 
 
 
-                                        {client.photo_url ? (  
+                                    {client.photo_url ? (
                                         <img
                                             src={client.photo_url}
                                             alt="Profile"
-                                            style={{ width: "100%", height: "100%", objectFit: "cover" }} 
+                                            style={{ width: "100%", height: "100%", objectFit: "cover" }}
                                         />
                                     ) : (
 
 
-                                    <span className="fs-1 fw-bold text-primary">
-                                        {client.email.charAt(0).toUpperCase()}
-                                    </span>
+                                        <span className="fs-1 fw-bold text-primary">
+                                            {client.email.charAt(0).toUpperCase()}
+                                        </span>
 
                                     )}
 
@@ -98,7 +98,7 @@ export const ClientPrivate = () => {
                             </div>
                             <h4 className="fw-bold mb-1">Mi Perfil</h4>
                             <p className="text-muted small mb-3">{client.email}</p>
-                            <button className="btn btn-primary btn-sm px-4 rounded-pill mb-2 w-100" onClick={()=> navigate(`/clients/${client.id}/edit`)} >Editar Perfil</button>
+                            <button className="btn btn-primary btn-sm px-4 rounded-pill mb-2 w-100" onClick={() => navigate(`/clients/${client.id}/edit`)} >Editar Perfil</button>
                             <button className="btn btn-outline-danger btn-sm px-4 rounded-pill w-100" onClick={handleLogout}>
                                 Cerrar Sesión
                             </button>

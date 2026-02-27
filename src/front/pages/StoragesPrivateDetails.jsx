@@ -24,9 +24,8 @@ export const StoragesPrivateDetails = () => {
                 setLoading(false);
             }
         };
-
-        if (storageId && store.tokenClient) fetchDetail();
-    }, [storageId, store.tokenClient]);
+        if (storageId) fetchDetail();
+    }, [storageId]);
 
 
     if (loading) return (
