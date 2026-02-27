@@ -69,6 +69,7 @@ export const Features = () => {
           <span>💳 Stripe</span>
           <span>⚡ Socket.IO</span>
           <span>📍 Google Maps</span>
+          <span>🤖 OpenAI</span>
         </div>
       </div>
 
