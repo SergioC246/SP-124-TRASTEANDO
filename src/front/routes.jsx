@@ -182,7 +182,7 @@ export const router = createBrowserRouter(
       {/* ==== DASHBOARD CLIENT (PARALELO) ==== */}
       <Route element={<ClientProtectedRoute />}>
         <Route path="/client/dashboard" element={<ClientDashboardLayout />}>
-          <Route index element={<SearchHome />} />
+          <Route index element={<ClientPrivate />} />
           <Route path="profile" element={<ClientPrivate />} />
           <Route path="search" element={<SearchHome />} />
           <Route path="leases" element={<ClientPrivateLeases />} />

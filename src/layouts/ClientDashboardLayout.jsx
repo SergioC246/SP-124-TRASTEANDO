@@ -8,7 +8,6 @@ export const ClientDashboardLayout = () => {
 
   const links = [
     { to: "/client/dashboard/profile", label: "My Profile", icon: "bi-person" },
-    { to: "/client/dashboard/search", label: "Search", icon: "bi-search" },
     { to: "/client/dashboard/leases", label: "My Leases", icon: "bi-box-seam" },
     { to: "/client/dashboard/inventory", label: "My Inventory", icon: "bi-archive" },
     { to: "/client/dashboard/storages", label: "Storages available", icon: "bi-box" },
