@@ -28,7 +28,7 @@ export const AboutUs = () => {
 
 
     return (
-        <div className="container-fluid p-0" style={{ background: "linear-gradient(135deg, #5C73F2 0%, #3A4FD8 100%)" }}>
+        <div className="container-fluid p-0 features-bg">
 
             {/* ================= HERO SECTION ================= */}
             <div className="container py-5 text-white text-center fade-section" style={{ paddingTop: "100px", paddingBottom: "100px" }}>
