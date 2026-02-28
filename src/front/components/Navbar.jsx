@@ -154,18 +154,11 @@ export const Navbar = () => {
 								</li>
 
 								<li className="nav-item ms-2 me-2">
-									<Link to="/admin/private" className="nav-link" >
+									<Link to="/admin/dashboard" className="nav-link" >
 										<i className="fa-solid fa-user me-2 nav-icon"></i>
 										My Profile
 									</Link>
 								</li>
-								<li className="nav-item ms-2">
-									<Link to="/admin/dashboard" className="nav-link">
-										<i className="fa-solid fa-table-columns me-2 nav-icon"></i>
-										My Dashboard
-									</Link>
-								</li>
-
 							</ul>
 						</>
 					)}
@@ -175,15 +168,9 @@ export const Navbar = () => {
 					{role === "company" && (
 						<>
 							<li className="nav-item ms-auto company-link me-2">
-								<Link to="/companies/private" className="nav-link">
+								<Link to="/company/dashboard" className="nav-link">
 									<i className="fa-solid fa-building-lock me-2 nav-icon"></i>
 									Company Private
-								</Link>
-							</li>
-							<li className="nav-item ms-2">
-								<Link to="/company/dashboard" className="nav-link">
-									<i className="fa-solid fa-table-columns me-2 nav-icon"></i>
-									My Dashboard
 								</Link>
 							</li>
 						</>
@@ -217,7 +204,7 @@ export const Navbar = () => {
 								</li>
 
 								<li className="nav-item ms-2">
-									<Link to="/client/private" className="nav-link">
+									<Link to="/client/dashboard" className="nav-link">
 										<i className="fa-solid fa-user me-2 nav-icon"></i>
 										My Profile
 									</Link>

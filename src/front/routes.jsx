@@ -70,6 +70,8 @@ import { CompanyDashboardLayout } from "../layouts/CompanyDashboardLayout";
 import { AdminDashboardLayout } from "../layouts/AdminDashboardLayout";
 import { AboutUs } from "./pages/AboutUs";
 import { Features } from "./pages/Features";
+import { PaymentDetails } from "./pages/PaymentDetails";
+import { DeleteProfile } from "./pages/DeleteProfile";
 
 export const router = createBrowserRouter(
   createRoutesFromElements(
@@ -164,12 +166,11 @@ export const router = createBrowserRouter(
         <Route path="/client/dashboard" element={<ClientDashboardLayout />}>
           <Route index element={<ClientPrivate />} />
           <Route path="profile" element={<ClientPrivate />} />
-          <Route path="search" element={<SearchHome />} />
           <Route path="leases" element={<ClientPrivateLeases />} />
           <Route path="inventory" element={<Inventariator />} />
-          <Route path="search" element={<SearchHome />} />
-          <Route path="locations" element={<ClientLocations />} />
+          <Route path="paymentdetails" element={<PaymentDetails />} />
           <Route path="chat" element={<Chat />} />
+          <Route path="deleteprofile" element={<DeleteProfile />} />
         </Route>
       </Route>
 

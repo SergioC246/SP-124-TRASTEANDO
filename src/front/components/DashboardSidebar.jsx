@@ -16,95 +16,68 @@ export const DashboardSidebar = ({ title, links, color, user, onLogout }) => {
   const avatar = user?.photo || fallbackAvatar;
 
   return (
-    <div style={{ width: 300, padding: 16 }}>
-      <div
-        style={{
-          background: "#111827",
-          borderRadius: 24,
-          border: "1px solid rgba(255,255,255,0.08)",
-          padding: 20,
-        }}
-      >
-        {/* PERFIL */}
-        <div className="d-flex align-items-center justify-content-between mb-4">
-          <div className="d-flex align-items-center gap-3">
-            <img
-              src={avatar}
-              alt="avatar"
-              className="rounded-circle"
-              style={{
-                width: 72,
-                height: 72,
-                objectFit: "cover",
-                aspectRatio: "1 / 1",
-                border: `2px solid ${color}`,
-              }}
-            />
-            <div style={{ color: "#e9eefc" }}>
-              <div className="fw-bold">{user?.name || title}</div>
-              <div style={{ fontSize: 13, opacity: 0.7 }}>
-                {user?.email || ""}
-              </div>
-            </div>
-          </div>
+    <div style={{ width: 280, minHeight: "100vh", background: "#fff", borderRight: "1px solid #e8eaf6", padding: 24 }}>
 
-          {user?.editPath && (
+      {/* PERFIL */}
+      <div className="text-center mb-4">
+        <img
+          src={avatar}
+          alt="avatar"
+          className="rounded-circle mb-2"
+          style={{ width: 80, height: 80, objectFit: "cover", border: `3px solid ${color}` }}
+        />
+        <h6 className="mb-0 fw-bold">{user?.name || title}</h6>
+        <small className="text-muted">{user?.email || ""}</small>
+
+        {user?.editPath && (
+          <div className="mt-2">
             <button
               className="btn btn-sm"
               onClick={() => navigate(user.editPath)}
-              style={{
-                background: "rgba(255,255,255,0.08)",
-                color: "#fff",
-                borderRadius: "50%",
-                border: "1px solid rgba(255,255,255,0.12)",
-              }}
+              style={{ borderRadius: 8, border: `1px solid ${color}`, color: color, fontSize: 12 }}
             >
-              <i className="bi bi-pencil"></i>
+              <i className="bi bi-pencil me-1"></i> Editar perfil
             </button>
-          )}
-        </div>
-
-        {/* LINKS */}
-        <ul className="nav flex-column">
-          {links.map((link, index) => (
-            <li key={index} className="nav-item mb-2">
-              <NavLink
-                to={link.to}
-                end={link.to.endsWith("/dashboard")}
-                className="nav-link d-flex align-items-center"
-                style={({ isActive }) => ({
-                  color: "#fff",
-                  borderRadius: 14,
-                  padding: "10px 12px",
-                  background: isActive ? color : "transparent",
-                  transition: "all 0.2s ease",
-                })}
-              >
-                {link.icon && (
-                  <i className={`bi ${link.icon} me-2`}></i>
-                )}
-                {link.label}
-              </NavLink>
-            </li>
-          ))}
-        </ul>
-
-        {/* LOGOUT */}
-        <div className="mt-4">
-          <button
-            className="btn w-100"
-            onClick={onLogout}
-            style={{
-              background: color,
-              color: "white",
-              borderRadius: 14,
-              border: "none",
-            }}
-          >
-            Logout
-          </button>
-        </div>
+          </div>
+        )}
+        <hr className="mt-3" />
       </div>
+
+      {/* LINKS */}
+      <ul className="nav flex-column gap-1">
+        {links.map((link, index) => (
+          <li key={index} className="nav-item">
+            <NavLink
+              to={link.to}
+              end={link.to.endsWith("/dashboard")}
+              className="nav-link d-flex align-items-center"
+              style={({ isActive }) => ({
+                borderRadius: 12,
+                padding: "10px 14px",
+                backgroundColor: isActive ? color : "transparent",
+                color: isActive ? "#fff" : "#444",
+                fontWeight: isActive ? 600 : 400,
+                transition: "all 0.2s ease",
+              })}
+            >
+              {link.icon && <i className={`bi ${link.icon} fa-fw me-2`}></i>}
+              {link.label}
+            </NavLink>
+          </li>
+        ))}
+      </ul>
+
+      {/* LOGOUT */}
+      <div className="mt-4 pt-3" style={{ borderTop: "1px solid #e8eaf6" }}>
+        <button
+          className="d-flex align-items-center w-100 border-0 bg-transparent text-danger"
+          onClick={onLogout}
+          style={{ borderRadius: 12, padding: "10px 14px", cursor: "pointer", fontWeight: 500 }}
+        >
+          <i className="fas fa-sign-out-alt fa-fw me-2"></i> Sign Out
+        </button>
+      </div>
+
     </div>
   );
 };
