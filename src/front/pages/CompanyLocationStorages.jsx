@@ -128,13 +128,13 @@ export const CompanyLocationStorages = () => {
                             <div className="card-body py-4">
                                 <div className="d-flex flex-column align-items-center gap-3">
                                     <button
-                                        className="btn btn-outline-success shadow"
+                                        className= "btn btn-secondary-custom shadow"
                                         onClick={() => navigate("/companies/private/storages/create")}
                                     >
                                         Create Storage
                                     </button>
                                     <button
-                                        className="btn btn-outline-secondary shadow"
+                                        className="btn btn-secondary-custom shadow"
                                         onClick={() => navigate("/companies/private/locations")}
                                     >
                                         Back
@@ -153,14 +153,16 @@ export const CompanyLocationStorages = () => {
             <div className="row mb-5">
                 <div className="col-12 col-xl-12 mx-auto">
                     <div className="card shadow-lg border-0">
-                        <div className="card-header bg-info-subtle text-info-emphasis text-center py-4">
-                            <h4 className="mb-0">
+
+                        <div className="card-header header-primary text-info-emphasis text-center py-4">
+                            <h4 className="mb-0 fw-bold" style={{ textShadow: "0px 4px 12px rgba(0,0,0,0.3)" }}>
                                 Storages in {location?.address}
                             </h4>
                         </div>
 
                         <div className="card-body bg-light">
-                            <div className="row g-4">
+                            <div className="row g-3">
+                                
                                 {storages.map(storage => {
 
                                     const today = new Date()
@@ -176,7 +178,7 @@ export const CompanyLocationStorages = () => {
 
                                     return (
                                         <div key={storage.id} className="col-12 col-md-6 col-lg-3">
-                                            <div className="card shadow-sm border-0 h-100">
+                                            <div className="card shadow-sm h-100">
 
                                                 {storage.photo ? (
                                                     <img
@@ -229,14 +231,14 @@ export const CompanyLocationStorages = () => {
 
                                                     <div className="d-flex justify-content-end gap-1 mt-2">
                                                         <button
-                                                            className="btn btn-md btn-outline-primary shadow"
+                                                            className="btn btn-outline-secondary-custom shadow"
                                                             onClick={() => navigate(`/companies/private/storages/${storage.id}`)}
                                                         >
                                                             <i className="fa-regular fa-eye"></i>
                                                         </button>
 
                                                         <button
-                                                            className="btn btn-md btn-outline-success shadow"
+                                                            className="btn btn-outline-secondary-custom shadow"
                                                             onClick={() => navigate(`/companies/private/storages/edit/${storage.id}`)}
                                                         >
                                                             <i className="fa-solid fa-pencil"></i>
@@ -255,16 +257,17 @@ export const CompanyLocationStorages = () => {
                                         </div>
                                     )
                                 })}
+
                                 <div className="card-footer bg-white border-0 py-3">
                                     <div className="d-flex flex-column align-items-center gap-3">
                                         <button
-                                            className="btn btn-outline-success shadow"
+                                            className="btn btn-secondary-custom shadow"
                                             onClick={() => navigate("/companies/private/storages/create")}
                                         >
                                             Create Storage
                                         </button>
                                         <button
-                                            className="btn btn-outline-secondary shadow"
+                                            className="btn btn-secondary-custom shadow"
                                             onClick={() => navigate("/companies/private/locations")}
                                         >
                                             Back

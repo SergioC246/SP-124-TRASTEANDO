@@ -107,35 +107,35 @@ export const CompanyStoragesCreate = () => {
     if (loading) return <h2>Loading locations...</h2>
 
     return (
-        <div className="container py-5">
+        <div className="container-fluid py-5 px-5 mb-5">
             <div className="row justify-content-center">
                 <div className="col-12 col-md-8 col-lg-5">
                     <div className="card shadow-lg border-0">
 
-                        <div className="card-header bg-info-subtle text-info-emphasis text-center py-4">
-                            <h3 className="mb-0">
+                        <div className="card-header header-primary text-info-emphasis text-center py-4">
+                            <h3 className="mb-0 fw-bold" style={{ textShadow: "0px 4px 12px rgba(0,0,0,0.3)" }}>
                                 Create New Storage
                             </h3>
                         </div>
 
-                        <div className="card-body py-4">
+                        <div className="card-body">
 
                             <form onSubmit={handleSubmit}>
-                                <div className="row">
-                                    <div className="col-md-6 mb-3">
+                                <div className="row g-3 mb-3">
+                                    <div className="col-md-6">
                                         <label className="form-label fw-semibold">Size</label>
-                                        <input type="text" className="form-control" value={size} onChange={(e) => setSize(e.target.value)} />
+                                        <input type="text" className="form-control input-custom" value={size} onChange={(e) => setSize(e.target.value)} />
                                     </div>
 
-                                    <div className="col-md-6 mb-3">
+                                    <div className="col-md-6">
                                         <label className="form-label fw-semibold">Price</label>
-                                        <input type="number" className="form-control" value={price} onChange={(e) => setPrice(e.target.value)} />
+                                        <input type="number" className="form-control input-custom" value={price} onChange={(e) => setPrice(e.target.value)} />
                                     </div>
 
-                                    <div className="mb-3">
+                                    <div>
                                         <label className="form-label fw-semibold">Location</label>
                                         <select
-                                            className="form-select"
+                                            className="form-control input-custom"
                                             value={locationId}
                                             onChange={(e) => setLocationId(e.target.value)}
                                         >
@@ -152,18 +152,18 @@ export const CompanyStoragesCreate = () => {
                                         <label className="form-label fw-semibold">Photo</label>
                                         <input
                                             type="file"
-                                            className="form-control"
+                                            className="form-control input-custom"
                                             accept="image/*"
                                             onChange={(e) => setPhoto(e.target.files[0])}
                                         />
                                     </div>
 
-                                    <div className="card-footer bg-white border-0 py-2">
+                                    <div className="card-footer bg-white border-0 py-3 mt-3">
                                         <div className="d-flex flex-column align-items-center gap-3">
-                                            <button type="submit" className="btn btn-outline-success shadow">
+                                            <button type="submit" className="btn btn-secondary-custom shadow">
                                                 Create Storage
                                             </button>
-                                            <button type="button" className="btn btn-outline-secondary shadow" onClick={() => navigate(-1)}>
+                                            <button type="button" className="btn btn-secondary-custom shadow" onClick={() => navigate(-1)}>
                                                 Back
                                             </button>
                                         </div>
