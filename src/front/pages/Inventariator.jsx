@@ -130,13 +130,13 @@ export const Inventariator = () => {
 
       {/* CABECERA */}
       <div className="d-flex justify-content-between align-items-center">
-        <h4 className="fw-bold mb-0">Mi Inventario</h4>
+        <h4 className="fw-bold mb-0">My Inventory</h4>
         <button
           className="btn btn-sm px-3"
           onClick={handleExportCSV}
           style={{ background: COLOR, color: "#fff", borderRadius: 10 }}
         >
-          <i className="bi bi-download me-2"></i>Exportar CSV
+          <i className="bi bi-download me-2"></i>Export CSV
         </button>
       </div>
 
@@ -144,7 +144,7 @@ export const Inventariator = () => {
       <div className="rounded-4 p-4" style={{ background: "#fff", border: "1px solid #e8eaf6" }}>
         <h5 className="fw-bold mb-4">
           <i className="bi bi-plus-circle me-2" style={{ color: COLOR }}></i>
-          Añadir Producto
+          Add Product
         </h5>
 
         <form onSubmit={handleSubmit}>
@@ -173,7 +173,7 @@ export const Inventariator = () => {
                 ) : (
                   <>
                     <i className="bi bi-cloud-arrow-up fs-1" style={{ color: COLOR }}></i>
-                    <span className="small text-muted">Haz clic para subir una imagen</span>
+                    <span className="small text-muted">Click to upload an image</span>
                   </>
                 )}
 
@@ -206,7 +206,7 @@ export const Inventariator = () => {
 
             {/* NOMBRE */}
             <div className="col-md-6">
-              <label className="form-label fw-semibold small">Nombre del producto</label>
+              <label className="form-label fw-semibold small">Product name</label>
               <input
                 className="form-control"
                 placeholder="Ej: Lámpara de pie"
@@ -219,7 +219,7 @@ export const Inventariator = () => {
 
             {/* CATEGORÍA */}
             <div className="col-md-6">
-              <label className="form-label fw-semibold small">Categoría</label>
+              <label className="form-label fw-semibold small">Category</label>
               <select
                 className="form-select"
                 value={String(categoryId ?? "")}
@@ -227,7 +227,7 @@ export const Inventariator = () => {
                 disabled={isAnalyzing || uploading}
                 style={{ borderRadius: 10 }}
               >
-                <option value="">Selecciona categoría</option>
+                <option value="">Choose category</option>
                 {categories.map((cat) => (
                   <option key={cat.id} value={String(cat.id)}>{cat.name}</option>
                 ))}
@@ -236,7 +236,7 @@ export const Inventariator = () => {
 
             {/* DESCRIPCIÓN */}
             <div className="col-12">
-              <label className="form-label fw-semibold small">Descripción</label>
+              <label className="form-label fw-semibold small">Description</label>
               <textarea
                 className="form-control"
                 rows="2"
@@ -250,7 +250,7 @@ export const Inventariator = () => {
 
             {/* UBICACIÓN */}
             <div className="col-12">
-              <label className="form-label fw-semibold small">Ubicación física</label>
+              <label className="form-label fw-semibold small">Storage spot</label>
               <input
                 className="form-control"
                 placeholder="Ej: Caja 3 · Estantería A · Balda 2"
@@ -269,7 +269,7 @@ export const Inventariator = () => {
                 disabled={isAnalyzing || uploading}
                 style={{ background: COLOR, color: "#fff", borderRadius: 10 }}
               >
-                <i className="bi bi-plus-lg me-2"></i>Crear Producto
+                <i className="bi bi-plus-lg me-2"></i>Create Product
               </button>
             </div>
           </div>
@@ -280,13 +280,13 @@ export const Inventariator = () => {
       <div className="rounded-4 p-4" style={{ background: "#fff", border: "1px solid #e8eaf6" }}>
         <h5 className="fw-bold mb-4">
           <i className="bi bi-box-seam me-2" style={{ color: COLOR }}></i>
-          Mis Productos ({products.length})
+          My Products ({products.length})
         </h5>
 
         {products.length === 0 ? (
           <div className="text-center py-5">
             <i className="bi bi-inbox fs-1 text-muted"></i>
-            <p className="text-muted mt-2">No tienes productos aún. ¡Añade el primero!</p>
+            <p className="text-muted mt-2">You have no products yet. Add your first one!</p>
           </div>
         ) : (
           <div className="row g-3">
@@ -387,7 +387,7 @@ export const Inventariator = () => {
                         loadProducts();
                       }}
                     >
-                      <i className="bi bi-trash me-1"></i>Eliminar
+                      <i className="bi bi-trash me-1"></i>Delete
                     </button>
                   </div>
                 </div>

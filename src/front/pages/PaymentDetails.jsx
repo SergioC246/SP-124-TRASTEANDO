@@ -29,9 +29,9 @@ export const PaymentDetails = () => {
       
       {/* TÍTULO Y BOTÓN AÑADIR */}
       <div className="d-flex justify-content-between align-items-center">
-        <h4 className="fw-bold mb-0">Métodos de Pago</h4>
+        <h4 className="fw-bold mb-0">Payment Methods</h4>
         <button className="btn btn-sm px-3" style={{ background: COLOR, color: "#fff", borderRadius: 10 }}>
-          <i className="bi bi-plus-lg me-2"></i>Añadir Tarjeta
+          <i className="bi bi-plus-lg me-2"></i>Add Card
         </button>
       </div>
 
@@ -51,7 +51,7 @@ export const PaymentDetails = () => {
             >
               <div className="d-flex justify-content-between align-items-start mb-4">
                 <div>
-                  <p className="small mb-0 opacity-75">Titular</p>
+                  <p className="small mb-0 opacity-75">Cardholder</p>
                   <h6 className="fw-bold">{card.name}</h6>
                 </div>
                 <div className="fw-italic fw-bold fs-5">{card.type}</div>
@@ -60,10 +60,10 @@ export const PaymentDetails = () => {
                 <h5 className="mb-2" style={{ letterSpacing: "2px" }}>•••• •••• •••• {card.last4}</h5>
                 <div className="d-flex justify-content-between align-items-end">
                   <div>
-                    <p className="small mb-0 opacity-75">Expira</p>
+                    <p className="small mb-0 opacity-75">Expires</p>
                     <p className="mb-0 fw-semibold">{card.exp}</p>
                   </div>
-                  {card.primary && <span className="badge bg-white text-primary rounded-pill px-3 py-2 small">Principal</span>}
+                  {card.primary && <span className="badge bg-white text-primary rounded-pill px-3 py-2 small">Primary</span>}
                 </div>
               </div>
             </div>
@@ -73,11 +73,11 @@ export const PaymentDetails = () => {
 
       {/* SECCIÓN DE FACTURACIÓN */}
       <div className="card border shadow-sm rounded-4 p-4 mt-2" style={{ background: "#fff" }}>
-        <h6 className="fw-bold mb-3">Dirección de Facturación</h6>
+        <h6 className="fw-bold mb-3">Billing Address</h6>
         <div className="d-flex align-items-start gap-3 p-3 rounded-3 bg-light border">
           <i className="bi bi-geo-alt fs-4 text-muted"></i>
           <div>
-            <p className="mb-1 fw-semibold">Dirección Principal</p>
+            <p className="mb-1 fw-semibold">Primary Address</p>
             <p className="mb-0 small text-muted">
               {billingAddress.street}<br/>
               {billingAddress.zip} {billingAddress.city}, {billingAddress.country}
@@ -90,7 +90,7 @@ export const PaymentDetails = () => {
             data-bs-toggle="modal" 
             data-bs-target="#addressModal"
           >
-            Cambiar
+            Change
           </button>
         </div>
       </div>
@@ -100,13 +100,13 @@ export const PaymentDetails = () => {
         <div className="modal-dialog modal-dialog-centered">
           <div className="modal-content border-0 shadow" style={{ borderRadius: 20 }}>
             <div className="modal-header border-0 pt-4 px-4">
-              <h5 className="modal-title fw-bold">Editar Dirección</h5>
+              <h5 className="modal-title fw-bold">Edit Address</h5>
               <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div className="modal-body px-4">
               <div className="row g-3">
                 <div className="col-12">
-                  <label className="form-label small fw-bold">Calle y número</label>
+                  <label className="form-label small fw-bold">Street and number</label>
                   <input 
                     type="text" className="form-control" style={{ borderRadius: 10 }}
                     value={tempAddress.street}
@@ -114,7 +114,7 @@ export const PaymentDetails = () => {
                   />
                 </div>
                 <div className="col-md-6">
-                  <label className="form-label small fw-bold">Ciudad</label>
+                  <label className="form-label small fw-bold">City</label>
                   <input 
                     type="text" className="form-control" style={{ borderRadius: 10 }}
                     value={tempAddress.city}
@@ -122,7 +122,7 @@ export const PaymentDetails = () => {
                   />
                 </div>
                 <div className="col-md-6">
-                  <label className="form-label small fw-bold">Código Postal</label>
+                  <label className="form-label small fw-bold">Postal code</label>
                   <input 
                     type="text" className="form-control" style={{ borderRadius: 10 }}
                     value={tempAddress.zip}
@@ -138,7 +138,7 @@ export const PaymentDetails = () => {
                 style={{ background: COLOR, color: "#fff", borderRadius: 10 }}
                 onClick={handleSaveAddress}
               >
-                Guardar Cambios
+                Save changes
               </button>
             </div>
           </div>
