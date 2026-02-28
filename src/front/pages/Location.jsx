@@ -43,7 +43,7 @@ export const Location = () => {
                                 <h3 className="mb-0">No Locations Found</h3>
                             </div>
                             <div className="card-body py-4 text-center">
-                                <button className="btn btn-outline-success shadow"
+                                <button className="btn btn-secondary-custom shadow"
                                     onClick={() => navigate("/companies/private/locations/create")}>
                                     Create Location
                                 </button>
@@ -102,12 +102,12 @@ export const Location = () => {
                                                 <div className="card-body">
 
                                                     {/* COMPANY BADGE */}
-                                                    <span
-                                                        className="badge mb-2"
-                                                        style={{ backgroundColor: "#9BBBF2", color: "white" }}
-                                                    >
+                                                    <div className="mb-2">
+                                                        <span className="badge-city fw-bold">
+                                                        
                                                         {location.company_name}
                                                     </span>
+                                                    </div>
 
                                                     <h5 className="fw-bold">{location.city}</h5>
 
@@ -150,7 +150,7 @@ export const Location = () => {
 
                                                         <div className="d-flex gap-1">
                                                             <button
-                                                                className="btn btn-tertiary-custom shadow"
+                                                                className="btn btn-outline-secondary-custom shadow"
                                                                 onClick={() =>
                                                                     navigate(`/admin/location-details/${location.id}`)
                                                                 }
@@ -159,7 +159,7 @@ export const Location = () => {
                                                             </button>
 
                                                             <button
-                                                                className="btn btn-tertiary-custom shadow"
+                                                                className="btn btn-outline-secondary-custom shadow"
                                                                 onClick={() =>
                                                                     navigate(`/admin/location-edit/${location.id}`)
                                                                 }
@@ -176,7 +176,6 @@ export const Location = () => {
                                                                 </button>
                                                             )}
                                                         </div>
-
                                                     </div>
                                                 </div>
                                             </div>
@@ -202,7 +201,6 @@ export const Location = () => {
                                     </button>
                                 </div>
                             </div>
-
                         </div>
                     </div>
                 </div>

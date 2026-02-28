@@ -98,58 +98,86 @@ export const CompanyPrivateEdit = () => {
     if (loading) return <h2 className="text-center mt-5">Cargando...</h2>
 
     return (
-        <div className="container py-4">
+        <div className="container-fluid py-5 px-5 mb-5">
             <div className="row justify-content-center">
                 <div className="col-12 col-md-8 col-lg-5">
                     <div className="card shadow-lg border-0">
 
-                        <div className="card-header bg-info-subtle text-info-emphasis text-center py-4">
-                            <h2 className="mb-0">Editar Company</h2>
+                        <div className="card-header header-primary text-info-emphasis text-center py-4">
+                            <h3 className="mb-0 fw-bold" style={{ textShadow: "0px 4px 12px rgba(0,0,0,0.3)" }}>
+                                Editar Company
+                            </h3>
                         </div>
 
-                        <div className="card-body py-4">
+                        <div className="card-body">
 
-                            <div className="row">
-                                <div className="col-md-6 mb-3">
+                            <div className="row g-3">
+                                <div className="col-md-6">
                                     <label className="form-label fw-semibold">Company Name</label>
-                                    <input type="text" className="form-control" value={name} onChange={e => setName(e.target.value)} />
-                                </div>
-                                <div className="col-md-6 mb-3">
-                                    <label className="form-label fw-semibold">Email</label>
-                                    <input type="email" className="form-control" name="email" value={email} onChange={e => setEmail(e.target.value)} />
+                                    <input
+                                        type="text"
+                                        className="form-control input-custom"
+                                        value={name}
+                                        onChange={e => setName(e.target.value)} />
                                 </div>
 
-                                <div className="col-md-6 mb-3">
-                                    <label className="form-label fw-semibold">CIF</label>
-                                    <input type="text" className="form-control" name="cif" value={cif} onChange={e => setCif(e.target.value)} />
+                                <div className="col-md-6">
+                                    <label className="form-label fw-semibold">Email</label>
+                                    <input
+                                        type="email"
+                                        className="form-control input-custom"
+                                        value={email}
+                                        onChange={e => setEmail(e.target.value)} />
                                 </div>
-                                <div className="col-md-6 mb-3">
+
+                                <div className="col-md-6">
+                                    <label className="form-label fw-semibold">CIF</label>
+                                    <input
+                                        type="text"
+                                        className="form-control input-custom"
+                                        value={cif}
+                                        onChange={e => setCif(e.target.value)} />
+                                </div>
+                                <div className="col-md-6">
                                     <label className="form-label fw-semibold">Address</label>
-                                    <input type="text" className="form-control" name="address" value={address} onChange={e => setAddress(e.target.value)} />
+                                    <input
+                                        type="text"
+                                        className="form-control input-custom"
+                                        value={address}
+                                        onChange={e => setAddress(e.target.value)} />
                                 </div>
                             </div>
 
-                            <div>
+                            <div className="mt-3">
                                 <label className="form-label fw-semibold">Photo</label>
                                 <input type="file" className="form-control" onChange={handleUploadPhoto} />
                             </div>
 
-                            {uploading && <p className="mt-2">Uploading image...</p>}
+                            {uploading && <p className="mt-2 text-center">Uploading image...</p>}
 
                             {photo && (
                                 <div className="mt-3 text-center">
-                                    <img src={photo} alt="Company" className="img-fluid rounded shadow"
+                                    <img src={photo}
+                                        alt="Company"
+                                        className="img-fluid rounded-3 shadow"
+                                        style={{ width: "180px", height: "180px", objectFit: "cover" }}
                                     />
                                 </div>
                             )}
 
-                            <div className="card-footer bg-white border-0 py-3 d-flex justify-content-center gap-3">
-                                <button className="btn btn-outline-success shadow px-4" onClick={handleUpdate}>
-                                    Save
-                                </button>
-                                <button className="btn btn-outline-secondary shadow px-4" onClick={() => navigate("/companies/private")}>
-                                    Cancel
-                                </button>
+                            <div className="card-footer bg-white border-0 py-3 mt-3">
+                                <div className="d-flex flex-column align-items-center gap-3">
+                                    <button
+                                        className="btn btn-secondary-custom shadow"
+                                        onClick={handleUpdate}>
+                                        Save
+                                    </button>
+                                    <button
+                                        className="btn btn-secondary-custom shadow"
+                                        onClick={() => navigate("/companies/private")}>
+                                        Cancel
+                                    </button>
+                                </div>
                             </div>
 
                         </div>
