@@ -1352,5 +1352,20 @@ header,
   background-color: #5C73F2;
 }
 
+/* BOTÓN OUTLINE SECUNDARIO (eye & edit) */
+.btn-outline-secondary-custom {
+  background-color: transparent;
+  color: #9BBBF2;
+  border: 2px solid #9BBBF2;
+  transition: all 0.3s ease;
+}
+
+.btn-outline-secondary-custom:hover {
+  background-color: #9BBBF2;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(155, 187, 242, 0.4);
+}
+
 
 /* FIN BOTONES LOCATIONS ADMIN SERGIO */
