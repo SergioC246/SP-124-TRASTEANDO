@@ -1,24 +1,23 @@
 """
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
+import api.socket_handlers
+from api.socketio_instance import socketio
+from api.commands import setup_commands
+from api.admin import setup_admin
+from api.routes import api
+from api.models import db
+from api.utils import APIException, generate_sitemap
+from flask_jwt_extended import JWTManager
+from flask_swagger import swagger
+from flask_cors import CORS
+from flask_migrate import Migrate
+from flask import Flask, request, jsonify, url_for, send_from_directory
 import os
 
-import eventlet 
+import eventlet
 eventlet.monkey_patch()
 
-from flask import Flask, request, jsonify, url_for, send_from_directory
-from flask_migrate import Migrate
-from flask_cors import CORS
-from flask_swagger import swagger
-from flask_jwt_extended import JWTManager
-
-from api.utils import APIException, generate_sitemap
-from api.models import db
-from api.routes import api
-from api.admin import setup_admin
-from api.commands import setup_commands
-
-from api.socketio_instance import socketio
 
 # from models import Person
 
@@ -62,7 +61,6 @@ print("=" * 50)
 
 app.register_blueprint(api, url_prefix='/api')
 
-import api.socket_handlers
 
 # Handle/serialize errors like a JSON object
 
@@ -80,6 +78,7 @@ def sitemap():
         return generate_sitemap(app)
     return send_from_directory(static_file_dir, 'index.html')
 
+
 # any other endpoint will try to serve it like a static file
 @app.route('/<path:path>', methods=['GET'])
 def serve_any_other_file(path):
@@ -89,6 +88,7 @@ def serve_any_other_file(path):
     response.cache_control.max_age = 0  # avoid cache memory
     return response
 
+
 with app.app_context():
     db.create_all()
     print("Tablas creadas (si no existían)")
@@ -97,4 +97,5 @@ with app.app_context():
 # this only runs if `$ python src/main.py` is executed
 if __name__ == '__main__':
     PORT = int(os.environ.get('PORT', 3001))
-    socketio.run(app, host='0.0.0.0', port=PORT, debug=True, allow_unsafe_werkzeug=True)
+    socketio.run(app, host='0.0.0.0', port=PORT,
+                 debug=True, allow_unsafe_werkzeug=True)

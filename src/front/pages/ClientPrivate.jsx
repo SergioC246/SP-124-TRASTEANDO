@@ -98,7 +98,8 @@ export const ClientPrivate = () => {
                             </div>
                             <h4 className="fw-bold mb-1">Mi Perfil</h4>
                             <p className="text-muted small mb-3">{client.email}</p>
-                            <button className="btn btn-primary btn-sm px-4 rounded-pill mb-2 w-100" onClick={() => navigate(`/clients/${client.id}/edit`)} >Editar Perfil</button>
+                            <button className="btn btn-sm px-4 rounded-pill mb-2 w-100" style={{ backgroundColor: "rgb(92, 115, 242)", border: "none", color: "white" }}
+                            onClick={() => navigate(`/clients/${client.id}/edit`)} >Editar Perfil</button>
                             <button className="btn btn-outline-danger btn-sm px-4 rounded-pill w-100" onClick={handleLogout}>
                                 Cerrar Sesión
                             </button>
