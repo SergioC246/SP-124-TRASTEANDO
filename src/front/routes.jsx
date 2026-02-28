@@ -72,6 +72,7 @@ import { AboutUs } from "./pages/AboutUs";
 import { Features } from "./pages/Features";
 import { PaymentDetails } from "./pages/PaymentDetails";
 import { DeleteProfile } from "./pages/DeleteProfile";
+import { NotFound } from "./pages/NotFound";
 
 export const router = createBrowserRouter(
   createRoutesFromElements(
@@ -84,7 +85,7 @@ export const router = createBrowserRouter(
       <Route path="/features" element={<Features />} />
 
       <Route path="/client/private/storage/:storageId" element={<StoragesPrivateDetails />} />
-      
+
       {/* Rutas adminUser */}
       <Route path="/admin/login" element={<AdminLogin />} />
 
@@ -196,6 +197,8 @@ export const router = createBrowserRouter(
           <Route path="clients" element={<ClientList />} />
         </Route>
       </Route>
+
+      <Route path="*" element={<NotFound />} />
 
       {/* <Route path="/leases" element={<Leases />} /> */}
       {/* <Route path="/leasesCreate" element={<LeasesCreate />} />
