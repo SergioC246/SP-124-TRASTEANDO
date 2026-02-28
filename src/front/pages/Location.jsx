@@ -194,7 +194,7 @@ export const Location = () => {
                                         Create Location
                                     </button>
                                     <button
-                                        className="btn btn-outline-secondary shadow"
+                                        className="btn btn-secondary-custom shadow"
                                         onClick={() => navigate("/admin")}
                                     >
                                         Back

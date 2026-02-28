@@ -1492,4 +1492,46 @@ header,
   border-radius: 1rem !important;
 }
 
+/* HEADER */
+.header-primary {
+  background-color: #5C73F2;
+  color: white;
+  text-shadow: 0px 4px 12px rgba(0,0,0,0.3);
+}
+
+/* INFO BLOCKS */
+.info-block {
+  background-color: #f0f4ff;
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  transition: all 0.3s ease;
+}
+
+.info-block:hover {
+  background-color: #d9e2ff;
+}
+
+/* ICONS */
+.icon {
+  font-size: 1.2rem;
+  color: #5C73F2;
+  transition: transform 0.3s ease;
+}
+
+.info-block:hover .icon {
+  transform: scale(1.2);
+}
+
+/* BOTONES */
+.btn-secondary-custom {
+  background-color: #9BBBF2;
+  color: #000;
+  transition: all 0.3s ease;
+}
+
+.btn-secondary-custom:hover {
+  background-color: #5C73F2;
+  color: #fff;
+}
+
 /* FIN BOTONES LOCATIONS ADMIN SERGIO */

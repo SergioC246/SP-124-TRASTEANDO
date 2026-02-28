@@ -150,7 +150,7 @@ export const CompanyPrivateEdit = () => {
 
                             <div className="mt-3">
                                 <label className="form-label fw-semibold">Photo</label>
-                                <input type="file" className="form-control" onChange={handleUploadPhoto} />
+                                <input type="file" className="form-control input-custom" onChange={handleUploadPhoto} />
                             </div>
 
                             {uploading && <p className="mt-2 text-center">Uploading image...</p>}
