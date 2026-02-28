@@ -65,8 +65,13 @@ import { SubscriptionCheckout } from "./pages/SubscriptionCheckout";
 import { PaymentSuccess } from "./pages/PaymentSucess";
 import { PaymentCancel } from "./pages/PaymentCancel";
 import { Inventariator } from "./pages/Inventariator";
+import { ClientDashboardLayout } from "../layouts/ClientDashboardLayout";
+import { CompanyDashboardLayout } from "../layouts/CompanyDashboardLayout";
+import { AdminDashboardLayout } from "../layouts/AdminDashboardLayout";
 import { AboutUs } from "./pages/AboutUs";
 import { Features } from "./pages/Features";
+import { PaymentDetails } from "./pages/PaymentDetails";
+import { DeleteProfile } from "./pages/DeleteProfile";
 
 export const router = createBrowserRouter(
   createRoutesFromElements(
@@ -146,8 +151,8 @@ export const router = createBrowserRouter(
         <Route path="/clients/:id/edit" element={<ClientEdit />} />
         <Route path="/client/private" element={<ClientPrivate />} />
         <Route path="/client/private/leases" element={<ClientPrivateLeases />} />
-        <Route path="/client/private/checkout/:storageId" element={<StoragePrivateCheckout />} />        
-        
+        <Route path="/client/private/checkout/:storageId" element={<StoragePrivateCheckout />} />
+        <Route path="/client/private/storage/:storageId" element={<StoragesPrivateDetails />} />
         <Route path="/inventariator" element={<Inventariator />} />
       </Route>
 
@@ -155,6 +160,42 @@ export const router = createBrowserRouter(
       <Route path="/checkout" element={<SubscriptionCheckout />} />
       <Route path="/payment/success" element={<PaymentSuccess />} />
       <Route path="/payment/cancel" element={<PaymentCancel />} />
+
+      {/* ==== DASHBOARD CLIENT (PARALELO) ==== */}
+      <Route element={<ClientProtectedRoute />}>
+        <Route path="/client/dashboard" element={<ClientDashboardLayout />}>
+          <Route index element={<ClientPrivate />} />
+          <Route path="profile" element={<ClientPrivate />} />
+          <Route path="leases" element={<ClientPrivateLeases />} />
+          <Route path="inventory" element={<Inventariator />} />
+          <Route path="paymentdetails" element={<PaymentDetails />} />
+          <Route path="chat" element={<Chat />} />
+          <Route path="deleteprofile" element={<DeleteProfile />} />
+        </Route>
+      </Route>
+
+      {/* ==== DASHBOARD COMPANY (PARALELO) ==== */}
+      <Route element={<CompanyProtectedRoute />}>
+        <Route path="/company/dashboard" element={<CompanyDashboardLayout />}>
+          <Route index element={<CompanyPrivate />} />
+          <Route path="locations" element={<CompanyLocations />} />
+          <Route path="storages" element={<CompanyStorages />} />
+          <Route path="storages/:id" element={<CompanyStoragesDetails />} />
+          <Route path="storages/edit/:storage_id" element={<CompanyStoragesEdit />} />
+          <Route path="locations/:id" element={<CompanyLocationsDetails />} />
+          <Route path="chat" element={<Chat />} />
+        </Route>
+      </Route>
+
+      {/* ==== DASHBOARD ADMIN (PARALELO) ==== */}
+      <Route element={<AdminProtectedRoute />}>
+        <Route path="/admin/dashboard" element={<AdminDashboardLayout />}>
+          <Route index element={<AdminPrivate />} />
+          <Route path="users" element={<AdminUsers />} />
+          <Route path="companies" element={<Companies />} />
+          <Route path="clients" element={<ClientList />} />
+        </Route>
+      </Route>
 
       {/* <Route path="/leases" element={<Leases />} /> */}
       {/* <Route path="/leasesCreate" element={<LeasesCreate />} />
