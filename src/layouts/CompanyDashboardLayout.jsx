@@ -55,29 +55,31 @@ export const CompanyDashboardLayout = () => {
   };
 
   return (
-    <div
-      className="d-flex justify-content-center"
-      style={{ minHeight: "100vh", background: "#ffffff", padding: 40 }}
-    >
+    <div style={{ minHeight: "100vh", background: "#f4f6fb", padding: "40px 20px" }}>
       <div
-        className="d-flex"
+        className="d-flex mx-auto"
         style={{
-          width: "1200px",
-          borderRadius: 28,
+          maxWidth: 1200,
+          borderRadius: 24,
           overflow: "hidden",
-          background: "#f9fafb",
-          border: "1px solid rgba(255,255,255,0.08)",
+          background: "#fff",
+          boxShadow: "0 4px 24px rgba(92,115,242,0.08)",
+          border: "1px solid #e8eaf6",
         }}
       >
-        <DashboardSidebar
-          title="Company Panel"
-          links={links}
-          color="#5C73F2"
-          user={user}
-          onLogout={onLogout}
-        />
+        {/* SIDEBAR */}
+        <div style={{ width: 280, borderRight: "1px solid #e8eaf6", background: "#fff" }}>
+          <DashboardSidebar
+            title="Client"
+            links={links}
+            color="#5C73F2"
+            user={user}
+            onLogout={onLogout}
+          />
+        </div>
 
-        <div className="flex-grow-1 p-4" style={{ color: "#e9eefc" }}>
+        {/* CONTENIDO */}
+        <div className="flex-grow-1 p-5" style={{ color: "#5C73F2" }}>
           <Outlet />
         </div>
       </div>

@@ -115,7 +115,7 @@ export const ClientEdit = () => {
     <div className="mb-3">
         {/* <label>URL de la foto</label> */}
         <input className="form-control bg-light"
-              //  type="hidden"
+              type="hidden"
                name="photo_url"
                value={form.photo_url}
                onChange={handleChange}

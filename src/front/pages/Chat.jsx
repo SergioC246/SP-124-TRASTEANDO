@@ -104,7 +104,9 @@ export const Chat = () => {
 
   // Scroll automático al último mensaje
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (messages.length > 0) {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
   }, [messages]);
 
   const handleSend = async () => {
@@ -116,15 +118,16 @@ export const Chat = () => {
 
   /* ===== RENDER ===== */
   return (
-    <div className="container-fluid"  style={{ height: "calc(100vh - 130px)", display: "flex", flexDirection: "column", padding: "12px" }}>
+    <div className="container-fluid" style={{ height: "calc(100vh - 130px)", display: "flex", flexDirection: "column", padding: "12px" }}>
       <div className="row flex-grow-1" style={{ overflow: "hidden", minHeight: 0 }}>
 
         {/* PANEL IZQUIERDO */}
-        <div className="col-md-4 col-lg-3 border-end bg-light d-flex flex-column" style={{ overflow: "hidden", height: "100%" }}>
+        <div className="col-md-4 col-lg-3 border-end bg-white d-flex flex-column" style={{ overflow: "hidden", height: "100%" }}>
           <div className="p-3 border-bottom d-flex justify-content-between align-items-center">
             <h5 className="m-0">Mensajes</h5>
             <button
-              className="btn btn-primary btn-sm"
+              className="btn btn-sm"
+              style={{ backgroundColor: "#5C73F2", color: "#fff", border: "none" }}
               onClick={async () => {
                 const endpoint = myRole === "client" ? "api/companies" : "api/clients";
                 const resp = await fetch(`${API_URL}${endpoint}`);
@@ -146,7 +149,14 @@ export const Chat = () => {
                 <button
                   key={key}
                   onClick={() => { setTargetId(c.id); setTargetRole(c.role); }}
-                  className={`list-group-item list-group-item-action d-flex align-items-center justify-content-between ${targetId === c.id ? "active" : ""}`}
+                  className="list-group-item list-group-item-action d-flex align-items-center justify-content-between"
+                  style={{
+                    backgroundColor: targetId === c.id ? "#5C73F2" : "white",
+                    color: targetId === c.id ? "#fff" : "#111827",
+                    borderColor: targetId === c.id ? "#5C73F2" : "#dee2e6",
+                    borderRadius: "12px",
+                    marginBottom: "6px"
+                  }}
                 >
                   <div className="d-flex align-items-center text-truncate">
                     <img
@@ -173,7 +183,7 @@ export const Chat = () => {
         <div className="col-md-8 col-lg-9 d-flex flex-column bg-white border rounded" style={{ overflow: "hidden", height: "100%" }}>
 
           {/* CABECERA con foto */}
-          <div className="p-3 border-bottom bg-light d-flex justify-content-between align-items-center">
+          <div className="p-3 border-bottom bg-white d-flex justify-content-between align-items-center">
             <div className="d-flex align-items-center">
               {targetId && (() => {
                 const activeContact = contacts.find(c => c.id === targetId && c.role === targetRole);
@@ -190,8 +200,8 @@ export const Chat = () => {
               })()}
               <span className="fw-bold">
                 {contacts.find(c => c.id === targetId && c.role === targetRole)?.name ||
-                 contacts.find(c => c.id === targetId && c.role === targetRole)?.email ||
-                 "Selecciona un chat"}
+                  contacts.find(c => c.id === targetId && c.role === targetRole)?.email ||
+                  "Selecciona un chat"}
               </span>
             </div>
 
@@ -220,7 +230,7 @@ export const Chat = () => {
           {/* MENSAJES */}
           <div className="flex-grow-1 overflow-auto p-3">
             {!targetId ? (
-              <div className="h-100 d-flex align-items-center justify-content-center text-muted">
+              <div className="h-100 d-flex align-items-center justify-content-center" style={{ color: "#5C73F2" }}>
                 <p>Selecciona una conversación para empezar</p>
               </div>
             ) : (
@@ -230,8 +240,12 @@ export const Chat = () => {
                   className={`d-flex mb-3 ${m.sender_id === myId && m.sender_role === myRole ? "justify-content-end" : "justify-content-start"}`}
                 >
                   <div
-                    className={`p-2 px-3 rounded-pill ${m.sender_id === myId && m.sender_role === myRole ? "bg-primary text-white" : "bg-light border"}`}
-                    style={{ maxWidth: "80%" }}
+                    className="p-2 px-3 rounded-pill"
+                    style={{
+                      maxWidth: "80%",
+                      backgroundColor: m.sender_id === myId && m.sender_role === myRole ? "#5C73F2" : "#f0f0f0",
+                      color: m.sender_id === myId && m.sender_role === myRole ? "#fff" : "#333"
+                    }}
                   >
                     {m.content}
                   </div>
@@ -253,7 +267,13 @@ export const Chat = () => {
                 disabled={!targetId}
                 onKeyDown={e => e.key === "Enter" && handleSend()}
               />
-              <button className="btn btn-primary" onClick={handleSend} disabled={!targetId}>
+              <button className="btn"
+                style={{
+                  backgroundColor: "#5C73F2",
+                  borderColor: "#5C73F2",
+                  color: "#fff"
+                }}
+                onClick={handleSend} disabled={!targetId}>
                 <i className="fas fa-paper-plane"></i>
               </button>
             </div>
@@ -266,7 +286,7 @@ export const Chat = () => {
         <div className="modal d-block" style={{ backgroundColor: "rgba(0,0,0,0.5)" }}>
           <div className="modal-dialog modal-dialog-centered">
             <div className="modal-content shadow-lg border-0">
-              <div className="modal-header bg-primary text-white">
+              <div className="modal-header text-white" style={{ backgroundColor: "#5C73F2" }}>
                 <h5 className="modal-title">Iniciar nueva conversación</h5>
                 <button className="btn-close btn-close-white" onClick={() => setShowNewChat(false)}></button>
               </div>
@@ -278,6 +298,7 @@ export const Chat = () => {
                       <button
                         key={d.id}
                         className="list-group-item list-group-item-action d-flex align-items-center py-3"
+                        style={{ color: "#0f172a" }}
                         onClick={() => {
                           const role = myRole === "client" ? "company" : "client";
                           setTargetId(d.id);
@@ -299,7 +320,7 @@ export const Chat = () => {
                       </button>
                     );
                   }) : (
-                    <div className="text-center p-4 text-muted">
+                    <div className="text-center p-4" style={{ color: "#5C73F2" }}>
                       No hay nuevos contactos disponibles
                     </div>
                   )}

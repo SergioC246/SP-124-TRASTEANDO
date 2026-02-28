@@ -73,7 +73,7 @@ export const ClientDashboardLayout = () => {
         </div>
 
         {/* CONTENIDO */}
-        <div className="flex-grow-1 p-4" style={{ background: "#f4f6fb" }}>
+        <div className="flex-grow-1 p-1" style={{ color: "#5C73F2" }}>
           <Outlet />
         </div>
       </div>
