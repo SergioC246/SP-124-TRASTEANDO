@@ -1310,4 +1310,47 @@ header,
     }
 /* FIN FEATURES SERGIO */
 
-/* FIN FEATURES SERGIO */
+
+/* INICIO BOTONES LOCATIONS ADMIN SERGIO */
+
+/* HEADER */
+.header-primary {
+  background-color: #9BBBF2;
+  color: black;
+}
+
+/* BOTÓN SECUNDARIO (exterior) */
+.btn-secondary-custom {
+  background-color: #9BBBF2;
+  color: white;
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.btn-secondary-custom:hover {
+  background-color: #5C73F2;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(92, 115, 242, 0.4);
+}
+
+/* BOTÓN TERCIARIO (acciones internas) */
+.btn-tertiary-custom {
+  background-color: #6695F2;
+  color: white;
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.btn-tertiary-custom:hover {
+  background-color: #ffffff00;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(242, 65, 113, 0.4);
+}
+
+/* Progress bar personalizada */
+.progress-bar-custom {
+  background-color: #5C73F2;
+}
+
+
+/* FIN BOTONES LOCATIONS ADMIN SERGIO */
