@@ -1,143 +1,100 @@
 import { useEffect, useState } from "react"
-import { Link, useNavigate } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 import useGlobalReducer from "../hooks/useGlobalReducer"
 
 export const CompanyPrivate = () => {
 
     const [company, setCompany] = useState(null)
     const [photo, setPhoto] = useState("")
-
     const navigate = useNavigate()
     const { dispatch } = useGlobalReducer()
 
     function handleLogout() {
         localStorage.removeItem("token_company")
-
-        dispatch({
-            type: 'set_auth_company',
-            payload: false
-        })
+        dispatch({ type: 'set_auth_company', payload: false })
         navigate("/")
     }
 
     useEffect(() => {
         const token = localStorage.getItem("token_company")
-
-        if (!token) {
-            navigate("/companies/login")
-            return
-        }
+        if (!token) { navigate("/companies/login"); return }
 
         fetch(import.meta.env.VITE_BACKEND_URL + "api/private/company", {
             method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": "Bearer " + token
-            }
+            headers: { "Content-Type": "application/json", "Authorization": "Bearer " + token }
         })
             .then(response => {
-                if (response.status !== 200) {
-                    navigate("/companies/login")
-                }
+                if (response.status !== 200) navigate("/companies/login")
                 return response.json()
             })
-            .then(data => {
-                setCompany(data)
-                setPhoto(data.photo || "")
-            })
-
+            .then(data => { setCompany(data); setPhoto(data.photo || "") })
     }, [])
 
-    if (!company) {
-        return <h2 className="text-center mt-5">Cargando...</h2>
-    }
+    if (!company) return <h2 className="text-center mt-5">Cargando...</h2>
 
     return (
-        <div className="container-fluid py-5 px-5">
-            <div className="row justify-content-center mb-5">
-                <div className="col-12 col-md-8 col-lg-4">
-                    <div className="card shadow-lg border-0">
+        <div>
+            <div className="card border-0 shadow-sm" style={{ borderRadius: 20, overflow: "hidden", maxWidth: 580, margin: "0 auto" }}>
 
-                        <div className="card-header header-primary text-info-emphasis text-center py-4 position-relative">
-                            <h3 className="mb-0 fw-bold" style={{ textShadow: "0px 4px 12px rgba(0,0,0,0.3)" }}>
-                                Welcome {company.name}
-                            </h3>
+                {/* CABECERA */}
+                <div className="p-4 text-center text-white position-relative" style={{ backgroundColor: "#5C73F2" }}>
+                    <h4 className="mb-0 fw-bold">Bienvenido, {company.name}</h4>
+                    <button
+                        className="btn btn-light btn-sm position-absolute"
+                        style={{ top: 16, right: 16, borderRadius: "50%", width: 34, height: 34, padding: 0 }}
+                        onClick={() => navigate("/companies/private/edit")}
+                    >
+                        <i className="fa-solid fa-pencil"></i>
+                    </button>
+                </div>
 
-                            <button
-                                className="btn btn-edit-header shadow position-absolute top-50 end-0 translate-middle-y me-3"
-                                onClick={() => navigate("/companies/private/edit")}
-                            >
-                                <i className="fa-solid fa-pencil"></i>
-                            </button>
-
+                {/* FOTO */}
+                <div className="text-center pt-4 pb-2">
+                    {photo ? (
+                        <img src={photo} alt="Company" className="rounded-3 shadow-sm"
+                            style={{ width: 140, height: 140, objectFit: "cover", border: "4px solid #f0f2ff" }} />
+                    ) : (
+                        <div className="rounded-circle d-inline-flex align-items-center justify-content-center bg-light text-muted shadow-sm"
+                            style={{ width: 140, height: 140, fontSize: 14 }}>
+                            Sin imagen
                         </div>
+                    )}
+                </div>
 
-                        <div className="card-body text-center">
-
-                            {photo ? (
-                                <img
-                                    src={photo}
-                                    alt="Company"
-                                    className="mb-5 shadow-sm company-photo"
-                                />
-                            ) : (
-                                <div
-                                    className="rounded-circle mb-4 shadow-sm d-flex align-items-center justify-content-center bg-light text-muted"
-                                    style={{ width: "150px", height: "150px" }}
-                                >
-                                    No image
-                                </div>
-                            )}
-
-                            <div className="text-start px-3">
-                                <div className="info-block">
-                                    <div className="info-icon-wrapper">
-                                        <i className="fa-solid fa-envelope info-icon"></i>
-                                    </div>
-                                    <div>
-                                        <strong>Email:</strong><br />
-                                        <span className="text-muted">{company.email}</span>
-                                    </div>
-                                </div>
-
-
-                                <div className="info-block">
-                                    <div className="info-icon-wrapper">
-                                        <i className="fa-solid fa-id-card info-icon"></i>
-                                    </div>
-                                    <div>
-                                        <strong>CIF:</strong><br />
-                                        <span className="text-muted">{company.cif}</span>
-                                    </div>
-                                </div>
-
-                                <div className="info-block">
-                                    <div className="info-icon-wrapper">
-                                        <i className="fa-solid fa-location-dot info-icon"></i>
-                                    </div>
-                                    <div>
-                                        <strong>Address:</strong><br />
-                                        <span className="text-muted">{company.address}</span>
-                                    </div>
-                                </div>
+                {/* INFO */}
+                <div className="card-body px-4 pb-2">
+                    {[
+                        { icon: "fa-envelope", label: "Email", value: company.email },
+                        { icon: "fa-id-card", label: "CIF", value: company.cif },
+                        { icon: "fa-location-dot", label: "Dirección", value: company.address },
+                    ].map(({ icon, label, value }) => (
+                        <div key={label} className="d-flex align-items-center gap-3 p-3 mb-2 rounded-3" style={{ backgroundColor: "#f8f9ff" }}>
+                            <div className="d-flex align-items-center justify-content-center rounded-circle text-white"
+                                style={{ width: 38, height: 38, backgroundColor: "#5C73F2", flexShrink: 0 }}>
+                                <i className={`fa-solid ${icon}`}></i>
                             </div>
-
-                            <div className="card-footer bg-white border-0 py-3">
-                                <div className="d-flex flex-column align-items-center gap-3">
-                                    <button className="btn btn-secondary-custom shadow"
-                                        onClick={() => navigate("/companies/private/locations")}>
-                                        My Locations
-                                    </button>
-                                    <button className="btn btn-secondary-custom shadow"
-                                        onClick={handleLogout}>
-                                        Logout
-                                    </button>
-                                </div>
+                            <div>
+                                <small className="text-muted d-block">{label}</small>
+                                <span className="fw-semibold">{value}</span>
                             </div>
                         </div>
-                    </div>
+                    ))}
+                </div>
+
+                {/* BOTONES */}
+                <div className="px-4 pb-4 pt-2 d-flex gap-2">
+                    <button className="btn w-100 fw-bold py-2"
+                        style={{ backgroundColor: "#5C73F2", color: "#fff", borderRadius: 10 }}
+                        onClick={() => navigate("/companies/private/locations")}>
+                        <i className="fa-solid fa-location-dot me-2"></i>Mis Ubicaciones
+                    </button>
+                    <button className="btn btn-outline-danger w-100 fw-bold py-2"
+                        style={{ borderRadius: 10 }}
+                        onClick={handleLogout}>
+                        <i className="fa-solid fa-right-from-bracket me-2"></i>Cerrar Sesión
+                    </button>
                 </div>
             </div>
-        </div >
+        </div>
     )
 }

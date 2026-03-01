@@ -103,7 +103,7 @@ export const CompanyPrivateEdit = () => {
                 <div className="col-12 col-md-8 col-lg-5">
                     <div className="card shadow-lg border-0">
 
-                        <div className="card-header header-primary text-info-emphasis text-center py-4">
+                        <div className="card-header text-white text-center py-4" style={{ backgroundColor: "#5C73F2" }}>
                             <h3 className="mb-0 fw-bold" style={{ textShadow: "0px 4px 12px rgba(0,0,0,0.3)" }}>
                                 Editar Company
                             </h3>
@@ -166,16 +166,16 @@ export const CompanyPrivateEdit = () => {
                             )}
 
                             <div className="card-footer bg-white border-0 py-3 mt-3">
-                                <div className="d-flex flex-column align-items-center gap-3">
-                                    <button
-                                        className="btn btn-secondary-custom shadow"
+                                <div className="px-4 pb-4 pt-2 d-flex gap-2">
+                                    <button className="btn w-100 fw-bold py-2"
+                                        style={{ backgroundColor: "#5C73F2", color: "#fff", borderRadius: 10 }}
                                         onClick={handleUpdate}>
-                                        Save
+                                        <i className="fa-solid fa-floppy-disk me-2"></i>Guardar
                                     </button>
-                                    <button
-                                        className="btn btn-secondary-custom shadow"
+                                    <button className="btn btn-outline-danger w-100 fw-bold py-2"
+                                        style={{ borderRadius: 10 }}
                                         onClick={() => navigate("/companies/private")}>
-                                        Cancel
+                                        <i className="fa-solid fa-xmark me-2"></i>Cancelar
                                     </button>
                                 </div>
                             </div>
