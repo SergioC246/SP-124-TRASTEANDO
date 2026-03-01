@@ -46,87 +46,108 @@ export const AdminPrivate = () => {
     const admin = store.admin_info || {};
 
     return (
-        <div className="container-fluid">
-            <div className="row">
-                <nav className="col-md-3 col-lg-2 d-md-block bg-dark sidebar vh-100 p-3 text-white">
-                    <h4 className="text-center mb-4 text-primary">AdminPanel</h4>
-                    <ul className="nav flex-column">
-                        <li className="nav-item mb-2">
-                            <a className="nav-link text-white active" href="#"><i className="bi bi-person-circle me-2"></i> Mi Perfil</a>
-                        </li>
-                        <li className="nav-item mb-2">
-                            <a className="nav-link text-white-50" href="#"><i className="bi bi-speedometer2 me-2"></i> Dashboard</a>
-                        </li>
-                        <hr className="bg-secondary" />
-                        <li className="nav-item mt-auto">
-                            <button onClick={handleLogout} className="btn btn-outline-danger w-100">
-                                Cerrar Sesión
-                            </button>
-                        </li>
-                    </ul>
-                </nav>      
-                <main className="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4 bg-light">
-                    <div className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-4 border-bottom">
-                        <h1 className="h2 text-dark">Panel de Control</h1>
-                        <span className="badge bg-success p-2">Estado: Administrador Activo</span>
+        <div className="container-fluid py-5 px-md-5" style={{ backgroundColor: "#f8f9fa", minHeight: "100vh" }}>
+            <div className="row justify-content-center mb-5">
+                <div className="col-lg-11 col-xl-10">
+                    <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-end pb-4 border-bottom" style={{ borderColor: "#dee2e6" }}>
+                        <div>
+                            <h1 className="display-6 fw-bold mb-1" style={{ color: "var(--text-dark, #111111)" }}>Mi Perfil</h1>
+                            <p className="text-muted mb-0">Configuración de cuenta de administrador</p>
+                        </div>
+                        <button
+                            onClick={handleLogout}
+                            className="btn rounded-pill px-4 mt-3 mt-md-0 shadow-sm transition-all text-white border-0"
+                            style={{ backgroundColor: "var(--accent-pink, #f24171)", fontWeight: "600" }}
+                        >
+                            <i className="bi bi-box-arrow-right me-2"></i> Cerrar Sesión
+                        </button>
                     </div>
+                </div>
+            </div>
 
-                    <div className="row">
-                        <div className="col-lg-4 mb-4">
-                            <div className="card shadow-sm border-0 text-center p-4">
-                                <div className="mx-auto mb-3" style={{ width: "100px", height: "100px" }}>
-                                    <img 
-                                        src={`https://ui-avatars.com/api/?name=${admin.name || 'Admin'}&background=0D6EFD&color=fff&size=128`} 
-                                        className="rounded-circle img-fluid shadow-sm"
+            <div className="row justify-content-center">
+                <div className="col-lg-11 col-xl-10">
+                    <div className="card shadow-sm border-0 rounded-4 overflow-hidden mb-4">
+                        <div className="card-body p-4 p-md-5">
+                            <div className="d-flex align-items-center mb-5">
+                                <div className="flex-shrink-0">
+                                    <img
+                                        src={`https://ui-avatars.com/api/?name=${admin.name || 'Admin'}&background=5c73f2&color=fff&size=128`}
+                                        className="rounded-circle shadow-sm border border-3 border-white"
+                                        style={{ width: "100px" }}
                                         alt="Avatar"
                                     />
                                 </div>
-                                <h4 className="fw-bold mb-1">{admin.name || "Administrador"}</h4>
-                                <p className="text-muted small mb-3">{admin.email}</p>
-                                <button className="btn btn-sm btn-outline-primary px-4 rounded-pill">Editar Perfil</button>
+                                <div className="ms-4">
+                                    <h4 className="fw-bold mb-0" style={{ color: "var(--text-dark, #111111)" }}>{admin.name || "Administrador"}</h4>
+                                    <span className="badge bg-opacity-10 rounded-pill px-3 py-2 mt-2"
+                                        style={{ backgroundColor: "var(--secondary-color, #91bbf2)", color: "var(--primary-color, #5c73f2)", border: "1px solid var(--secondary-color)" }}>
+                                        <i className="bi bi-shield-check me-1"></i> Administrador Activo
+                                    </span>
+                                </div>
                             </div>
-                        </div>
-                        <div className="col-lg-8">
-                            <div className="card shadow-sm border-0 p-4 mb-4">
-                                <h5 className="mb-4 text-secondary">Información de la Cuenta</h5>
-                                <div className="row g-3">
-                                    <div className="col-sm-6">
-                                        <label className="text-muted small d-block">Identificador Único (ID)</label>
-                                        <p className="fw-bold border-bottom pb-2">#{admin.id}</p>
+
+                            <h6 className="text-uppercase fw-bold mb-4" style={{ letterSpacing: "1px", fontSize: "0.8rem", color: "var(--primary-color, #5c73f2)" }}>
+                                Detalles de la cuenta
+                            </h6>
+
+                            <div className="row g-4 mb-5">
+                                <div className="col-sm-6">
+                                    <label className="text-muted small d-block mb-2 fw-semibold">Identificador</label>
+                                    <div className="p-3 bg-light rounded-3 font-monospace fw-bold" style={{ color: "var(--text-dark)" }}>
+                                        #{admin.id}
                                     </div>
-                                    <div className="col-sm-6">
-                                        <label className="text-muted small d-block">Correo Electrónico</label>
-                                        <p className="fw-bold border-bottom pb-2">{admin.email}</p>
+                                </div>
+                                <div className="col-sm-6">
+                                    <label className="text-muted small d-block mb-2 fw-semibold">Rol del Sistema</label>
+                                    <div className="p-3 bg-light rounded-3 fw-bold" style={{ color: "var(--text-dark)" }}>
+                                        <i className="bi bi-person-badge me-2" style={{ color: "var(--primary-color)" }}></i>Sistema Admin
                                     </div>
-                                    <div className="col-sm-6">
-                                        <label className="text-muted small d-block">Rol del Sistema</label>
-                                        <p className="fw-bold border-bottom pb-2 text-primary">Super Admin</p>
+                                </div>
+                                <div className="col-12">
+                                    <label className="text-muted small d-block mb-2 fw-semibold">Email Registrado</label>
+                                    <div className="p-3 bg-light rounded-3 fw-medium">
+                                        <i className="bi bi-envelope me-2" style={{ color: "var(--primary-color)" }}></i>{admin.email}
                                     </div>
-                                    <div className="col-sm-6">
-                                        <label className="text-muted small d-block">Nivel de Acceso</label>
-                                        <p className="fw-bold border-bottom pb-2">Total</p>
+                                </div>
+                                <div className="col-sm-6">
+                                    <label className="text-muted small d-block mb-2 fw-semibold">Último Acceso</label>
+                                    <div className="p-3 bg-light rounded-3 small text-muted">
+                                        Hoy, 2026-03-01
                                     </div>
                                 </div>
                             </div>
-                            <div className="accordion border-0 shadow-sm" id="accordionExample">
-                                <div className="accordion-item border-0">
-                                    <h2 className="accordion-header">
-                                        <button className="accordion-button collapsed bg-white text-primary fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#collapseData">
-                                            Ver Datos Técnicos (Secret)
-                                        </button>
-                                    </h2>
-                                    <div id="collapseData" className="accordion-collapse collapse" data-bs-parent="#accordionExample">
-                                        <div className="accordion-body bg-dark text-info rounded-bottom">
-                                            <pre className="mb-0" style={{ fontSize: "0.85rem" }}>
-                                                {JSON.stringify(admin, null, 2)}
-                                            </pre>
-                                        </div>
-                                    </div>
+
+                            <div className="d-grid">
+                                <button className="btn btn-lg py-3 rounded-3 fw-bold shadow-sm transition-all text-white border-0"
+                                    style={{ backgroundColor: "var(--primary-color, #5c73f2)" }}>
+                                    <i className="bi bi-pencil-square me-2"></i> Editar Datos de Perfil
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="accordion border-0 shadow-sm rounded-4 overflow-hidden mb-5" id="accordionExample">
+                        <div className="accordion-item border-0">
+                            <h2 className="accordion-header">
+                                <button
+                                    className="accordion-button collapsed bg-white text-dark fw-bold py-3 shadow-none"
+                                    type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#collapseData"
+                                >
+                                    <i className="bi bi-braces me-2" style={{ color: "var(--primary-color)" }}></i> Metadatos de Sesión (JSON)
+                                </button>
+                            </h2>
+                            <div id="collapseData" className="accordion-collapse collapse" data-bs-parent="#accordionExample">
+                                <div className="accordion-body p-0" style={{ background: "#111111" }}>
+                                    <pre className="mb-0 p-4" style={{ fontSize: "0.85rem", maxHeight: "300px", overflowY: "auto", color: "var(--secondary-color)" }}>
+                                        {JSON.stringify(admin, null, 2)}
+                                    </pre>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </main>
+                </div>
             </div>
         </div>
     );
