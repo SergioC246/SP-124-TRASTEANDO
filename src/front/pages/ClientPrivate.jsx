@@ -96,12 +96,12 @@ export const ClientPrivate = () => {
 
                                 </div>
                             </div>
-                            <h4 className="fw-bold mb-1">Mi Perfil</h4>
+                            <h4 className="fw-bold mb-1">Mi Profile</h4>
                             <p className="text-muted small mb-3">{client.email}</p>
                             <button className="btn btn-sm px-4 rounded-pill mb-2 w-100" style={{ backgroundColor: "rgb(92, 115, 242)", border: "none", color: "white" }}
-                            onClick={() => navigate(`/clients/${client.id}/edit`)} >Editar Perfil</button>
+                                onClick={() => navigate(`/clients/${client.id}/edit`)} >Edit Profile</button>
                             <button className="btn btn-outline-danger btn-sm px-4 rounded-pill w-100" onClick={handleLogout}>
-                                Cerrar Sesión
+                                Log Out
                             </button>
                         </div>
                     </div>
@@ -109,21 +109,21 @@ export const ClientPrivate = () => {
                 <div className="col-lg-8">
                     <div className="card shadow-sm border-0 rounded-4">
                         <div className="card-header bg-white border-0 py-3">
-                            <h5 className="mb-0 fw-bold">Información de la Cuenta</h5>
+                            <h5 className="mb-0 fw-bold">Account Information</h5>
                         </div>
                         <div className="card-body p-4 pt-0">
                             <div className="row mb-4">
-                                <div className="col-sm-4 text-muted">ID de Cliente</div>
+                                <div className="col-sm-4 text-muted">Client ID</div>
                                 <div className="col-sm-8 fw-medium">#{client.id}</div>
                             </div>
                             <hr className="text-light" />
                             <div className="row mb-4">
-                                <div className="col-sm-4 text-muted">Correo Electrónico</div>
+                                <div className="col-sm-4 text-muted">Email Address</div>
                                 <div className="col-sm-8 fw-medium">{client.email}</div>
                             </div>
                             <hr className="text-light" />
                             <div className="row mb-4">
-                                <div className="col-sm-4 text-muted">Estado de la Cuenta</div>
+                                <div className="col-sm-4 text-muted">Account Status</div>
                                 <div className="col-sm-8">
                                     <span className={`badge ${client.is_active ? 'bg-success-subtle text-success' : 'bg-danger-subtle text-danger'} px-3`}>
                                         {client.is_active ? 'Activa' : 'Inactiva'}

@@ -57,10 +57,10 @@ export const ClientEdit = () => {
       if (data.secure_url) {
         setForm({ ...form, photo_url: data.secure_url });
       } else {
-        
+
       }
     } catch (error) {
-     
+
     } finally {
       setUploading(false);
     }
@@ -96,43 +96,43 @@ export const ClientEdit = () => {
         />
       </div>
 
-    {/*Selección de archivos*/}
+      {/*Selección de archivos*/}
 
-    <div className="mb-3">
-      <label htmlFor="form-label">Cambiar foto de Perfil</label>
-      <input type="file"
-             className="form-control"
-             onChange={handleUploadPhoto}
-             disabled={uploading}
-      />
-      {uploading && <span 
-                      className="spinner-border spinner-border-sm text-primary ms-2">
-                    </span>}
-    </div>
-    
-    {/*URL de la foto enviada pro Cloudinary*/}
+      <div className="mb-3">
+        <label htmlFor="form-label">Change profile photo</label>
+        <input type="file"
+          className="form-control"
+          onChange={handleUploadPhoto}
+          disabled={uploading}
+        />
+        {uploading && <span
+          className="spinner-border spinner-border-sm text-primary ms-2">
+        </span>}
+      </div>
 
-    <div className="mb-3">
+      {/*URL de la foto enviada pro Cloudinary*/}
+
+      <div className="mb-3">
         {/* <label>URL de la foto</label> */}
         <input className="form-control bg-light"
-              type="hidden"
-               name="photo_url"
-               value={form.photo_url}
-               onChange={handleChange}
-               placeholder="La URL de la foto"
-        />
-    </div>
-    {/*Preview*/}
-
-    {form.photo_url&& (
-      <div className="mb-3">
-        <img src={form.photo_url}
-             alt="Preview" 
-             className="img-thumbnail" 
-             style={{width: "150px"}} 
+          type="hidden"
+          name="photo_url"
+          value={form.photo_url}
+          onChange={handleChange}
+          placeholder="La URL de la foto"
         />
       </div>
-    )}
+      {/*Preview*/}
+
+      {form.photo_url && (
+        <div className="mb-3">
+          <img src={form.photo_url}
+            alt="Preview"
+            className="img-thumbnail"
+            style={{ width: "150px" }}
+          />
+        </div>
+      )}
 
       <div className="form-check mb-3">
         <input
