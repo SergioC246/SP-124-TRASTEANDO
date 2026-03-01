@@ -95,7 +95,7 @@ export const ClientLocations = () => {
 
                                 <button
                                     className="btn btn-primary-custom w-100 rounded-pill fw-bold py-2 mt-3 shadow-sm hover-up"
-                                    onClick={() => navigate(`/client/private/storages/${loc.id}`)}
+                                    onClick={() => navigate(`/client/private/storage/${loc.id}`)}
                                 >
                                     View Storage Units
                                 </button>
