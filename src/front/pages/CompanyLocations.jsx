@@ -70,10 +70,8 @@ export const CompanyLocations = () => {
               </div>
               <div className="card-body py-4">
                 <div className="d-flex flex-column align-items-center gap-3">
-                  <button
-                    className="btn btn-outline-success shadow"
-                    onClick={() => navigate("/companies/private/locations/create")}
-                  >
+                  <button className="btn btn-secondary-custom shadow"
+                    onClick={() => navigate("/companies/private/locations/create")}>
                     Create Location
                   </button>
                   <button
@@ -97,14 +95,15 @@ export const CompanyLocations = () => {
         <div className="col-12 col-xl-10 mx-auto">
           <div className="card shadow-lg border-0">
 
-            <div className="card-header bg-info-subtle text-info-emphasis text-center py-4">
-              <h4 className="mb-0">
+            <div className="card-header header-primary text-info-emphasis text-center py-4">
+              <h4 className="mb-0 fw-bold" style={{ textShadow: "0px 4px 12px rgba(0,0,0,0.3)" }}>
                 Locations of {locations[0]?.company_name}
               </h4>
             </div>
 
             <div className="card-body bg-light">
               <div className="row g-3">
+
                 {locations.map((location) => {
                   const occupancyPercentage =
                     location.total_storages > 0
@@ -131,7 +130,13 @@ export const CompanyLocations = () => {
                         )}
 
                         <div className="card-body">
-                          <h5 className="fw-bold">{location.city}</h5>
+
+                          <div className="mb-2">
+                            <span className="badge-city fw-bold">
+                              {location.city}
+                            </span>
+                          </div>
+
                           <p className="mb-2">
                             <strong>Address:</strong> {location.address}
                           </p>
@@ -144,9 +149,10 @@ export const CompanyLocations = () => {
                               </small>
                               <small className="fw-bold">{occupancyPercentage}%</small>
                             </div>
+
                             <div className="progress" style={{ height: "10px" }}>
                               <div
-                                className="progress-bar bg-success"
+                                className="progress-bar progress-bar-custom"
                                 role="progressbar"
                                 style={{ width: `${occupancyPercentage}%` }}
                                 aria-valuenow={occupancyPercentage}
@@ -158,7 +164,7 @@ export const CompanyLocations = () => {
 
                           <div className="mt-3 d-flex justify-content-between align-items-center">
                             <button
-                              className="btn btn-outline-primary shadow"
+                              className="btn btn-secondary-custom shadow"
                               onClick={() =>
                                 navigate(`/companies/private/locations/storages/${location.id}`)
                               }
@@ -166,16 +172,16 @@ export const CompanyLocations = () => {
                               View Storages
                             </button>
 
-                            <div className="d-flex justify-content-end gap-1 mt-2">
+                            <div className="d-flex gap-1">
                               <button
-                                className="btn btn-outline-secondary shadow"
+                                className="btn btn-outline-secondary-custom shadow"
                                 onClick={() => navigate(`/companies/private/locations/${location.id}`)}
                               >
                                 <i className="fa-regular fa-eye"></i>
                               </button>
 
                               <button
-                                className="btn btn-outline-success shadow"
+                                className="btn btn-outline-secondary-custom shadow"
                                 onClick={() =>
                                   navigate(`/companies/private/locations/edit/${location.id}`)
                                 }
@@ -200,14 +206,12 @@ export const CompanyLocations = () => {
 
               <div className="card-footer bg-white border-0 py-3">
                 <div className="d-flex flex-column align-items-center gap-3">
-                  <button
-                    className="btn btn-outline-success shadow"
-                    onClick={() => navigate("/companies/private/locations/create")}
-                  >
+                  <button className="btn btn-secondary-custom shadow"
+                    onClick={() => navigate("/companies/private/locations/create")}>
                     Create Location
                   </button>
                   <button
-                    className="btn btn-outline-secondary shadow"
+                    className="btn btn-secondary-custom shadow"
                     onClick={() => navigate("/companies/private")}
                   >
                     Back

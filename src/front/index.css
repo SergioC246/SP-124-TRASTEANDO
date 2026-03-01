@@ -1311,4 +1311,228 @@ header,
 }
 /* FIN FEATURES SERGIO */
 
-/* FIN FEATURES SERGIO */
+
+/* INICIO BOTONES LOCATIONS ADMIN SERGIO */
+
+/* HEADER */
+.header-primary {
+  background-color: #9BBBF2;
+  color: black;
+}
+
+/* BOTÓN SECUNDARIO (exterior) */
+.btn-secondary-custom {
+  background-color: #9BBBF2;
+  color: white;
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.btn-secondary-custom:hover {
+  background-color: #5C73F2;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(92, 115, 242, 0.4);
+}
+
+/* BOTÓN TERCIARIO (acciones internas) */
+.btn-tertiary-custom {
+  background-color: #6695F2;
+  color: white;
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.btn-tertiary-custom:hover {
+  background-color: #ffffff00;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(242, 65, 113, 0.4);
+}
+
+/* Progress bar personalizada */
+.progress-bar-custom {
+  background-color: #5C73F2;
+}
+
+/* BOTÓN OUTLINE SECUNDARIO (eye & edit) */
+.btn-outline-secondary-custom {
+  background-color: transparent;
+  color: #9BBBF2;
+  border: 2px solid #9BBBF2;
+  transition: all 0.3s ease;
+}
+
+.btn-outline-secondary-custom:hover {
+  background-color: #9BBBF2;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(155, 187, 242, 0.4);
+}
+
+/* BADGE CIUDAD GRANDE */
+.badge-city {
+  background-color: #5C73F2;
+  color: white;
+  font-size: 1rem;        /* mismo tamaño visual que h5 */
+  padding: 0.3rem 0.3rem;
+  border-radius: 8px;
+  display: inline-block;
+  box-shadow: 0 4px 12px rgba(92, 115, 242, 0.3);
+}
+
+/* BOTÓN BACK PERSONALIZADO */
+.btn-back-custom {
+  background-color: transparent;
+  color: #5C73F2;
+  border: 2px solid #5C73F2;
+  transition: all 0.3s ease;
+}
+
+.btn-back-custom:hover {
+  background-color: #5C73F2;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(92, 115, 242, 0.4);
+}
+
+/* BOTÓN EDIT HEADER */
+.btn-edit-header {
+  background-color: rgba(255, 255, 255, 0.9);
+  color: #5C73F2;
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.btn-edit-header:hover {
+  background-color: white;
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+}
+
+.company-photo {
+  width: 180px;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 20px;
+}
+
+/* INFO BLOCK MEJORADO */
+.info-block {
+  background-color: #eef1ff;
+  padding: 14px 18px;
+  border-radius: 12px;
+  margin-bottom: 14px;
+  border-left: 5px solid #5C73F2;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  transition: all 0.3s ease;
+}
+
+.info-block:hover {
+  background-color: #e0e6ff;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(92, 115, 242, 0.15);
+}
+
+/* Iconos */
+.info-icon {
+  font-size: 0.95rem;      
+  color: #5C73F2;
+  margin-top: 4px;        
+  transition: all 0.3s ease;
+}
+
+.info-block:hover .info-icon {
+  transform: scale(1.1);
+}
+
+/* HEADER */
+.header-primary {
+  background-color: #5C73F2;
+  color: white;
+  text-shadow: 0px 4px 12px rgba(0,0,0,0.3);
+}
+
+/* INPUTS */
+.input-custom {
+  border: 1px solid #9BBBF2;
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  transition: all 0.3s ease;
+}
+
+.input-custom:focus {
+  border-color: #5C73F2;
+  box-shadow: 0 0 8px rgba(92,115,242,0.3);
+}
+
+/* BOTONES */
+.btn-secondary-custom {
+  background-color: #9BBBF2;
+  color: #000;
+  transition: all 0.3s ease;
+}
+
+.btn-secondary-custom:hover {
+  background-color: #5C73F2;
+  color: #fff;
+}
+
+.btn-third-custom {
+  background-color: #F24171;
+  color: #fff;
+  transition: all 0.3s ease;
+}
+
+.btn-third-custom:hover {
+  background-color: #d0305b;
+}
+
+/* IMG */
+.rounded-3 {
+  border-radius: 1rem !important;
+}
+
+/* HEADER */
+.header-primary {
+  background-color: #5C73F2;
+  color: white;
+  text-shadow: 0px 4px 12px rgba(0,0,0,0.3);
+}
+
+/* INFO BLOCKS */
+.info-block {
+  background-color: #f0f4ff;
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  transition: all 0.3s ease;
+}
+
+.info-block:hover {
+  background-color: #d9e2ff;
+}
+
+/* ICONS */
+.icon {
+  font-size: 1.2rem;
+  color: #5C73F2;
+  transition: transform 0.3s ease;
+}
+
+.info-block:hover .icon {
+  transform: scale(1.2);
+}
+
+/* BOTONES */
+.btn-secondary-custom {
+  background-color: #9BBBF2;
+  color: #000;
+  transition: all 0.3s ease;
+}
+
+.btn-secondary-custom:hover {
+  background-color: #5C73F2;
+  color: #fff;
+}
+
+/* FIN BOTONES LOCATIONS ADMIN SERGIO */

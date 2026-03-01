@@ -121,24 +121,26 @@ export const CompanyStoragesEdit = () => {
     if (loading) return <h2>Loading storage...</h2>
 
     return (
-        <div className="container py-5">
+        <div className="container-fluid py-5 px-5 mb-5">
             <div className="row justify-content-center">
                 <div className="col-12 col-md-8 col-lg-5">
                     <div className="card shadow-lg border-0">
 
-                        <div className="card-header bg-info-subtle text-info-emphasis text-center py-4">
-                            <h3 className="mb-0">Edit Storage</h3>
+                        <div className="card-header header-primary text-info-emphasis text-center py-4">
+                            <h3 className="mb-0 fw-bold" style={{ textShadow: "0px 4px 12px rgba(0,0,0,0.3)" }}>
+                                Edit Storage
+                            </h3>
                         </div>
 
-                        <div className="card-body py-4">
+                        <div className="card-body">
 
-                            <div className="row">
-                                <div className="col-md-6 mb-3">
+                            <div className="row g-3">
+                                <div className="col-md-6">
                                     <label className="form-label fw-semibold">Size</label>
-                                    <input type="text" className="form-control" value={size} onChange={e => setSize(e.target.value)} />
+                                    <input type="text" className="form-control input-custom" value={size} onChange={e => setSize(e.target.value)} />
 
                                     <label className="form-label fw-semibold mt-3">Location</label>
-                                    <select className="form-select" value={locationId} onChange={e => setLocationId(e.target.value)}>
+                                    <select className="form-control input-custom" value={locationId} onChange={e => setLocationId(e.target.value)}>
                                         <option value="">Select location</option>
                                         {locations.map(loc => (
                                             <option key={loc.id} value={loc.id}>
@@ -150,10 +152,10 @@ export const CompanyStoragesEdit = () => {
 
                                 <div className="col-md-6 mb-3">
                                     <label className="form-label fw-semibold">Price</label>
-                                    <input type="number" className="form-control" value={price} onChange={e => setPrice(e.target.value)} />
+                                    <input type="number" className="form-control input-custom" value={price} onChange={e => setPrice(e.target.value)} />
 
                                     <label className="form-label fw-semibold mt-3">Status</label>
-                                    <select className="form-select" value={status ? "true" : "false"} onChange={e => setStatus(e.target.value === "true")}>
+                                    <select className="form-control input-custom" value={status ? "true" : "false"} onChange={e => setStatus(e.target.value === "true")}>
                                         <option value="true">Available</option>
                                         <option value="false">Occupied</option>
                                     </select>
@@ -161,7 +163,7 @@ export const CompanyStoragesEdit = () => {
 
                                 <div>
                                     <label className="form-label fw-semibold">Photo</label>
-                                    <input type="file" className="form-control" onChange={handleUploadPhoto} />
+                                    <input type="file" className="form-control input-custom" onChange={handleUploadPhoto} />
                                 </div>
 
                                 {uploading && <p className="mt-2">Uploading image...</p>}
@@ -172,13 +174,15 @@ export const CompanyStoragesEdit = () => {
                                 )}
                             </div>
 
-                            <div className="card-footer bg-white border-0 py-3 d-flex justify-content-center gap-3">
-                                <button className="btn btn-outline-success shadow px-4" onClick={handleUpdate}>
-                                    Save
-                                </button>
-                                <button className="btn btn-outline-secondary shadow px-4" onClick={() => navigate(-1)}>
-                                    Cancel
-                                </button>
+                            <div className="card-footer bg-white border-0 py-3 mt-3">
+                                <div className="d-flex flex-column align-items-center gap-3">
+                                    <button className="btn btn-secondary-custom shadow" onClick={handleUpdate}>
+                                        Save
+                                    </button>
+                                    <button className="btn btn-secondary-custom shadow" onClick={() => navigate(-1)}>
+                                        Cancel
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>

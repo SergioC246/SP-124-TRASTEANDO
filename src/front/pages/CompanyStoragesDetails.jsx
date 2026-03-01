@@ -42,34 +42,37 @@ export const CompanyStoragesDetails = () => {
     const storageLocation = locations.find(loc => loc.id === storage.location_id)
 
     return (
-        <div className="container py-5">
+        <div className="container-fluid py-5 px-5 mb-5">
             <div className="row justify-content-center">
                 <div className="col-12 col-md-6 col-lg-4">
                     <div className="card shadow-lg border-0">
 
-                        <div className="card-header bg-info-subtle text-info-emphasis text-center py-3">
-                            <h3 className="mb-0">Storage Details</h3>
+                        <div className="card-header header-primary text-info-emphasis text-center py-4">
+                           <h3 className="mb-0 fw-bold" style={{ textShadow: "0px 4px 12px rgba(0,0,0,0.3)" }}>
+                                Storage Details
+                            </h3>
                         </div>
 
-                        <div className="card-body py-4">
+                        <div className="card-body">
+
                             <div className="mb-3">
                                 <p className="text-muted mb-1">ID:</p>
                                 <p className="fw-semibold fs-5 mb-0">{storage.id}</p>
                             </div>
 
-                            <div className="row">
-                                <div className="col-md-6 mb-3">
+                            <div className="row g-3">
+                                <div className="col-md-6 mb-4">
                                     <p className="text-muted mb-1">Size:</p>
                                     <p className="fw-semibold fs-5 mb-0">{storage.size}</p>
                                 </div>
 
-                                <div className="col-md-6 mb-3">
+                                <div className="col-md-6 mb-4">
                                     <p className="text-muted mb-1">Price:</p>
                                     <p className="fw-semibold fs-5 mb-0">{storage.price}€</p>
                                 </div>
                             </div>
 
-                            <div className="row">
+                            <div className="row g-3">
                                 <div className="col-md-6 mb-3">
                                     <p className="text-muted mb-1">Status:</p>
                                     <p className="fw-semibold fs-5 mb-0">{storage.status ? "Available" : "Occupied"}</p>
@@ -84,7 +87,7 @@ export const CompanyStoragesDetails = () => {
                             </div>
 
                             <div className="card-footer bg-white border-0 py-3 text-center">
-                                <button className="btn btn-outline-secondary shadow px-4" onClick={() => navigate(-1)}>
+                                <button className="btn btn-secondary-custom shadow" onClick={() => navigate(-1)}>
                                     Back
                                 </button>
                             </div>

@@ -53,19 +53,18 @@ export const CompanyPrivate = () => {
     }
 
     return (
-        <div className="container py-4">
+        <div className="container-fluid py-5 px-5">
             <div className="row justify-content-center mb-5">
-                <div className="col-12 col-md-8 col-lg-5">
+                <div className="col-12 col-md-8 col-lg-4">
                     <div className="card shadow-lg border-0">
 
-                        <div className="card-header bg-info-subtle text-info-emphasis py-4 position-relative">
-
-                            <h2 className="mb-0 text-center">
+                        <div className="card-header header-primary text-info-emphasis text-center py-4 position-relative">
+                            <h3 className="mb-0 fw-bold" style={{ textShadow: "0px 4px 12px rgba(0,0,0,0.3)" }}>
                                 Welcome {company.name}
-                            </h2>
+                            </h3>
 
                             <button
-                                className="btn btn-outline-success btn-sm shadow position-absolute top-50 end-0 translate-middle-y me-3"
+                                className="btn btn-edit-header shadow position-absolute top-50 end-0 translate-middle-y me-3"
                                 onClick={() => navigate("/companies/private/edit")}
                             >
                                 <i className="fa-solid fa-pencil"></i>
@@ -79,8 +78,7 @@ export const CompanyPrivate = () => {
                                 <img
                                     src={photo}
                                     alt="Company"
-                                    className="rounded-circle mb-4 shadow-sm"
-                                    style={{ width: "150px", height: "150px", objectFit: "cover" }}
+                                    className="mb-5 shadow-sm company-photo"
                                 />
                             ) : (
                                 <div
@@ -92,37 +90,54 @@ export const CompanyPrivate = () => {
                             )}
 
                             <div className="text-start px-3">
+                                <div className="info-block">
+                                    <div className="info-icon-wrapper">
+                                        <i className="fa-solid fa-envelope info-icon"></i>
+                                    </div>
+                                    <div>
+                                        <strong>Email:</strong><br />
+                                        <span className="text-muted">{company.email}</span>
+                                    </div>
+                                </div>
 
-                                <p className="mb-2">
-                                    <strong>Email:</strong><br />
-                                    <span className="text-muted">{company.email}</span>
-                                </p>
 
-                                <p className="mb-2">
-                                    <strong>CIF:</strong><br />
-                                    <span className="text-muted">{company.cif}</span>
-                                </p>
+                                <div className="info-block">
+                                    <div className="info-icon-wrapper">
+                                        <i className="fa-solid fa-id-card info-icon"></i>
+                                    </div>
+                                    <div>
+                                        <strong>CIF:</strong><br />
+                                        <span className="text-muted">{company.cif}</span>
+                                    </div>
+                                </div>
 
-                                <p className="mb-2">
-                                    <strong>Address:</strong><br />
-                                    <span className="text-muted">{company.address}</span>
-                                </p>
+                                <div className="info-block">
+                                    <div className="info-icon-wrapper">
+                                        <i className="fa-solid fa-location-dot info-icon"></i>
+                                    </div>
+                                    <div>
+                                        <strong>Address:</strong><br />
+                                        <span className="text-muted">{company.address}</span>
+                                    </div>
+                                </div>
                             </div>
+
                             <div className="card-footer bg-white border-0 py-3">
-                                <div className="d-grid gap-3 px-4">
-                                    <Link to="/companies/private/locations"
-                                        className="btn btn-outline-primary btn-lg shadow">
+                                <div className="d-flex flex-column align-items-center gap-3">
+                                    <button className="btn btn-secondary-custom shadow"
+                                        onClick={() => navigate("/companies/private/locations")}>
                                         My Locations
-                                    </Link>
-                                    <button className="btn btn-outline-danger btn-lg shadow"
+                                    </button>
+                                    <button className="btn btn-secondary-custom shadow"
                                         onClick={handleLogout}>
-                                        Logout </button>
+                                        Logout
+                                    </button>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </div >
     )
 }
