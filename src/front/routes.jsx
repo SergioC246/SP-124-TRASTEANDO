@@ -192,6 +192,7 @@ export const router = createBrowserRouter(
       <Route element={<AdminProtectedRoute />}>
         <Route path="/admin/dashboard" element={<AdminDashboardLayout />}>
           <Route index element={<AdminPrivate />} />
+          <Route path="private" element={<AdminPrivate />} />
           <Route path="users" element={<AdminUsers />} />
           <Route path="companies" element={<Companies />} />
           <Route path="clients" element={<ClientList />} />
