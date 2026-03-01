@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import useGlobalReducer from "../hooks/useGlobalReducer";
 import { deleteClientLease } from "../utilsLeases";
-import { getStorageOverview } from "../utilsStorages"; // Importamos la función que sí trae la info
+import { getStorageOverview } from "../utilsStorages";
 import { useNavigate } from "react-router-dom";
 
 export const ClientPrivateLeases = () => {
@@ -22,15 +22,11 @@ export const ClientPrivateLeases = () => {
 
             if (resp.ok) {
                 const leasesData = await resp.json();
-
-                // Hacemos el fetch de los detalles para cada lease individualmente
-                // tal como lo haces en la vista de detalles que funciona
                 const fullLeases = await Promise.all(
                     leasesData.map(async (lease) => {
                         try {
-                            const storageDetail = await getStorageOverview(lease.storage_id);
-                            // Combinamos la info del contrato con la info detallada del trastero
-                            return { ...lease, ...storageDetail };
+                            const storageDetail = await getStorageOverview(lease.storage_id);                            
+                            return { ...lease, storage: storageDetail };
                         } catch (err) {
                             console.error(`Error cargando detalle para storage ${lease.storage_id}`, err);
                             return lease;
@@ -76,6 +72,7 @@ export const ClientPrivateLeases = () => {
             </div>
         );
     }
+    console.log(myLeases);
 
     return (
         <div className="container-fluid min-vh-100 py-5" style={{ background: "#ffffff" }}>
@@ -96,14 +93,14 @@ export const ClientPrivateLeases = () => {
                                 <div className="card shadow-sm border-0 h-100 bg-white" style={{ borderRadius: "20px", overflow: "hidden" }}>
                                     <div style={{ height: "180px", position: "relative" }}>
                                         <img
-                                            src={lease.photo || "https://images.unsplash.com/photo-1581404917829-53144e2c115f?q=80&w=600"}
+                                            src={lease.storage.photo || "https://images.unsplash.com/photo-1581404917829-53144e2c115f?q=80&w=600"}
                                             alt="Storage"
                                             className="w-100 h-100"
                                             style={{ objectFit: "cover" }}
                                         />
                                         <div className="position-absolute top-0 end-0 m-3">
                                             <span className="badge bg-white text-dark shadow-sm rounded-pill px-3 py-2 fw-bold">
-                                                {lease.size} m²
+                                                {lease.storage.size} m²
                                             </span>
                                         </div>
                                     </div>
@@ -117,10 +114,10 @@ export const ClientPrivateLeases = () => {
 
                                     <div className="card-body p-4">
                                         <div className="mb-3">
-                                            <h5 className="fw-bold mb-1" style={{ color: "#111111" }}>{lease.company_name}</h5>
+                                            <h5 className="fw-bold mb-1" style={{ color: "#111111" }}>{lease.storage.company_name}</h5>
                                             <p className="text-muted small mb-0">
                                                 <i className="fa fa-map-marker-alt me-2" style={{ color: "#5c73f2" }}></i>
-                                                {lease.city}
+                                                {lease.storage.city}
                                             </p>
                                         </div>
                                         <div className="row text-center bg-light rounded-4 py-3 g-0 mb-4" style={{ borderRadius: "15px" }}>
@@ -138,7 +135,7 @@ export const ClientPrivateLeases = () => {
                                         <div className="d-flex justify-content-between align-items-center mt-3">
                                             <div>
                                                 <small className="text-muted d-block">Monthly Price</small>
-                                                <span className="fw-bold h5 mb-0" style={{ color: "#5c73f2" }}>{lease.price}€</span>
+                                                <span className="fw-bold h5 mb-0" style={{ color: "#5c73f2" }}>{lease.storage.price}€</span>
                                             </div>
                                             <button
                                                 type="button"

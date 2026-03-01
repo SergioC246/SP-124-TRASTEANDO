@@ -8,8 +8,13 @@ export const CompanyLocationsDetails = () => {
     const [location, setLocation] = useState(null)
     const [loading, setLoading] = useState(true)
 
+    const getAvailableToken = () => {
+        return localStorage.getItem("token_company") || localStorage.getItem("admin_token");
+    }
+
     useEffect(() => {
-        const token = localStorage.getItem("token_company")
+        const token = getAvailableToken();
+
         if (!token) return
 
         fetch(import.meta.env.VITE_BACKEND_URL + `api/private/company/locations/${id}`, {
@@ -71,7 +76,7 @@ export const CompanyLocationsDetails = () => {
                                     <p className="fw-semibold fs-5 mb-0">{location.longitude}</p>
                                 </div>
                             </div>
-                            
+
                             <div className="card-footer bg-white border-0 py-3 text-center">
                                 <button className="btn btn-outline-secondary shadow px-4" onClick={() => navigate("/companies/private/locations")}>
                                     Back

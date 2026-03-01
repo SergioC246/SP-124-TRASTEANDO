@@ -7,8 +7,12 @@ export const CompanyLocations = () => {
   const [loading, setLoading] = useState(true)
   const navigate = useNavigate()
 
+  const getAvailableToken = () => {
+    return localStorage.getItem("token_company") || localStorage.getItem("admin_token");
+  }
+
   useEffect(() => {
-    const token = localStorage.getItem("token_company")
+    const token = getAvailableToken();
 
     if (!token) {
       navigate("/companies/login")

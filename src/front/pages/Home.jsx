@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import useGlobalReducer from "../hooks/useGlobalReducer.jsx";
 import { getAllStoragesOverview } from "../utilsStorages";
@@ -9,7 +9,7 @@ export const Home = () => {
   const navigate = useNavigate();
   const inputRef = useRef(null);
   const autocompleteRef = useRef(null);
-  const storageSectionRef = useRef(null); // Referencia para el scroll
+  const storageSectionRef = useRef(null);
 
   const [storages, setStorages] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -22,7 +22,7 @@ export const Home = () => {
     location: "", lat: null, lng: null, checkin: "", checkout: ""
   });
 
-  // Intervalo para cambiar la palabra cada 3 segundos
+  // cambiador de palabra
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentWordIndex((prevIndex) => (prevIndex + 1) % words.length);
@@ -30,7 +30,6 @@ export const Home = () => {
     return () => clearInterval(interval);
   }, []);
 
-  // Función para hacer scroll hacia abajo
   const scrollToStorages = () => {
     storageSectionRef.current?.scrollIntoView({ behavior: "smooth" });
   };
@@ -92,9 +91,10 @@ export const Home = () => {
   };
 
   return (
-    <div className="hero-section container-fluid">
+
+    <div className="hero-section container-fluid ">
       <div className="row g-0 align-items-center min-vh-100">
-        <div className="col-lg-6 p-5 content-side">
+        <div className="altura col-lg-5 p-5 content-side">
           <h1 className="display-4 fw-bold mb-4" style={{ fontSize: '3.2rem' }}>
             Organized and Accessible Storage for Your
             <span className="dynamic-text-container">
@@ -112,16 +112,26 @@ export const Home = () => {
               onClick={scrollToStorages}>Discover now </button>
           </div>
         </div>
-
-        <div className="col-lg-6 image-side position-relative d-none d-lg-block">
-          <div className="support-badge position-absolute shadow-lg text-center z-3">
-            <span className="d-block fw-bold fs-5 text-danger">🎧 24/7</span>
-            <small className="text-muted fw-bold">Customer Support</small>
+        <div className="col-lg-7 d-none d-lg-block ps-lg-4 pe-lg-5 py-5">
+          <div className="position-relative h-100">
+            <img src="https://images.unsplash.com/photo-1551313158-73d016a829ae?q=80&w=2037&auto=format&fit=crop" alt="Storage facility" className="img-fluid shadow-sm"
+              style={{
+                height: "100%",
+                width: "100%",
+                objectFit: "cover",
+                borderRadius: "50px",
+                minHeight: "700px",
+              }}
+            />
+            <div className="support-badge position-absolute shadow-lg text-center z-3">
+              <span className="d-block fw-bold fs-5 text-danger">🎧 24/7</span>
+              <small className="text-muted fw-bold">Customer Support</small>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* BARRA DE BÚSQUEDA */}
+      {/* searchbar */}
       <div className="search-bar-container mx-auto position-relative">
         <h6 className="fw-bold mb-3 ms-4 text-dark">Search your storage</h6>
         <div className="bg-white search-bar-inner shadow-lg d-flex align-items-center justify-content-between">
@@ -143,7 +153,7 @@ export const Home = () => {
         </div>
       </div>
 
-      {/* Seccion storages */}
+      {/* storages section con circulitos*/}
       <div className="container py-5 mt-5" ref={storageSectionRef}>
         <div className="text-center mb-5 mt-5">
           <h2 className="fw-bold secondary-hero-title">Find the best Storages close to you</h2>
@@ -158,15 +168,10 @@ export const Home = () => {
           <div className="row row-cols-2 row-cols-md-3 row-cols-lg-6 g-4 justify-content-center">
             {storages.slice(0, 12).map((storage) => (
               <div key={storage.id} className="col">
-                <div
-                  className="nearby-card card h-100"
-                  onClick={() => navigate(`/client/private/storage/${storage.id}`)}
-                >
+                <div className="nearby-card card h-100" onClick={() => navigate(`/client/private/storage/${storage.id}`)} >
                   <div className="nearby-img-container">
-                    <img
-                      src={storage.photo || "https://images.unsplash.com/photo-1581404917829-https://images.unsplash.com/photo-1551313158-73d016a829ae?q=80&w=2037&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D?auto=format&fit=crop&q=80&w=400"}
-                      alt={storage.city}
-                    />
+                    <img src={storage.photo || "https://images.unsplash.com/photo-1581404917829-https://images.unsplash.com/photo-1551313158-73d016a829ae?q=80&w=2037&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D?auto=format&fit=crop&q=80&w=400"}
+                      alt={storage.city} />
                   </div>
                   <div className="nearby-content">
                     <div className="nearby-title">{storage.city}</div>
@@ -179,40 +184,26 @@ export const Home = () => {
         )}
       </div>
 
-      {/* final debajo storages */}
+      {/* final debajo storages video */}
 
-      {/* CON VÍDEO DE FONDO */}
       <div className="container my-5">
         <div className="reserve-banner-video shadow-lg position-relative overflow-hidden">
-     
-          <video
-            src={videoBg}
-            autoPlay
-            loop
-            muted
-            playsInline
-            className="reserve-video-bg"
-          />
+          <video src={videoBg} autoPlay loop muted playsInline className="reserve-video-bg" />
           <div className="reserve-content-overlay">
             <h2 className="fw-extrabold display-3">
               Reserve your storage unit <br />
               <span style={{ color: '#f24171' }}>in minutes</span>
             </h2>
-
-            <p className="text-white" style={{ maxWidth: '750px' }}>
+            <p className="text-white" style={{ maxWidth: '770px' }}>
               Experience the convenience of modern storage. Secure, accessible, and
               tailored to your needs. Start your journey with us today.
             </p>
-
-            <button
-              className="btn btn-glass-custom text-uppercase"
-              onClick={() => navigate("/search/map")}
-            >
+            <button className="btn btn-glass-custom text-uppercase" onClick={() => navigate("/search/map")}>
               Get Started Now
             </button>
           </div>
         </div>
       </div>
-    </div>
+    </div >
   );
 };
