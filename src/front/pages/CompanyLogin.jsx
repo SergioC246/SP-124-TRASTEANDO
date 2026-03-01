@@ -37,7 +37,7 @@ export const CompanyLogin = () => {
                         payload: true
                     })
 
-                    navigate("/companies/private")
+                    navigate("/company/dashboard")
 
                 } else {
                     alert("Bad email or password")
@@ -54,7 +54,7 @@ export const CompanyLogin = () => {
                             src={companyLoginImg}
                             alt="Login"
                             className="img-fluid"
-                            style={{ width: "100%", height: "100%"}}
+                            style={{ width: "100%", height: "100%" }}
                         />
                     </div>
 

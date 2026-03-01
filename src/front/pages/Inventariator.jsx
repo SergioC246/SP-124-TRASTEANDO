@@ -2,461 +2,400 @@ import { useEffect, useState, useRef } from "react";
 import useGlobalReducer from "../hooks/useGlobalReducer";
 
 const API_URL = import.meta.env.VITE_BACKEND_URL;
+const COLOR = "#5C73F2";
 
 export const Inventariator = () => {
+  const { store } = useGlobalReducer();
 
-    const { store } = useGlobalReducer();
+  const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [categoryId, setCategoryId] = useState("");
+  const [placement, setPlacement] = useState("");
+  const [editingId, setEditingId] = useState(null);
+  const [editingPlacement, setEditingPlacement] = useState("");
+  const [imageFile, setImageFile] = useState(null);
+  const [imageUrl, setImageUrl] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(null);
+  const [uploading, setUploading] = useState(false);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [suggestionMeta, setSuggestionMeta] = useState(null);
+  const fileInputRef = useRef(null);
 
-    const [products, setProducts] = useState([]);
-    const [categories, setCategories] = useState([]);
+  useEffect(() => {
+    return () => { if (previewUrl) URL.revokeObjectURL(previewUrl); };
+  }, [previewUrl]);
 
-    const [name, setName] = useState("");
-    const [description, setDescription] = useState("");
-    const [categoryId, setCategoryId] = useState("");
-    const [placement, setPlacement] = useState("");
-    const [editingId, setEditingId] = useState(null);
-    const [editingPlacement, setEditingPlacement] = useState("");
+  const loadCategories = async () => {
+    const resp = await fetch(`${API_URL}api/categories`);
+    const data = await resp.json();
+    setCategories(data);
+  };
 
-    const [imageFile, setImageFile] = useState(null);
-    const [imageUrl, setImageUrl] = useState(null); 
-    const [previewUrl, setPreviewUrl] = useState(null);
+  const loadProducts = async () => {
+    const token = store.tokenClient || localStorage.getItem("tokenClient");
+    if (!token) return;
+    const resp = await fetch(`${API_URL}api/products`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    if (!resp.ok) return;
+    const data = await resp.json();
+    setProducts(data);
+  };
 
-    const [uploading, setUploading] = useState(false);
-    const [isAnalyzing, setIsAnalyzing] = useState(false);
-    const [suggestionMeta, setSuggestionMeta] = useState(null);
+  useEffect(() => { loadCategories(); }, []);
+  useEffect(() => {
+    if (store.tokenClient || localStorage.getItem("tokenClient")) loadProducts();
+  }, [store.tokenClient]);
 
-    const fileInputRef = useRef(null);
+  const uploadImage = async (file) => {
+    if (!file) return null;
+    setUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("upload_preset", "topydai");
+      const resp = await fetch("https://api.cloudinary.com/v1_1/dofzpindm/image/upload", { method: "POST", body: formData });
+      const data = await resp.json();
+      return data.secure_url || null;
+    } finally { setUploading(false); }
+  };
 
-    // Limpieza del previewURL
-    useEffect(() => {
-        return () => {
-            if (previewUrl) URL.revokeObjectURL(previewUrl);
-        };
-    }, [previewUrl]);
+  const suggestCategory = async (secureUrl, token) => {
+    const resp = await fetch(`${API_URL}api/products/suggest-category`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ image_url: secureUrl })
+    });
+    if (!resp.ok) return null;
+    return await resp.json();
+  };
 
-    // Cargar categorías
-    const loadCategories = async () => {
-        const resp = await fetch(`${API_URL}api/categories`);
-        const data = await resp.json();
-        setCategories(data);
-    };
+  const resetForm = () => {
+    setName(""); setDescription(""); setPlacement(""); setCategoryId("");
+    setSuggestionMeta(null); setImageUrl(null); setImageFile(null); setPreviewUrl(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
 
-    // Cargar productos
-    const loadProducts = async () => {
-        const token = store.tokenClient || localStorage.getItem("tokenClient");
-        if (!token) return;
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const token = store.tokenClient;
+    if (!token) return alert("No autenticado");
+    if (!name) return alert("Faltan campos");
+    const resp = await fetch(`${API_URL}api/products`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ name, description, placement, category_id: parseInt(categoryId, 10), image_url: imageUrl }),
+    });
+    if (!resp.ok) { const error = await resp.json(); return alert(error.msg || "Error creando producto"); }
+    await loadProducts();
+    resetForm();
+  };
 
-        const resp = await fetch(`${API_URL}api/products`, {
-            headers: {
-                "Authorization": `Bearer ${token}`
-            }
-        });
+  const handleImageSelect = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setImageFile(file);
+    setPreviewUrl(URL.createObjectURL(file));
+    const token = store.tokenClient || localStorage.getItem("tokenClient");
+    if (!token) return;
+    setIsAnalyzing(true);
+    try {
+      const secureUrl = await uploadImage(file);
+      if (!secureUrl) return;
+      setImageUrl(secureUrl);
+      const suggestion = await suggestCategory(secureUrl, token);
+      if (!suggestion) return;
+      setSuggestionMeta(suggestion);
+      if (suggestion.suggested_category_id != null) setCategoryId(String(suggestion.suggested_category_id));
+      setName(prev => prev?.trim() ? prev : (suggestion.suggested_title ?? ""));
+      setDescription(prev => prev?.trim() ? prev : (suggestion.suggested_description ?? ""));
+    } finally { setIsAnalyzing(false); }
+  };
 
-        if (!resp.ok) {
-            console.log("Error loading products", resp.status);
-            return;
-        }
+  const handleExportCSV = async () => {
+    const token = store.tokenClient;
+    if (!token) return;
+    const resp = await fetch(`${API_URL}api/products/export`, { headers: { Authorization: `Bearer ${token}` } });
+    const blob = await resp.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = "mis_productos.csv"; a.click();
+    window.URL.revokeObjectURL(url);
+  };
 
-        const data = await resp.json();
-        setProducts(data);
-    };
+  return (
+    <div className="vstack gap-4">
 
-    useEffect(() => {
-        loadCategories();
-    }, []);
+      {/* CABECERA */}
+      <div className="d-flex justify-content-between align-items-center">
+        <h4 className="fw-bold mb-0">My Inventory</h4>
+        <button
+          className="btn btn-sm px-3"
+          onClick={handleExportCSV}
+          style={{ background: COLOR, color: "#fff", borderRadius: 10 }}
+        >
+          <i className="bi bi-download me-2"></i>Export CSV
+        </button>
+      </div>
 
-    useEffect(() => {
-        if (store.tokenClient || localStorage.getItem("tokenClient")) {
-            loadProducts();
-        }
-    }, [store.tokenClient]);
+      {/* FORMULARIO AÑADIR PRODUCTO */}
+      <div className="rounded-4 p-4" style={{ background: "#fff", border: "1px solid #e8eaf6" }}>
+        <h5 className="fw-bold mb-4">
+          <i className="bi bi-plus-circle me-2" style={{ color: COLOR }}></i>
+          Add Product
+        </h5>
 
-    const uploadImage = async (file) => {
-        if (!file) return null;
+        <form onSubmit={handleSubmit}>
+          <div className="row g-3">
 
-        setUploading(true);
-        try {
-            const formData = new FormData();
-            formData.append("file", file);
-            formData.append("upload_preset", "topydai");
+            {/* ZONA DE IMAGEN */}
+            <div className="col-12">
+              <label
+                htmlFor="upload-product"
+                className="d-flex flex-column align-items-center justify-content-center gap-2 rounded-3 border-2"
+                style={{
+                  border: `2px dashed ${COLOR}`,
+                  borderRadius: 16,
+                  padding: "24px",
+                  cursor: (isAnalyzing || uploading) ? "not-allowed" : "pointer",
+                  background: "#f8f9ff",
+                  opacity: (isAnalyzing || uploading) ? 0.7 : 1
+                }}
+              >
+                {(previewUrl || imageUrl) ? (
+                  <img
+                    src={imageUrl || previewUrl}
+                    alt="preview"
+                    style={{ width: 120, height: 120, objectFit: "cover", borderRadius: 12 }}
+                  />
+                ) : (
+                  <>
+                    <i className="bi bi-cloud-arrow-up fs-1" style={{ color: COLOR }}></i>
+                    <span className="small text-muted">Click to upload an image</span>
+                  </>
+                )}
 
-            const resp = await fetch(
-                "https://api.cloudinary.com/v1_1/dofzpindm/image/upload",
-                { method: "POST", body: formData }
-            );
+                {(uploading || isAnalyzing) && (
+                  <div className="d-flex align-items-center gap-2 mt-1">
+                    <div className="spinner-border spinner-border-sm" style={{ color: COLOR }} role="status"></div>
+                    <span className="small" style={{ color: COLOR }}>
+                      {uploading ? "Subiendo imagen..." : "Analizando con IA..."}
+                    </span>
+                  </div>
+                )}
 
-            const data = await resp.json();
-            return data.secure_url || null;
-        } finally {
-            setUploading(false);
-        }
-    };
+                {suggestionMeta && !isAnalyzing && (
+                  <span className="badge rounded-pill px-3 py-2 small" style={{ background: "#e8eaf6", color: COLOR }}>
+                    <i className="bi bi-stars me-1"></i>
+                    IA sugiere: {suggestionMeta.suggested_category_name} ({(suggestionMeta.confidence * 100).toFixed(0)}%)
+                  </span>
+                )}
+              </label>
+              <input
+                id="upload-product"
+                ref={fileInputRef}
+                type="file"
+                className="d-none"
+                accept="image/*"
+                onChange={handleImageSelect}
+                disabled={isAnalyzing || uploading}
+              />
+            </div>
 
-    const suggestCategory = async (secureUrl, token) => {
-        const resp = await fetch(`${API_URL}api/products/suggest-category`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}`
-            },
-            body: JSON.stringify({ image_url: secureUrl })
-        });
+            {/* NOMBRE */}
+            <div className="col-md-6">
+              <label className="form-label fw-semibold small">Product name</label>
+              <input
+                className="form-control"
+                placeholder="Ej: Lámpara de pie"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                disabled={isAnalyzing || uploading}
+                style={{ borderRadius: 10 }}
+              />
+            </div>
 
-        if (!resp.ok) return null;
+            {/* CATEGORÍA */}
+            <div className="col-md-6">
+              <label className="form-label fw-semibold small">Category</label>
+              <select
+                className="form-select"
+                value={String(categoryId ?? "")}
+                onChange={(e) => setCategoryId(e.target.value)}
+                disabled={isAnalyzing || uploading}
+                style={{ borderRadius: 10 }}
+              >
+                <option value="">Choose category</option>
+                {categories.map((cat) => (
+                  <option key={cat.id} value={String(cat.id)}>{cat.name}</option>
+                ))}
+              </select>
+            </div>
 
-        return await resp.json();
-    };
+            {/* DESCRIPCIÓN */}
+            <div className="col-12">
+              <label className="form-label fw-semibold small">Description</label>
+              <textarea
+                className="form-control"
+                rows="2"
+                placeholder="Descripción del producto"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                disabled={isAnalyzing || uploading}
+                style={{ borderRadius: 10 }}
+              />
+            </div>
 
-    const resetForm = () => {
-        setName("");
-        setDescription("");
-        setPlacement("");
-        setCategoryId("");
-        setSuggestionMeta(null);
-        setImageUrl(null);
-        setImageFile(null);
-        setPreviewUrl(null);
+            {/* UBICACIÓN */}
+            <div className="col-12">
+              <label className="form-label fw-semibold small">Storage spot</label>
+              <input
+                className="form-control"
+                placeholder="Ej: Caja 3 · Estantería A · Balda 2"
+                value={placement}
+                onChange={(e) => setPlacement(e.target.value)}
+                disabled={isAnalyzing || uploading}
+                style={{ borderRadius: 10 }}
+              />
+            </div>
 
-        if (fileInputRef.current) fileInputRef.current.value = "";
-    };
+            {/* BOTÓN */}
+            <div className="col-12 text-end">
+              <button
+                type="submit"
+                className="btn px-4"
+                disabled={isAnalyzing || uploading}
+                style={{ background: COLOR, color: "#fff", borderRadius: 10 }}
+              >
+                <i className="bi bi-plus-lg me-2"></i>Create Product
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+      {/* LISTA DE PRODUCTOS */}
+      <div className="rounded-4 p-4" style={{ background: "#fff", border: "1px solid #e8eaf6" }}>
+        <h5 className="fw-bold mb-4">
+          <i className="bi bi-box-seam me-2" style={{ color: COLOR }}></i>
+          My Products ({products.length})
+        </h5>
 
-        const token = store.tokenClient;
-        if (!token) return alert("No autenticado");
+        {products.length === 0 ? (
+          <div className="text-center py-5">
+            <i className="bi bi-inbox fs-1 text-muted"></i>
+            <p className="text-muted mt-2">You have no products yet. Add your first one!</p>
+          </div>
+        ) : (
+          <div className="row g-3">
+            {products.map((prod) => (
+              <div className="col-md-6 col-xl-4" key={prod.id}>
+                <div
+                  className="card border-0 h-100"
+                  style={{ borderRadius: 16, border: "1px solid #e8eaf6 !important", boxShadow: "0 2px 12px rgba(92,115,242,0.07)" }}
+                >
+                  {/* Imagen del producto */}
+                  {prod.image_url ? (
+                    <img
+                      src={prod.image_url}
+                      alt={prod.name}
+                      style={{ width: "100%", height: 160, objectFit: "cover", borderRadius: "16px 16px 0 0" }}
+                    />
+                  ) : (
+                    <div
+                      className="d-flex align-items-center justify-content-center"
+                      style={{ height: 160, background: "#f4f6fb", borderRadius: "16px 16px 0 0" }}
+                    >
+                      <i className="bi bi-image text-muted fs-1"></i>
+                    </div>
+                  )}
 
-        if (!name) return alert("Faltan campos");
+                  <div className="card-body p-3">
+                    {/* Nombre y categoría */}
+                    <div className="d-flex justify-content-between align-items-start mb-1">
+                      <h6 className="fw-bold mb-0">{prod.name}</h6>
+                      <span
+                        className="badge rounded-pill small"
+                        style={{ background: "#e8eaf6", color: COLOR, fontSize: 11 }}
+                      >
+                        {prod.category?.name}
+                      </span>
+                    </div>
 
-        const resp = await fetch(`${API_URL}api/products`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}`
-            },
-            body: JSON.stringify({
-                name,
-                description,
-                placement,
-                category_id: parseInt(categoryId, 10),
-                image_url: imageUrl,
-            }),
-        });
+                    {/* Descripción */}
+                    <p className="text-muted small mb-2" style={{ lineHeight: 1.4 }}>{prod.description}</p>
 
-        if (!resp.ok) {
-            const error = await resp.json();
-            return alert(error.msg || "Error creando producto");
-        }
-        
-        await loadProducts();
-        resetForm();
-    };
+                    {/* Ubicación */}
+                    {editingId === prod.id ? (
+                      <div className="d-flex gap-2 mt-2">
+                        <input
+                          className="form-control form-control-sm"
+                          value={editingPlacement}
+                          onChange={(e) => setEditingPlacement(e.target.value)}
+                          style={{ borderRadius: 8 }}
+                        />
+                        <button
+                          className="btn btn-sm"
+                          style={{ background: COLOR, color: "#fff", borderRadius: 8 }}
+                          onClick={async () => {
+                            const token = store.tokenClient;
+                            if (!token) return;
+                            await fetch(`${API_URL}api/products/${prod.id}`, {
+                              method: "PUT",
+                              headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+                              body: JSON.stringify({ placement: editingPlacement }),
+                            });
+                            setEditingId(null);
+                            loadProducts();
+                          }}
+                        >
+                          <i className="bi bi-check-lg"></i>
+                        </button>
+                      </div>
+                    ) : (
+                      prod.placement && (
+                        <p className="small mb-0">
+                          <i className="bi bi-geo-alt me-1" style={{ color: COLOR }}></i>
+                          {prod.placement}
+                        </p>
+                      )
+                    )}
+                  </div>
 
-    const handleImageSelect = async (e) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
-
-        setImageFile(file);
-        setPreviewUrl(URL.createObjectURL(file));
-
-        const token = store.tokenClient || localStorage.getItem("tokenClient");
-        if (!token) return;
-
-        setIsAnalyzing(true);
-        try {
-            const secureUrl = await uploadImage(file);
-            if (!secureUrl) return;
-
-            setImageUrl(secureUrl);
-
-            const suggestion = await suggestCategory(secureUrl, token);
-            console.log("IA response:", suggestion);
-
-            if (!suggestion) return;
-
-            setSuggestionMeta(suggestion);
-
-            if (suggestion.suggested_category_id != null) {
-                setCategoryId(String(suggestion.suggested_category_id));
-            }
-
-            setName(prev => (prev?.trim() ? prev : (suggestion.suggested_title ?? "")));
-            setDescription(prev => (prev?.trim() ? prev : (suggestion.suggested_description ?? "")));
-        } finally {
-            setIsAnalyzing(false);
-        }
-    };
-
-    return (
-        <div className="container py-5" style={{ maxWidth: "1100px" }}>
-            {/* Encabezado */}
-            <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-5 gap-3">
-                <div>
-                    <h2 className="fw-bold display-6 mb-1">Inventariator <span className="text-primary">v3</span></h2>
-                    <p className="text-muted mb-0">Gestiona tus pertenencias con el poder de la IA</p>
-                </div>
-                <button
-                    className="btn btn-dark btn-lg rounded-pill px-4 shadow-sm fs-6"
-                    onClick={async () => {
+                  {/* Botones acción */}
+                  <div className="card-footer bg-transparent border-0 d-flex gap-2 px-3 pb-3">
+                    <button
+                      className="btn btn-sm flex-grow-1"
+                      style={{ background: "#f4f6fb", color: COLOR, borderRadius: 8, fontWeight: 500 }}
+                      onClick={() => { setEditingId(prod.id); setEditingPlacement(prod.placement || ""); }}
+                    >
+                      <i className="bi bi-pencil me-1"></i>Editar
+                    </button>
+                    <button
+                      className="btn btn-sm flex-grow-1"
+                      style={{ background: "#fff0f0", color: "#dc3545", borderRadius: 8, fontWeight: 500 }}
+                      onClick={async () => {
+                        if (!window.confirm("¿Eliminar producto?")) return;
                         const token = store.tokenClient;
                         if (!token) return;
-
-                        const resp = await fetch(`${API_URL}api/products/export`, {
-                            headers: {
-                                Authorization: `Bearer ${token}`
-                            }
+                        await fetch(`${API_URL}api/products/${prod.id}`, {
+                          method: "DELETE",
+                          headers: { Authorization: `Bearer ${token}` },
                         });
-
-                        const blob = await resp.blob();
-                        const url = window.URL.createObjectURL(blob);
-
-                        const a = document.createElement("a");
-                        a.href = url;
-                        a.download = "mis_productos.csv";
-                        a.click();
-
-                        window.URL.revokeObjectURL(url);
-                    }}
-                >
-                    <i className="bi bi-download me-2"></i> Exportar CSV
-                </button>
-            </div>
-
-            <div className="row g-4">
-                {/* Columna Izquierda: Formulario */}
-                <div className="col-lg-4">
-                    <div className="card border-0 shadow-sm p-4 sticky-top" style={{ top: "2rem", borderRadius: "24px" }}>
-                        <h5 className="fw-bold mb-4">Añadir Producto</h5>
-                        
-                        <form onSubmit={handleSubmit}>
-                            {/* Selector de Imagen Mejorado */}
-                            <div className="mb-4 text-center">
-                                <div 
-                                    className="position-relative mx-auto border border-2 border-dashed rounded-4 d-flex align-items-center justify-content-center overflow-hidden bg-light"
-                                    style={{ width: "100%", height: "200px", cursor: "pointer", borderColor: "#dee2e6" }}
-                                    onClick={() => fileInputRef.current.click()}
-                                >
-                                    {(previewUrl || imageUrl) ? (
-                                        <img
-                                            src={imageUrl || previewUrl}
-                                            alt="preview"
-                                            className="w-100 h-100"
-                                            style={{ objectFit: "cover" }}
-                                        />
-                                    ) : (
-                                        <div className="text-muted">
-                                            <i className="bi bi-camera fs-1 d-block mb-1"></i>
-                                            <span className="small">Subir foto</span>
-                                        </div>
-                                    )}
-
-                                    {/* Overlay de Carga */}
-                                    {(uploading || isAnalyzing) && (
-                                        <div className="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column align-items-center justify-content-center bg-white bg-opacity-75">
-                                            <div className="spinner-border text-primary spinner-border-sm mb-2" role="status"></div>
-                                            <span className="small fw-bold text-dark text-center px-2">
-                                                {uploading ? "Subiendo..." : "IA analizando..."}
-                                            </span>
-                                        </div>
-                                    )}
-                                </div>
-                                <input
-                                    ref={fileInputRef}
-                                    type="file"
-                                    className="d-none"
-                                    accept="image/*"
-                                    onChange={handleImageSelect}
-                                    disabled={isAnalyzing || uploading}
-                                />
-                                
-                                {suggestionMeta && (
-                                    <div className="mt-2 text-primary small fw-semibold bg-primary-subtle py-1 px-2 rounded-pill d-inline-block">
-                                        <i className="bi bi-robot me-1"></i> Sugerido: {suggestionMeta.suggested_category_name}
-                                    </div>
-                                )}
-                            </div>
-
-                            <input
-                                className="form-control border-0 bg-light mb-3 py-2 px-3 rounded-3"
-                                placeholder="Nombre"
-                                value={name}
-                                onChange={(e) => setName(e.target.value)}
-                                disabled={isAnalyzing || uploading}
-                            />
-
-                            <textarea
-                                className="form-control border-0 bg-light mb-3 py-2 px-3 rounded-3"
-                                placeholder="Descripción"
-                                rows="2"
-                                value={description}
-                                onChange={(e) => setDescription(e.target.value)}
-                                disabled={isAnalyzing || uploading}
-                            />
-
-                            <select
-                                className="form-select border-0 bg-light mb-3 py-2 px-3 rounded-3"
-                                value={String(categoryId ?? "")}
-                                onChange={(e) => setCategoryId(e.target.value)}
-                                disabled={isAnalyzing || uploading}
-                            >
-                                <option value="">Categoría</option>
-                                {categories.map((cat) => (
-                                    <option key={cat.id} value={String(cat.id)}>
-                                        {cat.name}
-                                    </option>
-                                ))}
-                            </select>
-
-                            <div className="input-group mb-4">
-                                <span className="input-group-text border-0 bg-light rounded-start-3">
-                                    <i className="bi bi-geo-alt text-muted"></i>
-                                </span>
-                                <input
-                                    className="form-control border-0 bg-light py-2 rounded-end-3"
-                                    placeholder="Ubicación física"
-                                    value={placement}
-                                    onChange={(e) => setPlacement(e.target.value)}
-                                    disabled={isAnalyzing || uploading}
-                                />
-                            </div>
-
-                            <button 
-                                className="btn btn-primary w-100 py-2 rounded-3 fw-bold shadow-sm" 
-                                disabled={isAnalyzing || uploading}
-                            >
-                                {isAnalyzing || uploading ? "Procesando..." : "Crear Producto"}
-                            </button>
-                        </form>
-                    </div>
+                        loadProducts();
+                      }}
+                    >
+                      <i className="bi bi-trash me-1"></i>Delete
+                    </button>
+                  </div>
                 </div>
-
-                {/* Columna Derecha: Listado */}
-                <div className="col-lg-8">
-                    <div className="d-flex align-items-center justify-content-between mb-4">
-                        <h4 className="fw-bold mb-0">Mis Productos</h4>
-                        <span className="badge bg-light text-dark border rounded-pill px-3 py-2 fw-normal">
-                            Total: {products.length}
-                        </span>
-                    </div>
-
-                    {products.length === 0 && (
-                        <div className="text-center py-5 bg-white shadow-sm rounded-4 border border-dashed">
-                            <i className="bi bi-box-seam display-4 text-light-emphasis d-block mb-3"></i>
-                            <p className="text-muted">No hay productos registrados todavía.</p>
-                        </div>
-                    )}
-
-                    <div className="row g-3">
-                        {products.map((prod) => (
-                            <div key={prod.id} className="col-12 col-md-6">
-                                <div className="card h-100 border-0 shadow-sm rounded-4 overflow-hidden">
-                                    <div className="d-flex align-items-center p-3">
-                                        {/* Imagen Miniatura */}
-                                        <div className="flex-shrink-0">
-                                            {prod.image_url ? (
-                                                <img
-                                                    src={prod.image_url}
-                                                    alt="product"
-                                                    className="rounded-3 shadow-sm"
-                                                    style={{ width: "80px", height: "80px", objectFit: "cover" }}
-                                                />
-                                            ) : (
-                                                <div className="bg-light rounded-3 d-flex align-items-center justify-content-center" style={{ width: "80px", height: "80px" }}>
-                                                    <i className="bi bi-image text-muted"></i>
-                                                </div>
-                                            )}
-                                        </div>
-
-                                        {/* Info del Producto */}
-                                        <div className="flex-grow-1 ms-3 overflow-hidden">
-                                            <div className="d-flex justify-content-between align-items-start">
-                                                <div className="overflow-hidden">
-                                                    <h6 className="fw-bold mb-0 text-truncate">{prod.name}</h6>
-                                                    <span className="badge bg-primary-subtle text-primary small fw-normal mb-1">
-                                                        {prod.category?.name}
-                                                    </span>
-                                                </div>
-                                            </div>
-                                            <p className="small text-muted mb-1 text-truncate" style={{ maxWidth: "100%" }}>
-                                                {prod.description}
-                                            </p>
-                                        </div>
-
-                                        {/* Acciones */}
-                                        <div className="ms-2 d-flex flex-column gap-1">
-                                            <button
-                                                className="btn btn-sm btn-light text-primary rounded-circle shadow-none"
-                                                onClick={() => {
-                                                    setEditingId(prod.id);
-                                                    setEditingPlacement(prod.placement || "");
-                                                }}
-                                            >
-                                                <i className="bi bi-pencil-square"></i>
-                                            </button>
-                                            <button
-                                                className="btn btn-sm btn-light text-danger rounded-circle shadow-none"
-                                                onClick={async () => {
-                                                    if (!window.confirm("¿Eliminar producto?")) return;
-                                                    const token = store.tokenClient;
-                                                    if (!token) return;
-                                                    await fetch(`${API_URL}api/products/${prod.id}`, {
-                                                        method: "DELETE",
-                                                        headers: { Authorization: `Bearer ${token}` },
-                                                    });
-                                                    loadProducts();
-                                                }}
-                                            >
-                                                <i className="bi bi-trash"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-
-                                    {/* Pie de la card con Ubicación */}
-                                    <div className="card-footer bg-light border-0 px-3 py-2">
-                                        {editingId === prod.id ? (
-                                            <div className="d-flex gap-2 align-items-center">
-                                                <input
-                                                    className="form-control form-control-sm border-primary"
-                                                    value={editingPlacement}
-                                                    onChange={(e) => setEditingPlacement(e.target.value)}
-                                                    autoFocus
-                                                />
-                                                <button
-                                                    className="btn btn-sm btn-success rounded-3 py-0 px-2"
-                                                    style={{ height: "31px" }}
-                                                    onClick={async () => {
-                                                        const token = store.tokenClient;
-                                                        if (!token) return;
-                                                        await fetch(`${API_URL}api/products/${prod.id}`, {
-                                                            method: "PUT",
-                                                            headers: {
-                                                                "Content-Type": "application/json",
-                                                                Authorization: `Bearer ${token}`,
-                                                            },
-                                                            body: JSON.stringify({ placement: editingPlacement }),
-                                                        });
-                                                        setEditingId(null);
-                                                        loadProducts();
-                                                    }}
-                                                >
-                                                    <i className="bi bi-check-lg"></i>
-                                                </button>
-                                            </div>
-                                        ) : (
-                                            <div className="d-flex align-items-center">
-                                                <i className="bi bi-geo-alt text-primary small me-1"></i>
-                                                <small className="text-muted fw-semibold">
-                                                    {prod.placement || "Sin ubicación"}
-                                                </small>
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
 };
