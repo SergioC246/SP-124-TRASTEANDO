@@ -1542,7 +1542,7 @@ def stripe_create_subscription_session():
         return jsonify({"url": session.url})
 
     except Exception as e:
-        print("ERROR STRIE:", e)
+        print("ERROR STRIPE:", e)
         return jsonify({"error": str(e)}), 500
 
 

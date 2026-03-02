@@ -8,7 +8,7 @@ export const SubscriptionCheckout = () => {
 
         try {
             const response = await fetch(
-                `${backendUrl}/api/stripe/create-subscription-session`,
+                `${backendUrl}api/stripe/create-subscription-session`,
                 {
                     method: "POST",
                     headers: {
