@@ -25,7 +25,7 @@ import csv
 api = Blueprint('api', __name__)
 
 # Allow CORS requests to this API
-CORS(api)
+# CORS(api)
 
 # cargar .env
 env_path = Path(__file__).resolve().parent.parent / ".env"
