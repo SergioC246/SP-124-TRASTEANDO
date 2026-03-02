@@ -20,16 +20,15 @@ import os
 
 
 # from models import Person
-# Mod-4
-ENV = os.getenv("FLASK_ENV", "production")
+
+ENV = "development" if os.getenv("FLASK_DEBUG") == "1" else "production"
 static_file_dir = os.path.join(os.path.dirname(
     os.path.realpath(__file__)), '../dist/')
 app = Flask(__name__)
 app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY", "super-secret-key")
 jwt = JWTManager(app)
 
-# Mod-1
-CORS(app, supports_credentials=True)
+CORS(app)
 app.url_map.strict_slashes = False
 
 # database condiguration
@@ -51,12 +50,8 @@ setup_admin(app)
 setup_commands(app)
 
 # Add all endpoints form the API with a "api" prefix
-# Mod-2
-socketio.init_app(
-    app,
-    cors_allowed_origins="*",
-    async_mode="threading"
-)
+
+socketio.init_app(app, cors_allowed_origins="*")
 
 print("=" * 50)
 print("🚀 Socket.IO inicializado correctamente")
@@ -93,16 +88,14 @@ def serve_any_other_file(path):
     response.cache_control.max_age = 0  # avoid cache memory
     return response
 
-# Mod-3
-if ENV == "development":
-    with app.app_context():
-        db.create_all()
-        print("Tablas creadas (si no existían)")
+
+with app.app_context():
+    db.create_all()
+    print("Tablas creadas (si no existían)")
 
 
 # this only runs if `$ python src/main.py` is executed
-# MOd -5
 if __name__ == '__main__':
     PORT = int(os.environ.get('PORT', 3001))
     socketio.run(app, host='0.0.0.0', port=PORT,
-                 debug=(ENV == "development"))
+                 debug=True, allow_unsafe_werkzeug=True)
