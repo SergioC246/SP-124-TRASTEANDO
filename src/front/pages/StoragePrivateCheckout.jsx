@@ -2,7 +2,9 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import useGlobalReducer from "../hooks/useGlobalReducer";
 import { getStorageOverview } from "../utilsStorages";
-import { deleteClientLease, createClientLease } from "../utilsLeases";
+import { createLease, deleteClientLease } from "../utilsLeases";
+import { createClientLease } from "../utilsLeases";
+
 
 export const StoragePrivateCheckout = () => {
     const { storageId } = useParams();
@@ -10,10 +12,12 @@ export const StoragePrivateCheckout = () => {
     const navigate = useNavigate();
 
     const [storage, setStorage] = useState(null);
-    const [startDate, setStartDate] = useState("");
+    const [startDate, setStartDate] = useState("")
     const [endDate, setEndDate] = useState("");
     const [loading, setLoading] = useState(true);
 
+
+    
     const handleCompleteOrder = async () => {
         if (!startDate || !endDate) return alert("Por favor, elige las fechas.");
 
@@ -28,20 +32,18 @@ export const StoragePrivateCheckout = () => {
                 end_date: endDate,
                 status: "pending payment"
             };
+          
 
             const newLease = await createClientLease(leaseData, store.tokenClient);
 
-            const stripeResponse = await fetch(
-                `${import.meta.env.VITE_BACKEND_URL}/api/stripe/create-subscription-session`, // ✅ FIX slash
-                {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        plan: "monthly",
-                        lease_id: newLease.id
-                    })
-                }
-            );
+            const stripeResponse = await fetch(`${import.meta.env.VITE_BACKEND_URL}api/stripe/create-subscription-session`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    plan: "monthly",
+                    lease_id: newLease.id
+                })
+            });
 
             const stripeData = await stripeResponse.json();
 
@@ -49,7 +51,7 @@ export const StoragePrivateCheckout = () => {
                 window.location.href = stripeData.url;
             } else {
                 await deleteClientLease(newLease.id, store.tokenClient);
-                throw new Error(stripeData.error || "El plan de pago no es válido.");
+                throw new Error(stripeData.error || "El plan de pago no es válido en el servidor.");
             }
 
         } catch (error) {
@@ -83,23 +85,13 @@ export const StoragePrivateCheckout = () => {
                 setLoading(false);
             }
         };
-
         if (storageId && store.tokenClient) loadInfo();
     }, [storageId, store.tokenClient]);
 
-    // ✅ FIX IMPORTANTE — evitar render antes de tener datos
-    if (loading || !storage) {
-        return (
-            <div className="text-center py-5">
-                Loading checkout...
-            </div>
-        );
-    }
 
     return (
-        <div className="container py-5" style={{ color: "#222222", fontFamily: "system-ui, -apple-system, sans-serif" }}>
 
-            {/* Cabecera con botón de retroceso opcional (puedes añadir un onClick={() => navigate(-1)}) */}
+         <div className="container py-5" style={{ color: "#222222", fontFamily: "system-ui, -apple-system, sans-serif" }}>
             <h2 className="fw-bold mb-5 pb-4 border-bottom d-flex align-items-center" style={{ fontSize: "2rem" }}>
                 <i className="bi bi-chevron-left me-4" style={{ cursor: "pointer", fontSize: "1.5rem" }}></i>
                 Confirmar y pagar
@@ -112,9 +104,8 @@ export const StoragePrivateCheckout = () => {
                     <div className="mb-5">
                         <h4 className="fw-bold mb-4 fs-5">Fechas de tu reserva</h4>
                         <div className="row g-0 border rounded-4 overflow-hidden shadow-sm">
-                            {/* Primera columna: quitamos border-end y usamos una línea divisoria absoluta o border-right en el input */}
                             <div className="col-md-6 border-md-bottom-0 position-relative">
-                                <div className="form-floating" style={{ borderRight: "1px solid #dee2e6" }}> {/* El borde va aquí ahora */}
+                                <div className="form-floating" style={{ borderRight: "1px solid #dee2e6" }}>
                                     <input
                                         type="date"
                                         className="form-control border-0 shadow-none bg-light"
@@ -201,16 +192,12 @@ export const StoragePrivateCheckout = () => {
                             <span className="h5 fw-bold mb-0" style={{ color: "#222222" }}>Total hoy (EUR)</span>
                             <span className="h5 fw-bold mb-0" style={{ color: "#222222" }}>{storage?.price}€</span>
                         </div>
-
-                        {/* Alerta de Conflicto de Fechas */}
                         {isDateConflict() && (
                             <div className="alert alert-danger mb-4 d-flex align-items-center border-0 rounded-3 shadow-sm" style={{ background: "#ffebe9", color: "#da002a" }}>
                                 <i className="bi bi-exclamation-triangle-fill me-3 fs-4"></i>
                                 <span className="small fw-semibold">Las fechas seleccionadas coinciden con una reserva existente. Por favor, selecciona otras.</span>
                             </div>
                         )}
-
-                        {/* Botón CTA Rosa/Fucsia */}
                         <button
                             className="btn w-100 py-3 fw-bold text-white fs-6 shadow mt-2"
                             style={{
@@ -228,5 +215,8 @@ export const StoragePrivateCheckout = () => {
                 </div>
             </div>
         </div>
+
+
     )
-};
+
+}
