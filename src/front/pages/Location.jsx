@@ -142,7 +142,7 @@ export const Location = () => {
                                                         <button
                                                             className="btn btn-secondary-custom shadow"
                                                             onClick={() =>
-                                                                navigate(`/admin/locations/storages/${location.id}`)
+                                                                navigate(`/companies/private/locations/storages/${location.id}`)
                                                             }
                                                         >
                                                             View Storages
@@ -152,7 +152,7 @@ export const Location = () => {
                                                             <button
                                                                 className="btn btn-outline-secondary-custom shadow"
                                                                 onClick={() =>
-                                                                    navigate(`/admin/location-details/${location.id}`)
+                                                                    navigate(`/companies/private/locations/${location.id}`)
                                                                 }
                                                             >
                                                                 <i className="fa-regular fa-eye"></i>
@@ -161,7 +161,7 @@ export const Location = () => {
                                                             <button
                                                                 className="btn btn-outline-secondary-custom shadow"
                                                                 onClick={() =>
-                                                                    navigate(`/admin/location-edit/${location.id}`)
+                                                                    navigate(`/companies/private/locations/edit/${location.id}`)
                                                                 }
                                                             >
                                                                 <i className="fa-solid fa-pencil"></i>
