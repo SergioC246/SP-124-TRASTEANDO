@@ -23,7 +23,7 @@ import os
 
 ENV = "development" if os.getenv("FLASK_DEBUG") == "1" else "production"
 static_file_dir = os.path.join(os.path.dirname(
-    os.path.realpath(__file__)), '../front/dist/')
+    os.path.realpath(__file__)), '../dist/')
 app = Flask(__name__)
 app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY", "super-secret-key")
 jwt = JWTManager(app)
@@ -74,8 +74,8 @@ def handle_invalid_usage(error):
 
 @app.route('/')
 def sitemap():
-    if ENV == "development":
-        return generate_sitemap(app)
+    # if ENV == "development":
+    #     return generate_sitemap(app)
     return send_from_directory(static_file_dir, 'index.html')
 
 
@@ -98,4 +98,5 @@ def serve_any_other_file(path):
 if __name__ == '__main__':
     PORT = int(os.environ.get('PORT', 3001))
     socketio.run(app, host='0.0.0.0', port=PORT,
-                 debug=True, allow_unsafe_werkzeug=True)
+                 debug=True)
+                #  , allow_unsafe_werkzeug=True)
