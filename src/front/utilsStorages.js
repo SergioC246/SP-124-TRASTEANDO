@@ -112,7 +112,7 @@ export const getStorageOverview = async (storageId) => {
 export const getCompanyStorage = async () => {
   const token = localStorage.getItem("token_company");
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
-  const response = await fetch(`${backendUrl}/api/company/storages/`, {
+  const response = await fetch(`${backendUrl}/company/storages/`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",

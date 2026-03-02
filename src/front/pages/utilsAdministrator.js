@@ -2,7 +2,7 @@ const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 // Fetch para conseguir todos
 export const getAdminUsers = async() =>{
-    const response = await fetch(BACKEND_URL + "api/admin_user")
+    const response = await fetch(BACKEND_URL + "/admin_user")
 
     const data = await response.json()
 
@@ -12,7 +12,7 @@ export const getAdminUsers = async() =>{
 
 // Fetch para conseguir uno
 export const getAdminUser = async(id) =>{
-    const response = await fetch(BACKEND_URL + "api/admin_user/" + id)
+    const response = await fetch(BACKEND_URL + "/admin_user/" + id)
 
     const data = await response.json()
     
@@ -22,7 +22,7 @@ export const getAdminUser = async(id) =>{
 
 //Fetch para crear
 export const createAdminUsers = async (name, email, password) => {
-    const response = await fetch(`${BACKEND_URL}api/admin_user`, {
+    const response = await fetch(`${BACKEND_URL}/admin_user`, {
         method: "POST",
         headers: { "Content-type": "application/json" },
         body: JSON.stringify({ name, email, password })
@@ -38,7 +38,7 @@ export const createAdminUsers = async (name, email, password) => {
 
 //Fetch para editar
 export const updateAdminUsers = async (id, name, email, password) => {
-    const response = await fetch(`${BACKEND_URL}api/admin_user/${id}`, {
+    const response = await fetch(`${BACKEND_URL}/admin_user/${id}`, {
         method: "PUT",
         headers: { "Content-type": "application/json" },
         body: JSON.stringify({ name, email, password })
@@ -56,7 +56,7 @@ export const updateAdminUsers = async (id, name, email, password) => {
 
 // Fetch para eliminar
 export const deleteAdminUsers = async(adminUserId) => {
-    const response = await fetch(`${BACKEND_URL}api/admin_user/${adminUserId}`,{
+    const response = await fetch(`${BACKEND_URL}/admin_user/${adminUserId}`,{
         method: "DELETE"
     })
     return response.status === 200
@@ -66,7 +66,7 @@ export const deleteAdminUsers = async(adminUserId) => {
 
 export const loginAdmin = async (email, password, dispatch) => {
     try{
-        const response = await fetch(`${BACKEND_URL}/api/login/admin`, {
+        const response = await fetch(`${BACKEND_URL}/login/admin`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ email, password })
@@ -97,7 +97,7 @@ export const loginAdmin = async (email, password, dispatch) => {
 export const verifyAdminToken = async (token, dispatch) => {
     try {
         const response = await
-fetch (`${BACKEND_URL}/api/private/admin`, {
+fetch (`${BACKEND_URL}/private/admin`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",

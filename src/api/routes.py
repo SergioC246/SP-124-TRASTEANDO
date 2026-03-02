@@ -1106,7 +1106,7 @@ def delete_client_lease(lease_id):
     # el JOIN entre Storage y Location para Haces 1 sola consulta a la base de datos en lugar de 50 o 100
 @api.route('/storage/map', methods=["GET"])
 def get_storages_for_map():
-    import math  # Asegúrate de tener esto arriba o aquí
+    import math  
     from sqlalchemy import and_, not_, select
 
     search_lat = request.args.get('lat')
@@ -1114,25 +1114,22 @@ def get_storages_for_map():
     checkin = request.args.get('checkin')
     checkout = request.args.get('checkout')
 
-    # 1. Base de la consulta: Solo trasteros activos (status del dueño)
+ 
     query = select(Storage, Location).join(
         Location).where(Storage.status == True)
 
-    # 2. Filtro de disponibilidad por fechas
     if checkin and checkout and checkin != "" and checkout != "":
         occupied_subquery = select(Leases.storage_id).where(
             and_(
-                # bloquea ambos
+           
                 Leases.status.in_(["active", "pending payment"]),
                 Leases.start_date <= checkout,
                 Leases.end_date >= checkin
 
             )
         )
-        # Excluimos los trasteros ocupados
         query = query.where(not_(Storage.id.in_(occupied_subquery)))
 
-    # 3. Ejecutar la consulta (UNA SOLA VEZ)
     results = db.session.execute(query).all()
 
     final_result = []
