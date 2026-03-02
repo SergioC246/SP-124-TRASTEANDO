@@ -89,9 +89,9 @@ def serve_any_other_file(path):
     return response
 
 
-with app.app_context():
-    db.create_all()
-    print("Tablas creadas (si no existían)")
+# with app.app_context():
+#     db.create_all()
+#     print("Tablas creadas (si no existían)")
 
 
 # this only runs if `$ python src/main.py` is executed
