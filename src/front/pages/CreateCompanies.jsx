@@ -22,7 +22,7 @@ export const CreateCompanies = () => {
             if (result && result.msg) {
                 setError(result.msg)
             } else {
-                navigate("/companies")
+                navigate("/companies/login")
             }
         } catch (err) {
             // Capturamos el error de la base de datos (UniqueViolation)
@@ -80,7 +80,7 @@ export const CreateCompanies = () => {
 
                                 <div className="d-grid gap-2">
                                     <button type="submit" className="btn btn-primary fw-bold py-2">Registrar Compañía</button>
-                                    <button type="button" className="btn btn-light text-muted py-2" onClick={() => navigate("/companies")}>Cancelar</button>
+                                    <button type="button" className="btn btn-light text-muted py-2" onClick={() => navigate("-1")}>Cancelar</button>
                                 </div>
                             </form>
                         </div>
