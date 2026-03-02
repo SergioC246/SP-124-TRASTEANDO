@@ -36,7 +36,7 @@ export const StoragePrivateCheckout = () => {
 
             const newLease = await createClientLease(leaseData, store.tokenClient);
 
-            const stripeResponse = await fetch(`${import.meta.env.VITE_BACKEND_URL}api/stripe/create-subscription-session`, {
+            const stripeResponse = await fetch(`${import.meta.env.VITE_BACKEND_URL}/stripe/create-subscription-session`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({

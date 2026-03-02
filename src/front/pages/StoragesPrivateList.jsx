@@ -14,7 +14,7 @@ export const StoragesPrivateList = () => {
     const checkAllStoragesAvailability = async (storagesList, token) => {
         try {
             const backendUrl = import.meta.env.VITE_BACKEND_URL;
-            const resp = await fetch(`${backendUrl}/api/leases`, {
+            const resp = await fetch(`${backendUrl}/leases`, {
                 headers: { "Authorization": `Bearer ${token}` }
             });
 
@@ -41,7 +41,7 @@ export const StoragesPrivateList = () => {
                 const backendUrl = import.meta.env.VITE_BACKEND_URL;
                 const token = store.tokenClient;
 
-                const resp = await fetch(`${backendUrl}/api/location/${locationId}/storages`, {
+                const resp = await fetch(`${backendUrl}/location/${locationId}/storages`, {
                     headers: {
                         "Authorization": `Bearer ${token}`,
                         "Content-Type": "application/json"

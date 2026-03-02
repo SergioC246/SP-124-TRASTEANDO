@@ -23,7 +23,7 @@ export const CompanyStoragesCreate = () => {
             return
         }
 
-        fetch(`${import.meta.env.VITE_BACKEND_URL}/api/private/company/locations`, {
+        fetch(`${import.meta.env.VITE_BACKEND_URL}/private/company/locations`, {
             headers: {
                 "Authorization": "Bearer " + token
             }
@@ -79,7 +79,7 @@ export const CompanyStoragesCreate = () => {
             }
 
             const response = await fetch(
-                `${import.meta.env.VITE_BACKEND_URL}/api/private/company/storages`,
+                `${import.meta.env.VITE_BACKEND_URL}/private/company/storages`,
                 {
                     method: "POST",
                     headers: {

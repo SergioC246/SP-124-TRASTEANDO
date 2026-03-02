@@ -24,7 +24,7 @@ export const AdminDashboardLayout = () => {
           return;
         }
 
-        const resp = await fetch(`${backendUrl}/api/private/admin`, {
+        const resp = await fetch(`${backendUrl}/private/admin`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 

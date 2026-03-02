@@ -28,7 +28,7 @@ export const ClientPrivate = () => {
         const loadClient = async () => {
             try {
                 const backendUrl = import.meta.env.VITE_BACKEND_URL;
-                const resp = await fetch(`${backendUrl}/api/private/client`, {
+                const resp = await fetch(`${backendUrl}/private/client`, {
                     method: "GET",
                     headers: { Authorization: `Bearer ${token}` },
                 });

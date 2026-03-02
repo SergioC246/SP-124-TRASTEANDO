@@ -13,7 +13,7 @@ export const ClientPrivateLeases = () => {
     const fetchLeases = async () => {
         try {
             const backendUrl = import.meta.env.VITE_BACKEND_URL;
-            const resp = await fetch(`${backendUrl}/api/client/my-leases`, {
+            const resp = await fetch(`${backendUrl}/client/my-leases`, {
                 headers: {
                     Authorization: `Bearer ${store.tokenClient}`,
                     "Content-Type": "application/json"

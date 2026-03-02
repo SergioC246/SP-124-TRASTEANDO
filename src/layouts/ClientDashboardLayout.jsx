@@ -24,7 +24,7 @@ export const ClientDashboardLayout = () => {
         const token = localStorage.getItem("tokenClient");
         if (!token) { navigate("/client/login"); return; }
 
-        const resp = await fetch(`${backendUrl}/api/private/client`, {
+        const resp = await fetch(`${backendUrl}/private/client`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         if (!resp.ok) return;

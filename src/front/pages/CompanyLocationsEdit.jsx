@@ -25,7 +25,7 @@ export const CompanyLocationsEdit = () => {
             return
         }
 
-        fetch(import.meta.env.VITE_BACKEND_URL + `api/private/company/locations/${location_id}`, {
+        fetch(import.meta.env.VITE_BACKEND_URL + `/private/company/locations/${location_id}`, {
             headers: {
                 Authorization: "Bearer " + token
             }
@@ -82,7 +82,7 @@ export const CompanyLocationsEdit = () => {
     const handleUpdate = () => {
         const token = localStorage.getItem("token_company")
 
-        fetch(import.meta.env.VITE_BACKEND_URL + `api/private/company/locations/${location_id}`, {
+        fetch(import.meta.env.VITE_BACKEND_URL + `/private/company/locations/${location_id}`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",

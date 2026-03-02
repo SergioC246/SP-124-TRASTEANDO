@@ -26,7 +26,7 @@ export const CompanyLogin = () => {
                 }
             )
         }
-        fetch(import.meta.env.VITE_BACKEND_URL + '/api/login/company', requestOptions)
+        fetch(import.meta.env.VITE_BACKEND_URL + '/login/company', requestOptions)
             .then(response => response.json())
             .then(data => {
                 if (data.company_token) {

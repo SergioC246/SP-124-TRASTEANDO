@@ -129,7 +129,7 @@ export const Chat = () => {
               className="btn btn-sm"
               style={{ backgroundColor: "#5C73F2", color: "#fff", border: "none" }}
               onClick={async () => {
-                const endpoint = myRole === "client" ? "api/companies" : "api/clients";
+                const endpoint = myRole === "client" ? "/companies" : "/clients";
                 const resp = await fetch(`${API_URL}${endpoint}`);
                 const all = await resp.json();
                 const filtered = all.filter(d => !contacts.find(c => c.id === d.id));
@@ -212,7 +212,7 @@ export const Chat = () => {
                 onClick={async () => {
                   if (window.confirm("¿Borrar chat?")) {
                     await fetch(
-                      `${API_URL}api/messages/conversation/${myId}/${myRole}/${targetId}/${targetRole}`,
+                      `${API_URL}/messages/conversation/${myId}/${myRole}/${targetId}/${targetRole}`,
                       { method: "DELETE" }
                     );
                     setMessages([]);

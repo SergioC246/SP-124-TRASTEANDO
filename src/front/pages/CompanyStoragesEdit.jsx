@@ -26,7 +26,7 @@ export const CompanyStoragesEdit = () => {
             return
         }
 
-        fetch(import.meta.env.VITE_BACKEND_URL + `api/private/company/storages/${storage_id}`, {
+        fetch(import.meta.env.VITE_BACKEND_URL + `/private/company/storages/${storage_id}`, {
             headers: {
                 Authorization: "Bearer " + token
             }
@@ -45,7 +45,7 @@ export const CompanyStoragesEdit = () => {
                 setLoading(false)
             })
 
-        fetch(`${import.meta.env.VITE_BACKEND_URL}/api/private/company/locations`, {
+        fetch(`${import.meta.env.VITE_BACKEND_URL}/private/company/locations`, {
             headers: { Authorization: "Bearer " + token }
         })
             .then(res => res.json())
@@ -96,7 +96,7 @@ export const CompanyStoragesEdit = () => {
     const handleUpdate = () => {
         const token = localStorage.getItem("token_company")
 
-        fetch(import.meta.env.VITE_BACKEND_URL + `api/private/company/storages/${storage_id}`, {
+        fetch(import.meta.env.VITE_BACKEND_URL + `pi/private/company/storages/${storage_id}`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",

@@ -28,7 +28,7 @@ export const Inventariator = () => {
   }, [previewUrl]);
 
   const loadCategories = async () => {
-    const resp = await fetch(`${API_URL}api/categories`);
+    const resp = await fetch(`${API_URL}/categories`);
     const data = await resp.json();
     setCategories(data);
   };
@@ -36,7 +36,7 @@ export const Inventariator = () => {
   const loadProducts = async () => {
     const token = store.tokenClient || localStorage.getItem("tokenClient");
     if (!token) return;
-    const resp = await fetch(`${API_URL}api/products`, {
+    const resp = await fetch(`${API_URL}/products`, {
       headers: { Authorization: `Bearer ${token}` }
     });
     if (!resp.ok) return;
@@ -63,7 +63,7 @@ export const Inventariator = () => {
   };
 
   const suggestCategory = async (secureUrl, token) => {
-    const resp = await fetch(`${API_URL}api/products/suggest-category`, {
+    const resp = await fetch(`${API_URL}/products/suggest-category`, {
       method: "POST",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
       body: JSON.stringify({ image_url: secureUrl })
@@ -83,7 +83,7 @@ export const Inventariator = () => {
     const token = store.tokenClient;
     if (!token) return alert("No autenticado");
     if (!name) return alert("Faltan campos");
-    const resp = await fetch(`${API_URL}api/products`, {
+    const resp = await fetch(`${API_URL}/products`, {
       method: "POST",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
       body: JSON.stringify({ name, description, placement, category_id: parseInt(categoryId, 10), image_url: imageUrl }),
@@ -117,7 +117,7 @@ export const Inventariator = () => {
   const handleExportCSV = async () => {
     const token = store.tokenClient;
     if (!token) return;
-    const resp = await fetch(`${API_URL}api/products/export`, { headers: { Authorization: `Bearer ${token}` } });
+    const resp = await fetch(`${API_URL}/products/export`, { headers: { Authorization: `Bearer ${token}` } });
     const blob = await resp.blob();
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -342,7 +342,7 @@ export const Inventariator = () => {
                           onClick={async () => {
                             const token = store.tokenClient;
                             if (!token) return;
-                            await fetch(`${API_URL}api/products/${prod.id}`, {
+                            await fetch(`${API_URL}/products/${prod.id}`, {
                               method: "PUT",
                               headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
                               body: JSON.stringify({ placement: editingPlacement }),
@@ -380,7 +380,7 @@ export const Inventariator = () => {
                         if (!window.confirm("¿Eliminar producto?")) return;
                         const token = store.tokenClient;
                         if (!token) return;
-                        await fetch(`${API_URL}api/products/${prod.id}`, {
+                        await fetch(`${API_URL}/products/${prod.id}`, {
                           method: "DELETE",
                           headers: { Authorization: `Bearer ${token}` },
                         });
