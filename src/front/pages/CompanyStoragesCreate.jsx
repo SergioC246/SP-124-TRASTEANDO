@@ -14,7 +14,10 @@ export const CompanyStoragesCreate = () => {
     const navigate = useNavigate()
 
     useEffect(() => {
-        const token = localStorage.getItem("token_company")
+        const token =
+            localStorage.getItem("token_company") ||
+            localStorage.getItem("admin_token");
+
         if (!token) {
             navigate("/companies/login")
             return

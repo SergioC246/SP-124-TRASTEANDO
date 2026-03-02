@@ -17,7 +17,9 @@ export const CompanyStoragesEdit = () => {
     const [uploading, setUploading] = useState(false)
 
     useEffect(() => {
-        const token = localStorage.getItem("token_company")
+        const token =
+            localStorage.getItem("token_company") ||
+            localStorage.getItem("admin_token");
 
         if (!token) {
             navigate("/companies/login")

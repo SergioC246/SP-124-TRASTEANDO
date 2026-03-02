@@ -10,7 +10,10 @@ export const CompanyLocationStorages = () => {
     const [location, setLocation] = useState("")
 
     useEffect(() => {
-        const token = localStorage.getItem("token_company")
+        const token =
+            localStorage.getItem("token_company") ||
+            localStorage.getItem("admin_token");
+
         if (!token) {
             navigate("/companies/login")
             return
@@ -128,7 +131,7 @@ export const CompanyLocationStorages = () => {
                             <div className="card-body py-4">
                                 <div className="d-flex flex-column align-items-center gap-3">
                                     <button
-                                        className= "btn btn-secondary-custom shadow"
+                                        className="btn btn-secondary-custom shadow"
                                         onClick={() => navigate("/companies/private/storages/create")}
                                     >
                                         Create Storage
@@ -162,7 +165,7 @@ export const CompanyLocationStorages = () => {
 
                         <div className="card-body bg-light">
                             <div className="row g-3">
-                                
+
                                 {storages.map(storage => {
 
                                     const today = new Date()

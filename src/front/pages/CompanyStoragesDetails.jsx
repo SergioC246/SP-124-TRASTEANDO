@@ -10,8 +10,14 @@ export const CompanyStoragesDetails = () => {
     const navigate = useNavigate()
 
     useEffect(() => {
-        const token = localStorage.getItem("token_company")
-        if (!token) return
+        const token =
+            localStorage.getItem("token_company") ||
+            localStorage.getItem("admin_token");
+
+        if (!token) {
+            navigate("/companies/login")
+            return
+        }
 
         fetch(import.meta.env.VITE_BACKEND_URL + `api/private/company/storages/${id}`, {
             headers: {
@@ -48,7 +54,7 @@ export const CompanyStoragesDetails = () => {
                     <div className="card shadow-lg border-0">
 
                         <div className="card-header header-primary text-info-emphasis text-center py-4">
-                           <h3 className="mb-0 fw-bold" style={{ textShadow: "0px 4px 12px rgba(0,0,0,0.3)" }}>
+                            <h3 className="mb-0 fw-bold" style={{ textShadow: "0px 4px 12px rgba(0,0,0,0.3)" }}>
                                 Storage Details
                             </h3>
                         </div>
