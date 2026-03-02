@@ -1,5 +1,5 @@
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
-const COMPANIES_URL = BACKEND_URL + "api/companies";
+const COMPANIES_URL = BACKEND_URL + "/companies";
 
 // fetch para eliminar
 
