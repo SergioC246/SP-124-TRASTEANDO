@@ -1,4 +1,4 @@
-const CLIENTS_URL = `${import.meta.env.VITE_BACKEND_URL}/api/clients`;
+const CLIENTS_URL = `${import.meta.env.VITE_BACKEND_URL}/clients`;
 
 // Obtain client
 
