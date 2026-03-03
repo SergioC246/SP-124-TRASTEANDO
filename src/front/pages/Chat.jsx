@@ -113,6 +113,12 @@ export const Chat = () => {
     if (!text.trim() || !targetId) return;
     const payload = { sender_id: myId, sender_role: myRole, receiver_id: targetId, receiver_role: targetRole, content: text };
     await chatAPI.send(payload);
+    const result = await chatAPI.send(payload);
+
+    if (result) {
+      setMessages(prev => [...prev, result]);  // ← el sender ve su mensaje al instante
+    }
+
     setText("");
   };
 
