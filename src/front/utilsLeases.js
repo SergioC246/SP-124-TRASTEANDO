@@ -1,5 +1,5 @@
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
-const LEASES_URL = BACKEND_URL + "/leases";
+const LEASES_URL = BACKEND_URL + "api/leases";
 
 // fetch para eliminar
 export const deleteLease = async (leaseId) => {

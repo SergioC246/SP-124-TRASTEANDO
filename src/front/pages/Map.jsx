@@ -226,7 +226,7 @@ export const Map = () => {
 
    return (
     <div className="d-flex flex-column" style={{ height: "100vh" }}>  
-        <div className="bg-white mb-5 m-5q z-3 d-flex justify-content-center">
+        <div className="bg-white mb-5 m-5 z-3 d-flex justify-content-center">
             <div className="search-bar-map w-100" style={{ maxWidth: "800px" }}>
                 <div className="bg-white search-bar-inner shadow-sm border d-flex align-items-center justify-content-between rounded-pill p-2">
                     <div className="search-field border-end flex-grow-1 px-3">

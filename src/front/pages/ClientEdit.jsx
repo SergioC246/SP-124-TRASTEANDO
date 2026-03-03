@@ -107,7 +107,7 @@ export const ClientEdit = () => {
                             <div className="text-center mb-5">
                                 <div className="position-relative d-inline-block">
                                     <img 
-                                        src={form.photo_url || "https://via.placeholder.com/150"} 
+                                        src={form.photo_url || "https://img.freepik.com/premium-vector/vector-flat-illustration-grayscale-avatar-user-profile-person-icon-gender-neutral-silhouette-profile-picture-suitable-social-media-profiles-icons-screensavers-as-templatex9xa_719432-2205.jpg?semt=ais_rp_progressive&w=740&q=80"} 
                                         alt="Preview" 
                                         className="rounded-circle shadow-sm object-fit-cover border"
                                         style={{ width: "130px", height: "130px", border: "4px solid white" }}
