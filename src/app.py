@@ -1,6 +1,8 @@
 """
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
+import eventlet
+eventlet.monkey_patch()
 import api.socket_handlers
 from api.socketio_instance import socketio
 from api.commands import setup_commands
@@ -53,11 +55,6 @@ setup_commands(app)
 
 socketio.init_app(app, cors_allowed_origins="*")
 
-print("=" * 50)
-print("🚀 Socket.IO inicializado correctamente")
-print(f"🔌 CORS permitido desde: *")
-print(f"🌐 Async mode: eventlet")
-print("=" * 50)
 
 app.register_blueprint(api, url_prefix='/api')
 
