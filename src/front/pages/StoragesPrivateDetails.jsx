@@ -40,7 +40,7 @@ export const StoragesPrivateDetails = () => {
         </div>
     );
 
-    const mainImage = storage.photo || "https://images.unsplash.com/photo-1581404917829-53144e2c115f?auto=format&fit=crop&q=80&w=1000";
+    const mainImage = storage.photo || "https://cdn.pixabay.com/photo/2017/02/22/15/55/storage-warehouse-2089775_1280.jpg";
 
     return (
         <div className="container py-4 pb-5" style={{ color: "#222222", fontFamily: "system-ui, -apple-system, sans-serif" }}>

@@ -250,17 +250,15 @@ export const Map = () => {
                             {/* CONTENEDOR DE IMAGEN CON URL SEGURA */}
                             <div style={{ width: "150px", height: "120px", flexShrink: 0 }}>
                                 <img
-                                    src={storage.photo || "https://images.unsplash.com/photo-1581404917829-5a5d096770db?q=80&w=400&auto=format&fit=crop"}
+                                    src={storage.photo || "https://cdn.pixabay.com/photo/2017/02/22/15/55/storage-warehouse-2089775_1280.jpg"}
                                     alt="Storage"
                                     style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "8px" }}
                                     onError={(e) => {
                                         e.target.onerror = null;
-                                        e.target.src = "https://images.unsplash.com/photo-1581404917829-5a5d096770db?q=80&w=400&auto=format&fit=crop";
+                                        e.target.src = "https://cdn.pixabay.com/photo/2017/02/22/15/55/storage-warehouse-2089775_1280.jpg";
                                     }}
                                 />
                             </div>
-
-                            {/* CONTENIDO ORIGINAL SIN CAMBIOS DE ESTILO */}
                             <div style={{ flexGrow: 1 }}>
                                 <h4 style={{ margin: "0 0 5px 0" }}>{storage.address}</h4>
                                 <p style={{ margin: "0" }}>{storage.city}</p>

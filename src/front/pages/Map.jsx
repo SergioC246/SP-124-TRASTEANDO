@@ -198,7 +198,7 @@ export const Map = () => {
             // Estructura limpia para que el CSS haga el trabajo de "borde a borde"
             content: `
                 <div class="custom-info-window" id="info-${storage.storage_id}">
-                    <img src="${storage.photo || "https://images.unsplash.com/photo-1581404917829-5a5d096770db?q=80&w=400&auto=format&fit=crop"}" alt="Storage">
+                    <img src="${storage.photo || "https://cdn.pixabay.com/photo/2017/02/22/15/55/storage-warehouse-2089775_1280.jpg"}" alt="Storage">
                     <div class="info-text">
                         <h6>${storage.size} m² en ${storage.city}</h6>
                         <p>${storage.price}€ <span style="font-size:14px; font-weight:normal; color:#717171;">/ mes</span></p>
@@ -264,7 +264,7 @@ export const Map = () => {
                     {storages.map(storage => (
                         <div key={storage.storage_id} className="airbnb-grid-card" onClick={() => navigate(`/client/private/storage/${storage.storage_id}`)}>
                             <div className="img-container">
-                                <img src={storage.photo || "https://images.unsplash.com/photo-1581404917829-5a5d096770db?q=80&w=400&auto=format&fit=crop"} alt="Storage" />
+                                <img src={storage.photo || "https://cdn.pixabay.com/photo/2017/02/22/15/55/storage-warehouse-2089775_1280.jpg"} alt="Storage" />
                             </div>
                             <div className="card-info mt-2">
                                 <p className="fw-bold mb-0 text-truncate">Trastero en {storage.city}</p>

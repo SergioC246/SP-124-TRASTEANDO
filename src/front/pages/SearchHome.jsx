@@ -146,7 +146,7 @@ export const SearchHome = () => {
 
                                         <div className="col-5">
                                             <img
-                                                src={storage.photo || "https://images.unsplash.com/photo-1581404917829-5a5d096770db?auto=format&fit=crop&q=80&w=400"}
+                                                src={storage.photo || "https://cdn.pixabay.com/photo/2017/02/22/15/55/storage-warehouse-2089775_1280.jpg"}
                                                 className="img-fluid h-100"
                                                 style={{ objectFit: "cover", minHeight: "140px" }}
                                                 alt={storage.city}

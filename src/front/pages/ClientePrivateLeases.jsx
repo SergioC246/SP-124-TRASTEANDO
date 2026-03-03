@@ -93,7 +93,7 @@ export const ClientPrivateLeases = () => {
                                 <div className="card shadow-sm border-0 h-100 bg-white" style={{ borderRadius: "20px", overflow: "hidden" }}>
                                     <div style={{ height: "180px", position: "relative" }}>
                                         <img
-                                            src={lease.storage.photo || "https://images.unsplash.com/photo-1581404917829-53144e2c115f?q=80&w=600"}
+                                            src={lease.storage.photo || "https://cdn.pixabay.com/photo/2017/02/22/15/55/storage-warehouse-2089775_1280.jpg"}
                                             alt="Storage"
                                             className="w-100 h-100"
                                             style={{ objectFit: "cover" }}
