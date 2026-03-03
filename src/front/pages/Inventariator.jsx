@@ -126,10 +126,10 @@ export const Inventariator = () => {
   };
 
   return (
-    <div className="vstack gap-4">
+    <div className="vstack gap-4 p-4">
 
       {/* CABECERA */}
-      <div className="d-flex justify-content-between align-items-center">
+      <div className="d-flex justify-content-between align-items-center p-2">
         <h4 className="fw-bold mb-0">My Inventory</h4>
         <button
           className="btn btn-sm px-3"

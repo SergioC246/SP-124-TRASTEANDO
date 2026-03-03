@@ -17,6 +17,7 @@
 
 .map-view-container {
   display: flex;
+  border-radius: 10%;
   height: calc(100vh - 90px);
   background-color: #fff;
 }
