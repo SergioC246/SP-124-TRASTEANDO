@@ -170,7 +170,7 @@ export const Home = () => {
               <div key={storage.id} className="col">
                 <div className="nearby-card card h-100" onClick={() => navigate(`/client/private/storage/${storage.id}`)} >
                   <div className="nearby-img-container">
-                    <img src={storage.photo || "https://cdn.pixabay.com/photo/2017/02/22/15/55/storage-warehouse-2089775_1280.jpghttps://media.istockphoto.com/id/1803815808/fr/photo/client-%C3%A0-la-recherche-dune-unit%C3%A9-lou%C3%A9e-en-self-stockage.jpg?s=2048x2048&w=is&k=20&c=6uinrDmsMbfxzCs6OsDSEIdMI17tewrlWgMXJw76TyI="}
+                    <img src={storage.photo || "https://trasteroencaceres.es/wp-content/uploads/2019/07/self-storage.jpg"}
                       alt={storage.city} />
                   </div>
                   <div className="nearby-content">
