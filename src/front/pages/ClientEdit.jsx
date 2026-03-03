@@ -11,11 +11,11 @@ export const ClientEdit = () => {
   const [form, setForm] = useState({
     email: "",
     is_active: true,
-    photo_url: "", // 1. Añadimos foto
+    photo_url: "",
   });
 
   const [loading, setLoading] = useState(true);
-  const [uploading, setUploading] = useState(false); // 2. Añadimos spinner de carga
+  const [uploading, setUploading] = useState(false); 
 
   // Load client data
 
@@ -25,7 +25,7 @@ export const ClientEdit = () => {
         setForm({
           email: data.email,
           is_active: data.is_active,
-          photo_url: data.photo_url || "", // 3. Cargamos URL si existe
+          photo_url: data.photo_url || "", 
         });
         setLoading(false);
       })

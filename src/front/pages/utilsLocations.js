@@ -2,7 +2,7 @@ const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
 
 // Fetch para conseguir todos
 export const getLocations = async() => {
-    const response = await fetch(BACKEND_URL + "api/location")
+    const response = await fetch(BACKEND_URL + "/location")
 
     const data = await response.json()
 
