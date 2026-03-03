@@ -90,8 +90,7 @@ export const StoragesPrivateList = () => {
                             <div className="card-body d-flex flex-column justify-content-between p-4" style={{ minHeight: "220px" }}>
                                 <div>
                                     <div className="d-flex justify-content-between align-items-start mb-2">
-                                        <h3 className="fw-bold mb-0">Unidad {storage.id}</h3>
-                                        {/* ${storagesAvailability[storage.id] ? 'border-success text-success' : 'border-danger text-danger'}`} */}
+                                        <h3 className="fw-bold mb-0">Unidad {storage.id}</h3>                    
                                         <span className={`badge rounded-pill border
                                          ${storagesAvailability[storage.id] ? 'border-success text-success' : 'border-danger text-danger'}`}
                                             style={{ backgroundColor: "transparent" }}> 
