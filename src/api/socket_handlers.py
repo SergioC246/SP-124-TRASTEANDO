@@ -24,8 +24,7 @@ def handle_connect(auth):
         return True
 
     except Exception as e:
-        print("Socket connect error:", e)
-        disconnect()
+        print("Socket connect error:", e)      
         return False
 
 
