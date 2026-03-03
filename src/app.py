@@ -1,6 +1,8 @@
-
-from gevent import monkey
-monkey.patch_all() 
+"""
+This module takes care of starting the API Server, Loading the DB and Adding the endpoints
+"""
+import eventlet
+eventlet.monkey_patch()
 
 import api.socket_handlers
 from api.socketio_instance import socketio
