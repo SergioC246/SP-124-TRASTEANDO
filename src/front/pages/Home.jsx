@@ -92,118 +92,120 @@ export const Home = () => {
 
   return (
 
-    <div className="hero-section container-fluid ">
-      <div className="row g-0 align-items-center min-vh-100">
-        <div className="altura col-lg-5 p-5 content-side">
-          <h1 className="display-4 fw-bold mb-4" style={{ fontSize: '3.2rem' }}>
-            Organized and Accessible Storage for Your
-            <span className="dynamic-text-container">
-              <span key={words[currentWordIndex]} className="dynamic-text">
-                {words[currentWordIndex]}
+    <div className="hero-section container-fluid">
+      <div className="container">
+        <div className="row align-items-center min-vh-75">
+          <div className="col-lg-5 ps-lg-2 pe-lg-4 py-4 content-side">
+            <h1 className="display-4 fw-bold mb-4" style={{ fontSize: '3.2rem' }}>
+              Organized and Accessible Storage for Your
+              <span className="dynamic-text-container">
+                <span key={words[currentWordIndex]} className="dynamic-text">
+                  {words[currentWordIndex]}
+                </span>
               </span>
-            </span>
-          </h1>
-          <p className="lead text-muted mt-4 mb-5">
-            Modern facilities, maximum security, and the best prices in your city.
-          </p>
+            </h1>
+            <p className="lead text-muted mt-3 mb-3">
+              Modern facilities, maximum security, and the best prices in your city.
+            </p>
 
-          <div className="d-flex align-items-center mb-5">
-            <button className="btn btn-primary-custom rounded-pill px-5 py-3 shadow-sm"
-              onClick={scrollToStorages}>Discover now </button>
+            <div className="d-flex align-items-center mb-3">
+              <button className="btn btn-primary-custom rounded-pill px-5 py-3 shadow-sm"
+                onClick={scrollToStorages}>Discover now </button>
+            </div>
           </div>
-        </div>
-        <div className="col-lg-7 d-none d-lg-block ps-lg-4 pe-lg-5 py-5">
-          <div className="position-relative h-100">
-            <img src="https://images.unsplash.com/photo-1551313158-73d016a829ae?q=80&w=2037&auto=format&fit=crop" alt="Storage facility" className="img-fluid shadow-sm"
-              style={{
-                height: "100%",
-                width: "100%",
-                objectFit: "cover",
-                borderRadius: "50px",
-                minHeight: "700px",
-              }}
-            />
-            <div className="support-badge position-absolute shadow-lg text-center z-3">
-              <span className="d-block fw-bold fs-5 text-danger">🎧 24/7</span>
-              <small className="text-muted fw-bold">Customer Support</small>
+          <div className="col-lg-7 d-none d-lg-block ps-lg-4 pe-lg-5 py-5">
+            <div className="position-relative h-100">
+              <img src="https://images.unsplash.com/photo-1551313158-73d016a829ae?q=80&w=2037&auto=format&fit=crop" alt="Storage facility" className="img-fluid shadow-sm"
+                style={{
+                  height: "100%",
+                  width: "100%",
+                  objectFit: "cover",
+                  borderRadius: "50px",
+                  minHeight: "700px",
+                }}
+              />
+              <div className="support-badge position-absolute shadow-lg text-center z-3">
+                <span className="d-block fw-bold fs-5 text-danger">🎧 24/7</span>
+                <small className="text-muted fw-bold">Customer Support</small>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* searchbar */}
-      <div className="search-bar-container mx-auto position-relative">
-        <h6 className="fw-bold mb-3 ms-4 text-dark">Search your storage</h6>
-        <div className="bg-white search-bar-inner shadow-lg d-flex align-items-center justify-content-between">
-          <div className="search-field border-end flex-grow-1">
-            <label className="d-block mb-0">Location</label>
-            <input ref={inputRef} type="text" className="form-control border-0 p-0 shadow-none fw-bold" placeholder="Where do you need it?" />
-          </div>
-          <div className="search-field border-end flex-grow-1">
-            <label className="d-block mb-0">From</label>
-            <input type="date" className="form-control border-0 p-0 shadow-none fw-bold" onChange={(e) => setSearchData({ ...searchData, checkin: e.target.value })} />
-          </div>
-          <div className="search-field flex-grow-1">
-            <label className="d-block mb-0">To</label>
-            <input type="date" className="form-control border-0 p-0 shadow-none fw-bold" onChange={(e) => setSearchData({ ...searchData, checkout: e.target.value })} />
-          </div>
-          <button onClick={handleSearch} className="btn search-btn text-white ms-2">
-            <i className="fa fa-search"></i>
-          </button>
-        </div>
-      </div>
-
-      {/* storages section con circulitos*/}
-      <div className="container py-5 mt-5" ref={storageSectionRef}>
-        <div className="text-center mb-5 mt-5">
-          <h2 className="fw-bold secondary-hero-title">Find the best Storages close to you</h2>
-          <p className="text-muted">Explore our high-security facilities across the country</p>
-        </div>
-
-        {loading ? (
-          <div className="text-center py-5">
-            <div className="spinner-border text-primary" role="status"></div>
-          </div>
-        ) : (
-          <div className="row row-cols-2 row-cols-md-3 row-cols-lg-6 g-4 justify-content-center">
-            {storages.slice(0, 12).map((storage) => (
-              <div key={storage.id} className="col">
-                <div className="nearby-card card h-100" onClick={() => navigate(`/client/private/storage/${storage.id}`)} >
-                  <div className="nearby-img-container">
-                    <img src={storage.photo || "https://images.unsplash.com/photo-1581404917829-https://images.unsplash.com/photo-1551313158-73d016a829ae?q=80&w=2037&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D?auto=format&fit=crop&q=80&w=400"}
-                      alt={storage.city} />
-                  </div>
-                  <div className="nearby-content">
-                    <div className="nearby-title">{storage.city}</div>
-                    <div className="nearby-subtitle">{storage.price}€ / month</div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* final debajo storages video */}
-
-      <div className="container my-5">
-        <div className="reserve-banner-video shadow-lg position-relative overflow-hidden">
-          <video src={videoBg} autoPlay loop muted playsInline className="reserve-video-bg" />
-          <div className="reserve-content-overlay">
-            <h2 className="fw-extrabold display-3">
-              Reserve your storage unit <br />
-              <span style={{ color: '#f24171' }}>in minutes</span>
-            </h2>
-            <p className="text-white" style={{ maxWidth: '770px' }}>
-              Experience the convenience of modern storage. Secure, accessible, and
-              tailored to your needs. Start your journey with us today.
-            </p>
-            <button className="btn btn-glass-custom text-uppercase" onClick={() => navigate("/search/map")}>
-              Get Started Now
+        {/* searchbar */}
+        <div className="search-bar-container mx-auto position-relative mt-2 mb-2">
+          <h6 className="fw-bold mb-3 ms-4 text-dark">Search your storage</h6>
+          <div className="bg-white search-bar-inner shadow-lg d-flex align-items-center justify-content-between">
+            <div className="search-field border-end flex-grow-1">
+              <label className="d-block mb-0">Location</label>
+              <input ref={inputRef} type="text" className="form-control border-0 p-0 shadow-none fw-bold" placeholder="Where do you need it?" />
+            </div>
+            <div className="search-field border-end flex-grow-1">
+              <label className="d-block mb-0">From</label>
+              <input type="date" className="form-control border-0 p-0 shadow-none fw-bold" onChange={(e) => setSearchData({ ...searchData, checkin: e.target.value })} />
+            </div>
+            <div className="search-field flex-grow-1">
+              <label className="d-block mb-0">To</label>
+              <input type="date" className="form-control border-0 p-0 shadow-none fw-bold" onChange={(e) => setSearchData({ ...searchData, checkout: e.target.value })} />
+            </div>
+            <button onClick={handleSearch} className="btn search-btn text-white ms-2">
+              <i className="fa fa-search"></i>
             </button>
           </div>
         </div>
-      </div>
-    </div >
+
+        {/* storages section con circulitos*/}
+        <div className="py-4 mt-2" ref={storageSectionRef}>
+          <div className="text-center mb-4 mt-3">
+            <h2 className="fw-bold secondary-hero-title">Find the best Storages close to you</h2>
+            <p className="text-muted">Explore our high-security facilities across the country</p>
+          </div>
+
+          {loading ? (
+            <div className="text-center py-5">
+              <div className="spinner-border text-primary" role="status"></div>
+            </div>
+          ) : (
+            <div className="row row-cols-2 row-cols-md-3 row-cols-lg-6 g-4 justify-content-center">
+              {storages.slice(0, 12).map((storage) => (
+                <div key={storage.id} className="col">
+                  <div className="nearby-card card h-100" onClick={() => navigate(`/client/private/storage/${storage.id}`)} >
+                    <div className="nearby-img-container">
+                      <img src={storage.photo || "https://images.unsplash.com/photo-1581404917829-https://images.unsplash.com/photo-1551313158-73d016a829ae?q=80&w=2037&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D?auto=format&fit=crop&q=80&w=400"}
+                        alt={storage.city} />
+                    </div>
+                    <div className="nearby-content">
+                      <div className="nearby-title">{storage.city}</div>
+                      <div className="nearby-subtitle">{storage.price}€ / month</div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* final debajo storages video */}
+
+        <div className="container my-5">
+          <div className="reserve-banner-video shadow-lg position-relative overflow-hidden">
+            <video src={videoBg} autoPlay loop muted playsInline className="reserve-video-bg" />
+            <div className="reserve-content-overlay">
+              <h2 className="fw-extrabold display-3">
+                Reserve your storage unit <br />
+                <span style={{ color: '#f24171' }}>in minutes</span>
+              </h2>
+              <p className="text-white" style={{ maxWidth: '770px' }}>
+                Experience the convenience of modern storage. Secure, accessible, and
+                tailored to your needs. Start your journey with us today.
+              </p>
+              <button className="btn btn-glass-custom text-uppercase" onClick={() => navigate("/search/map")}>
+                Get Started Now
+              </button>
+            </div>
+          </div>
+        </div>
+      </div >
+    </div>
   );
 };
