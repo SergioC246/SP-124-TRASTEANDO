@@ -15,7 +15,7 @@ export const CompanyStorages = () => {
             return
         }
 
-        const url = `${import.meta.env.VITE_BACKEND_URL}/api/private/company/storages`
+        const url = `${import.meta.env.VITE_BACKEND_URL}/private/company/storages`
 
         fetch(url, {
             headers: {
@@ -39,7 +39,7 @@ export const CompanyStorages = () => {
 
         if (!window.confirm("Are you sure you want to delete this storage?")) return
 
-        fetch(`${import.meta.env.VITE_BACKEND_URL}/api/private/company/storages/${storageId}`, {
+        fetch(`${import.meta.env.VITE_BACKEND_URL}/private/company/storages/${storageId}`, {
             method: "DELETE",
             headers: {
                 "Authorization": "Bearer " + token

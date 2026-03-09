@@ -19,7 +19,7 @@ export const CompanyPrivate = () => {
         const token = localStorage.getItem("token_company")
         if (!token) { navigate("/companies/login"); return }
 
-        fetch(import.meta.env.VITE_BACKEND_URL + "api/private/company", {
+        fetch(import.meta.env.VITE_BACKEND_URL + "/private/company", {
             method: "GET",
             headers: { "Content-Type": "application/json", "Authorization": "Bearer " + token }
         })

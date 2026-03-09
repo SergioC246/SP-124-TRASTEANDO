@@ -19,7 +19,7 @@ export const CompanyLocationStorages = () => {
             return
         }
 
-        fetch(`${import.meta.env.VITE_BACKEND_URL}api/location/${id}/storages`, {
+        fetch(`${import.meta.env.VITE_BACKEND_URL}/location/${id}/storages`, {
             headers: {
                 "Authorization": "Bearer " + token,
             },
@@ -33,7 +33,7 @@ export const CompanyLocationStorages = () => {
                 try {
 
                     const leasesRes = await fetch(
-                        `${import.meta.env.VITE_BACKEND_URL}api/private/company/leases-filtered`,
+                        `${import.meta.env.VITE_BACKEND_URL}/private/company/leases-filtered`,
                         {
                             headers: {
                                 "Authorization": "Bearer " + token,
@@ -85,7 +85,7 @@ export const CompanyLocationStorages = () => {
                 setLoading(false)
             })
 
-        fetch(`${import.meta.env.VITE_BACKEND_URL}/api/location/${id}`, {
+        fetch(`${import.meta.env.VITE_BACKEND_URL}/location/${id}`, {
             headers: { Authorization: "Bearer " + token }
         })
             .then(res => {
@@ -103,7 +103,7 @@ export const CompanyLocationStorages = () => {
 
         if (!window.confirm("Are you sure you want to delete this storage?")) return
 
-        fetch(`${import.meta.env.VITE_BACKEND_URL}/api/private/company/storages/${storageId}`, {
+        fetch(`${import.meta.env.VITE_BACKEND_URL}/private/company/storages/${storageId}`, {
             method: "DELETE",
             headers: {
                 "Authorization": "Bearer " + token

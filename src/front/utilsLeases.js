@@ -74,7 +74,7 @@ export const createLease = async (leaseData) => {
 
 export const createClientLease = async (leaseData, token) => {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
-  const response = await fetch(`${backendUrl}/api/client/leases`, {
+  const response = await fetch(`${backendUrl}/client/leases`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -93,7 +93,7 @@ export const createClientLease = async (leaseData, token) => {
 // delete lease de cliente con cuenta logeada
 
 export const deleteClientLease = async (leaseId, token) => {
-  const response = await fetch(BACKEND_URL + "api/client/leases/" + leaseId, {
+  const response = await fetch(BACKEND_URL + "/client/leases/" + leaseId, {
     method: "DELETE",
     headers: {
       Authorization: "Bearer " + token,
@@ -109,7 +109,7 @@ export const deleteClientLease = async (leaseId, token) => {
 // fetch de limpieza que va  a llamar Layout para borrar los leases que no se hayan pagado
 
 export const clearPendingLeases = async (token) => {
-  const response = await fetch (BACKEND_URL+ '/api/client/leases/clear-pending', {
+  const response = await fetch (BACKEND_URL+ '/client/leases/clear-pending', {
     method: 'DELETE',
     headers:{
       "Authorization": `Bearer ${token}`

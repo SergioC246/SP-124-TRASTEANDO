@@ -19,7 +19,7 @@ export const CompanyStoragesDetails = () => {
             return
         }
 
-        fetch(import.meta.env.VITE_BACKEND_URL + `api/private/company/storages/${id}`, {
+        fetch(import.meta.env.VITE_BACKEND_URL + `/private/company/storages/${id}`, {
             headers: {
                 "Authorization": "Bearer " + token,
                 "Content-Type": "application/json",
@@ -31,7 +31,7 @@ export const CompanyStoragesDetails = () => {
                 setLoading(false)
             })
 
-        fetch(`${import.meta.env.VITE_BACKEND_URL}/api/private/company/locations`, {
+        fetch(`${import.meta.env.VITE_BACKEND_URL}/private/company/locations`, {
             headers: {
                 "Authorization": "Bearer " + token
             }

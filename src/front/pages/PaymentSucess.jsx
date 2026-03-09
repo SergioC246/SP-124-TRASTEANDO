@@ -15,7 +15,7 @@ export const PaymentSuccess = () => {
             if (leaseId && store.tokenClient) {
                 try {
                     // Esperamos a que el fetch termine ANTES de seguir
-                    const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}api/client/leases/${leaseId}/confirm`, {
+                    const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/client/leases/${leaseId}/confirm`, {
                         method: "PATCH",
                         headers: { 
                             "Authorization": `Bearer ${store.tokenClient}`,

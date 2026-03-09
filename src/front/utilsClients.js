@@ -1,4 +1,4 @@
-const CLIENTS_URL = `${import.meta.env.VITE_BACKEND_URL}/api/clients`;
+const CLIENTS_URL = `${import.meta.env.VITE_BACKEND_URL}/clients`;
 
 // Obtain client
 
@@ -29,7 +29,7 @@ export const getAllClients = async () => {
 // Create client
 
 export const createClient = async (clientData) => {
-    const response = await fetch(CLIENTS_URL, {
+    const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/clients`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json"

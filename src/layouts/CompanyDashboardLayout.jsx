@@ -24,7 +24,7 @@ export const CompanyDashboardLayout = () => {
           return;
         }
 
-        const resp = await fetch(`${backendUrl}/api/private/company`, {
+        const resp = await fetch(`${backendUrl}/private/company`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

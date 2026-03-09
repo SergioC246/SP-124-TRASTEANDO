@@ -113,6 +113,12 @@ export const Chat = () => {
     if (!text.trim() || !targetId) return;
     const payload = { sender_id: myId, sender_role: myRole, receiver_id: targetId, receiver_role: targetRole, content: text };
     await chatAPI.send(payload);
+    const result = await chatAPI.send(payload);
+
+    if (result) {
+      setMessages(prev => [...prev, result]);  // ← el sender ve su mensaje al instante
+    }
+
     setText("");
   };
 
@@ -129,7 +135,7 @@ export const Chat = () => {
               className="btn btn-sm"
               style={{ backgroundColor: "#5C73F2", color: "#fff", border: "none" }}
               onClick={async () => {
-                const endpoint = myRole === "client" ? "api/companies" : "api/clients";
+                const endpoint = myRole === "client" ? "/companies" : "/clients";
                 const resp = await fetch(`${API_URL}${endpoint}`);
                 const all = await resp.json();
                 const filtered = all.filter(d => !contacts.find(c => c.id === d.id));
@@ -144,7 +150,7 @@ export const Chat = () => {
           <div className="list-group list-group-flush overflow-auto flex-grow-1">
             {contacts.map(c => {
               const key = `${c.id}-${c.role}`;
-              const avatarUrl = c.photo_url || c.photo || "https://via.placeholder.com/40";
+              const avatarUrl = c.photo_url || c.photo || "https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small/default-avatar-icon-of-social-media-user-vector.jpg";
               return (
                 <button
                   key={key}
@@ -164,7 +170,7 @@ export const Chat = () => {
                       alt="avatar"
                       className="rounded-circle me-2"
                       style={{ width: "35px", height: "35px", objectFit: "cover", border: "1px solid #ccc" }}
-                      onError={(e) => { e.target.src = "https://via.placeholder.com/40"; }}
+                      onError={(e) => { e.target.src = "https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small/default-avatar-icon-of-social-media-user-vector.jpg"; }}
                     />
                     <div className="text-truncate" style={{ maxWidth: "150px" }}>
                       {c.name || c.email}
@@ -187,14 +193,14 @@ export const Chat = () => {
             <div className="d-flex align-items-center">
               {targetId && (() => {
                 const activeContact = contacts.find(c => c.id === targetId && c.role === targetRole);
-                const avatarUrl = activeContact?.photo_url || activeContact?.photo || "https://via.placeholder.com/40";
+                const avatarUrl = activeContact?.photo_url || activeContact?.photo || "https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small/default-avatar-icon-of-social-media-user-vector.jpg";
                 return (
                   <img
                     src={avatarUrl}
                     alt="avatar"
                     className="rounded-circle me-2"
                     style={{ width: "35px", height: "35px", objectFit: "cover" }}
-                    onError={(e) => { e.target.src = "https://via.placeholder.com/40"; }}
+                    onError={(e) => { e.target.src = "https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small/default-avatar-icon-of-social-media-user-vector.jpg"; }}
                   />
                 );
               })()}
@@ -212,7 +218,7 @@ export const Chat = () => {
                 onClick={async () => {
                   if (window.confirm("¿Borrar chat?")) {
                     await fetch(
-                      `${API_URL}api/messages/conversation/${myId}/${myRole}/${targetId}/${targetRole}`,
+                      `${API_URL}/messages/conversation/${myId}/${myRole}/${targetId}/${targetRole}`,
                       { method: "DELETE" }
                     );
                     setMessages([]);
@@ -293,7 +299,7 @@ export const Chat = () => {
               <div className="modal-body overflow-auto" style={{ maxHeight: "400px" }}>
                 <div className="list-group list-group-flush">
                   {directory.length > 0 ? directory.map(d => {
-                    const avatarUrl = d.photo_url || d.photo || "https://via.placeholder.com/40";
+                    const avatarUrl = d.photo_url || d.photo || "https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small/default-avatar-icon-of-social-media-user-vector.jpg";
                     return (
                       <button
                         key={d.id}
@@ -314,7 +320,7 @@ export const Chat = () => {
                           alt="avatar"
                           className="rounded-circle me-3"
                           style={{ width: "40px", height: "40px", objectFit: "cover", border: "1px solid #eee" }}
-                          onError={(e) => { e.target.src = "https://via.placeholder.com/40"; }}
+                          onError={(e) => { e.target.src = "https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small/default-avatar-icon-of-social-media-user-vector.jpg"; }}
                         />
                         <div className="fw-bold">{d.name || d.email}</div>
                       </button>

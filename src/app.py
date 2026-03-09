@@ -1,6 +1,9 @@
 """
 This module takes care of starting the API Server, Loading the DB and Adding the endpoints
 """
+import eventlet
+eventlet.monkey_patch()
+
 import api.socket_handlers
 from api.socketio_instance import socketio
 from api.commands import setup_commands
@@ -53,11 +56,6 @@ setup_commands(app)
 
 socketio.init_app(app, cors_allowed_origins="*")
 
-print("=" * 50)
-print("🚀 Socket.IO inicializado correctamente")
-print(f"🔌 CORS permitido desde: *")
-print(f"🌐 Async mode: eventlet")
-print("=" * 50)
 
 app.register_blueprint(api, url_prefix='/api')
 
@@ -74,8 +72,8 @@ def handle_invalid_usage(error):
 
 @app.route('/')
 def sitemap():
-    if ENV == "development":
-        return generate_sitemap(app)
+    # if ENV == "development":
+    #     return generate_sitemap(app)
     return send_from_directory(static_file_dir, 'index.html')
 
 
@@ -89,13 +87,14 @@ def serve_any_other_file(path):
     return response
 
 
-with app.app_context():
-    db.create_all()
-    print("Tablas creadas (si no existían)")
+# with app.app_context():
+#     db.create_all()
+#     print("Tablas creadas (si no existían)")
 
 
 # this only runs if `$ python src/main.py` is executed
 if __name__ == '__main__':
     PORT = int(os.environ.get('PORT', 3001))
     socketio.run(app, host='0.0.0.0', port=PORT,
-                 debug=True, allow_unsafe_werkzeug=True)
+                 debug=True)
+                #  , allow_unsafe_werkzeug=True)

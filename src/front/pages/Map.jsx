@@ -71,12 +71,11 @@ export const Map = () => {
             }
         }
     }, [searchParams]);
-    // useEffect que vigila lat/lng para qeu si cambian pide los trasteros.(marcador drggable y buscador actualizan la lsita automaticamente)
+
     useEffect(() => {
         fetchStorages();
     }, [searchData.lat, searchData.lng, searchData.checkin, searchData.checkout]);
 
-    // cuando se inicia el mapa lo qeu sale (añadir aqui los initdraggable etc)
 
     const initMap = () => {
         if (!mapRef.current) return;
@@ -194,11 +193,10 @@ export const Map = () => {
             }
         });
 
-        const infoWindow = new window.google.maps.InfoWindow({
-            // Estructura limpia para que el CSS haga el trabajo de "borde a borde"
+        const infoWindow = new window.google.maps.InfoWindow({         
             content: `
                 <div class="custom-info-window" id="info-${storage.storage_id}">
-                    <img src="${storage.photo || "https://images.unsplash.com/photo-1581404917829-5a5d096770db?q=80&w=400&auto=format&fit=crop"}" alt="Storage">
+                    <img src="${storage.photo || "https://cdn.pixabay.com/photo/2017/02/22/15/55/storage-warehouse-2089775_1280.jpg"}" alt="Storage">
                     <div class="info-text">
                         <h6>${storage.size} m² en ${storage.city}</h6>
                         <p>${storage.price}€ <span style="font-size:14px; font-weight:normal; color:#717171;">/ mes</span></p>
@@ -228,7 +226,7 @@ export const Map = () => {
 
    return (
     <div className="d-flex flex-column" style={{ height: "100vh" }}>  
-        <div className="bg-white mb-5 z-3 d-flex justify-content-center">
+        <div className="bg-white mb-5 m-5 z-3 d-flex justify-content-center">
             <div className="search-bar-map w-100" style={{ maxWidth: "800px" }}>
                 <div className="bg-white search-bar-inner shadow-sm border d-flex align-items-center justify-content-between rounded-pill p-2">
                     <div className="search-field border-end flex-grow-1 px-3">
@@ -257,14 +255,14 @@ export const Map = () => {
         </div>
 
         <div className="map-view-containe ps-3 d-flex flex-grow-1 overflow-hidden">
-            <div className="map-list-section custom-scrollbar p-4" style={{ width: "50%", overflowY: "auto" }}>
+            <div className="map-list-section custom-scrollbar p-1" style={{ width: "50%", overflowY: "auto" }}>
                 <p className="text-dark fw-bold mb-4 fs-5">{storages.length} trasteros disponibles</p>
                 
                 <div className="airbnb-cards-grid">
                     {storages.map(storage => (
                         <div key={storage.storage_id} className="airbnb-grid-card" onClick={() => navigate(`/client/private/storage/${storage.storage_id}`)}>
                             <div className="img-container">
-                                <img src={storage.photo || "https://images.unsplash.com/photo-1581404917829-5a5d096770db?q=80&w=400&auto=format&fit=crop"} alt="Storage" />
+                                <img src={storage.photo || "https://cdn.pixabay.com/photo/2017/02/22/15/55/storage-warehouse-2089775_1280.jpg"} alt="Storage" />
                             </div>
                             <div className="card-info mt-2">
                                 <p className="fw-bold mb-0 text-truncate">Trastero en {storage.city}</p>
@@ -276,7 +274,7 @@ export const Map = () => {
                 </div>
             </div>
 
-            <div className="map-section" style={{ width: "50%", position: "relative" }}>
+            <div className="map-section" style={{ width: "50%", position: "relative", borderRadius:"15px 15px 0 0", overflow:"hidden" }}>
                 <div ref={mapRef} style={{ height: "100%", width: "100%" }} />
             </div>
         </div>

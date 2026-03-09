@@ -21,7 +21,7 @@ export const CompanyPrivateEdit = () => {
             return
         }
 
-        fetch(import.meta.env.VITE_BACKEND_URL + "api/private/company", {
+        fetch(import.meta.env.VITE_BACKEND_URL + "/private/company", {
             headers: {
                 "Authorization": "Bearer " + token
             }
@@ -77,7 +77,7 @@ export const CompanyPrivateEdit = () => {
     const handleUpdate = () => {
         const token = localStorage.getItem("token_company")
 
-        fetch(import.meta.env.VITE_BACKEND_URL + `api/private/company/${companyId}`, {
+        fetch(import.meta.env.VITE_BACKEND_URL + `/private/company/${companyId}`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",

@@ -43,7 +43,7 @@ export const CompanyLocationsCreate = () => {
             }
 
             const response = await fetch(
-                `${import.meta.env.VITE_BACKEND_URL}/api/private/company/locations`,
+                `${import.meta.env.VITE_BACKEND_URL}/private/company/locations`,
                 {
                     method: "POST",
                     headers: {

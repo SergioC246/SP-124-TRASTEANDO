@@ -19,7 +19,7 @@ export const CompanyLocations = () => {
       return
     }
 
-    const url = `${import.meta.env.VITE_BACKEND_URL}api/mycompany/locations-overview`
+    const url = `${import.meta.env.VITE_BACKEND_URL}/mycompany/locations-overview`
 
     fetch(url, {
       headers: {
@@ -44,7 +44,7 @@ export const CompanyLocations = () => {
 
     if (!window.confirm("Are you sure you want to delete this location?")) return
 
-    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/private/company/locations/${locationId}`, {
+    fetch(`${import.meta.env.VITE_BACKEND_URL}/private/company/locations/${locationId}`, {
       method: "DELETE",
       headers: {
         "Authorization": "Bearer " + token

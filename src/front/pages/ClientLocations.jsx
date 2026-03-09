@@ -14,7 +14,7 @@ export const ClientLocations = () => {
             try {
                 const backendUrl = import.meta.env.VITE_BACKEND_URL;
                 const token = store.tokenClient;
-                const resp = await fetch(`${backendUrl}/api/location`, {
+                const resp = await fetch(`${backendUrl}/location`, {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json'

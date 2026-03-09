@@ -17,6 +17,7 @@
 
 .map-view-container {
   display: flex;
+  border-radius: 10%;
   height: calc(100vh - 90px);
   background-color: #fff;
 }
@@ -944,8 +945,13 @@ html {
 /* NAVBAR SIEMPRE POR ENCIMA */
 header,
 .navbar {
-  position: relative;
+  position: sticky;
+  top:0;
   z-index: 1100;
+  background-color: white;
+  height: fit-content;
+  padding:1px 0 1px 0;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.047);
 }
 
 /* Dropdown aún más arriba */

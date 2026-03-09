@@ -17,7 +17,7 @@ export const CompanyLocationsDetails = () => {
 
         if (!token) return
 
-        fetch(import.meta.env.VITE_BACKEND_URL + `api/private/company/locations/${id}`, {
+        fetch(import.meta.env.VITE_BACKEND_URL + `/private/company/locations/${id}`, {
             headers: {
                 "Authorization": "Bearer " + token,
                 "Content-Type": "application/json",

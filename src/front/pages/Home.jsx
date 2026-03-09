@@ -92,7 +92,7 @@ export const Home = () => {
 
   return (
 
-    <div className="hero-section container-fluid">
+    <div className="hero-section">
       <div className="container">
         <div className="row align-items-center min-vh-75">
           <div className="col-lg-5 ps-lg-2 pe-lg-4 py-4 content-side">
@@ -171,7 +171,7 @@ export const Home = () => {
                 <div key={storage.id} className="col">
                   <div className="nearby-card card h-100" onClick={() => navigate(`/client/private/storage/${storage.id}`)} >
                     <div className="nearby-img-container">
-                      <img src={storage.photo || "https://images.unsplash.com/photo-1581404917829-https://images.unsplash.com/photo-1551313158-73d016a829ae?q=80&w=2037&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D?auto=format&fit=crop&q=80&w=400"}
+                      <img src={storage.photo || "https://trasteroencaceres.es/wp-content/uploads/2019/07/self-storage.jpg"}
                         alt={storage.city} />
                     </div>
                     <div className="nearby-content">
@@ -184,28 +184,50 @@ export const Home = () => {
             </div>
           )}
         </div>
+        {loading ? (
+          <div className="text-center py-5">
+            <div className="spinner-border text-primary" role="status"></div>
+          </div>
+        ) : (
+          <div className="row row-cols-2 row-cols-md-3 row-cols-lg-6 g-4 justify-content-center">
+            {storages.slice(0, 12).map((storage) => (
+              <div key={storage.id} className="col">
+                <div className="nearby-card card h-100" onClick={() => navigate(`/client/private/storage/${storage.id}`)} >
+                  <div className="nearby-img-container">
+                    <img src={storage.photo || "https://images.unsplash.com/photo-1581404917829-https://images.unsplash.com/photo-1551313158-73d016a829ae?q=80&w=2037&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D?auto=format&fit=crop&q=80&w=400"}
+                      alt={storage.city} />
+                  </div>
+                  <div className="nearby-content">
+                    <div className="nearby-title">{storage.city}</div>
+                    <div className="nearby-subtitle">{storage.price}€ / month</div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
 
-        {/* final debajo storages video */}
+      {/* final debajo storages video */}
 
-        <div className="container my-5">
-          <div className="reserve-banner-video shadow-lg position-relative overflow-hidden">
-            <video src={videoBg} autoPlay loop muted playsInline className="reserve-video-bg" />
-            <div className="reserve-content-overlay">
-              <h2 className="fw-extrabold display-3">
-                Reserve your storage unit <br />
-                <span style={{ color: '#f24171' }}>in minutes</span>
-              </h2>
-              <p className="text-white" style={{ maxWidth: '770px' }}>
-                Experience the convenience of modern storage. Secure, accessible, and
-                tailored to your needs. Start your journey with us today.
-              </p>
-              <button className="btn btn-glass-custom text-uppercase" onClick={() => navigate("/search/map")}>
-                Get Started Now
-              </button>
-            </div>
+      <div className="container my-5">
+        <div className="reserve-banner-video shadow-lg position-relative overflow-hidden">
+          <video src={videoBg} autoPlay loop muted playsInline className="reserve-video-bg" />
+          <div className="reserve-content-overlay">
+            <h2 className="fw-extrabold display-3">
+              Reserve your storage unit <br />
+              <span style={{ color: '#f24171' }}>in minutes</span>
+            </h2>
+            <p className="text-white" style={{ maxWidth: '770px' }}>
+              Experience the convenience of modern storage. Secure, accessible, and
+              tailored to your needs. Start your journey with us today.
+            </p>
+            <button className="btn btn-glass-custom text-uppercase" onClick={() => navigate("/search/map")}>
+              Get Started Now
+            </button>
           </div>
         </div>
-      </div >
-    </div>
+      </div>
+    </div >
   );
 };
