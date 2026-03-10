@@ -25,6 +25,7 @@ python-dotenv = "*"
 openai = "*"
 flask-socketio = "*"
 eventlet = "*"
+colorama = "*"
 
 [requires]
 python_version = "3.13"
