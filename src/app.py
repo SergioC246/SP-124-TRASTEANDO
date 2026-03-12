@@ -31,7 +31,11 @@ app = Flask(__name__)
 app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY", "super-secret-key")
 jwt = JWTManager(app)
 
-CORS(app, origins=["https://trasteando-marketplace.vercel.app", "http://localhost:3000"])
+CORS(app, origins=[
+    "https://trasteando-marketplace.vercel.app",
+    "https://trasteando-marketplace-git-main-sergioc246s-projects.vercel.app",
+    "http://localhost:3000"
+])
 
 # database condiguration
 db_url = os.getenv("DATABASE_URL")
