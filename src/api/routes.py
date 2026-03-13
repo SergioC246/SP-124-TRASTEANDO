@@ -1497,10 +1497,10 @@ def delete_conversation(my_id, target_id):
 
 
 PRICE_MAP = {
-    "monthly": "price_1T2b1qKDc6NNyu7SmcI4irpk",
-    "quarterly": "price_1T2b2wKDc6NNyu7Svq2CMhdX",
-    "semiannual": "price_1T2b3NKDc6NNyu7SzvyNP0gJ",
-    "annual": "price_1T2b3oKDc6NNyu7SqT6ABkFx",
+    "monthly": "price_1TATiHF2odZIAnGXV4vcmgL6",
+    "quarterly": "price_1TATivF2odZIAnGXQCVfFEVt",
+    "semiannual": "price_1TATjHF2odZIAnGXP6vrphIF",
+    "annual": "price_1TATjXF2odZIAnGXg8xAcagQ",
 }
 
 
